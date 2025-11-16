@@ -1,0 +1,641 @@
+openapi: 3.0.3
+info:
+    title: Braver API (Ofys Integration)
+    version: 0.1.0
+    description: >
+        API exposée par Braver et consommée par Ofys pour la consultation, la création et la gestion des fils de discussion,
+        la consultation des statistiques sur les fils actifs, la recherche de professionnels et de cliniques,
+        ainsi qu'un canal WebSocket pour les activités en temps réel liées aux fils.
+    contact:
+        name: Braver API Team
+        url: https://www.braver.net
+        email: developers@braver.net
+servers:
+    - url: "<À préciser prochainement>"
+      description: Production
+    - url: "<À préciser prochainement>"
+      description: Sandbox
+
+tags:
+    - name: Authentification
+    - name: Fils
+    - name: Recherche
+    - name: Temps Réel
+
+security:
+    - braverJwt: []
+
+paths:
+    /auth/token:
+        post:
+            tags: [Authentification]
+            summary: Obtenir un jeton Braver à partir d'un JWT Ofys
+            description: >
+                Ofys appelle cet endpoint en présentant un JWT signé dans Authorization: Bearer <token>.
+                L'API valide ce jeton et retourne un JWT émis par Braver qui pourra être utilisé pour tous les autres appels de cette API.
+            operationId: exchangeOfysJwtForBraverJwt
+            security:
+                - ofysJwt: []
+            responses:
+                '200':
+                    description: Jeton Braver émis
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/BraverToken'
+                '401':
+                    description: JWT Ofys invalide ou expiré
+
+    /fils/actifs/stats:
+        get:
+            tags: [Fils]
+            summary: Statistiques des fils actifs
+            description: >
+                Retourne des compteurs à afficher dans Ofys.
+                Inclut le nombre de fils actifs (ouverts) et le nombre total de messages non lus.
+            operationId: getActiveThreadStats
+            responses:
+                '200':
+                    description: Statistiques
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ActiveThreadStats'
+
+    /fils/actifs:
+        get:
+            tags: [Fils]
+            summary: Lister les fils actifs
+            description: >
+                Retourne les fils actifs (non fermés) avec métadonnées, participants, lieux et infos patient minimales.
+                Les messages non lus peuvent être résumés par compteurs; le contenu détaillé se trouve via GET /fil/{id}.
+            operationId: listActiveThreads
+            parameters:
+                - in: query
+                  name: page
+                  schema: { type: integer, minimum: 1, default: 1 }
+                - in: query
+                  name: pageSize
+                  schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+            responses:
+                '200':
+                    description: Liste paginée
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ThreadList'
+
+    /fil/{id}:
+        get:
+            tags: [Fils]
+            summary: Détails complets d'un fil (messages et métadonnées)
+            operationId: getThread
+            parameters:
+                - $ref: '#/components/parameters/PathId'
+                - in: query
+                  name: sinceSequenceId
+                  schema: { type: integer, minimum: 0 }
+                  description: Optionnel—récupérer les messages depuis un sequenceId
+            responses:
+                '200':
+                    description: Fil
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Thread'
+                '404':
+                    description: Fil non trouvé
+        put:
+            tags: [Fils]
+            summary: Mettre à jour l'état du fil
+            description: >
+                Permet de marquer comme lu jusqu'à un sequenceId, marquer globalement comme non lu,
+                mettre en sourdine pour une durée, associer un numéro de dossier local, fermer ou quitter le fil.
+            operationId: updateThread
+            parameters:
+                - $ref: '#/components/parameters/PathId'
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ThreadUpdate'
+            responses:
+                '200':
+                    description: Fil mis à jour
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Thread'
+                '400':
+                    description: Requête invalide
+                '404':
+                    description: Fil non trouvé
+
+    /professions:
+        get:
+            tags: [Recherche]
+            summary: Lister les professions disponibles
+            description: >
+                Retourne la liste de toutes les professions connues par Braver, chacune avec un UUID unique,
+                des libellés localisés et genrés, ainsi que le type de profession (clinique sans licence, clinique licencié, non-clinique).
+                Ces IDs sont utilisés dans la recherche de professionnels et l'identification des participants dans les discussions.
+            operationId: listProfessions
+            security: []
+            responses:
+                '200':
+                    description: Liste des professions
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    professions:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/Profession'
+
+    /typesLieux:
+        get:
+            tags: [Recherche]
+            summary: Lister les types de lieux disponibles
+            description: >
+                Retourne la liste de tous les types de lieux connus par Braver (cliniques, pharmacies, services hospitaliers, etc.),
+                chacun avec un UUID unique et des libellés localisés.
+                Ces IDs sont utilisés dans la recherche de cliniques et l'identification des lieux dans les discussions.
+            operationId: listLocationTypes
+            security: []
+            responses:
+                '200':
+                    description: Liste des types de lieux
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    typesLieux:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/LocationType'
+
+    /rechercheDeProfessionnels:
+        get:
+            tags: [Recherche]
+            summary: Rechercher des professionnels
+            operationId: searchProfessionals
+            parameters:
+                - in: query
+                  name: termes
+                  required: true
+                  schema: { type: string }
+                  description: Termes séparés par virgules
+                - in: query
+                  name: profession
+                  schema:
+                      type: string
+                      description: UUID de profession (voir GET /professions)
+                - in: query
+                  name: longitude
+                  schema: { type: number, format: double }
+                - in: query
+                  name: latitude
+                  schema: { type: number, format: double }
+            responses:
+                '200':
+                    description: Résultats
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    results:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/ProfessionalProfile'
+
+    /rechercheDeCliniques:
+        get:
+            tags: [Recherche]
+            summary: Rechercher des cliniques
+            operationId: searchClinics
+            parameters:
+                - in: query
+                  name: termes
+                  required: true
+                  schema: { type: string }
+                - in: query
+                  name: typeLieu
+                  schema:
+                      type: string
+                      format: uuid
+                      description: UUID du type de lieu (voir GET /typesLieux)
+                - in: query
+                  name: longitude
+                  schema: { type: number, format: double }
+                - in: query
+                  name: latitude
+                  schema: { type: number, format: double }
+            responses:
+                '200':
+                    description: Résultats
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    results:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/ClinicProfile'
+
+    /fils:
+        post:
+            tags: [Fils]
+            summary: Créer un nouveau fil
+            description: >
+                Crée un fil avec participants (professionnels et/ou cliniques), contenu initial et association patient.
+                Si aucun patient synchronisé au préalable, Braver peut créer un profil minimal et retourner l'id local correspondant lorsque le rapprochement est effectué.
+            operationId: createThread
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ThreadCreate'
+            responses:
+                '201':
+                    description: Fil créé
+                    headers:
+                        Location:
+                            description: URL de la ressource nouvellement créée
+                            schema:
+                                type: string
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Thread'
+                '400':
+                    description: Données invalides
+
+    /fils/activites:
+        get:
+            tags: [Temps Réel]
+            summary: Obtenir une URL de WebSocket ou upgrader la connexion
+            description: >
+                Établit une connexion WebSocket pour recevoir en temps réel les événements affectant les fils actifs
+                (nouveaux fils, nouveaux messages, changements d'état).
+            operationId: getActivitiesSocket
+            responses:
+                '101':
+                    description: Protocol Switch to WebSocket (si upgrade direct)
+                '401':
+                    description: Non autorisé
+
+components:
+    securitySchemes:
+        braverJwt:
+            type: http
+            scheme: bearer
+            bearerFormat: JWT
+            description: >
+                JWT émis par Braver suite à l'échange d'un token Ofys via POST /auth/token.
+                Doit être transmis dans Authorization: Bearer <token> pour tous les appels de cette API,
+                à l'exception de l'obtention du jeton lui-même.
+        ofysJwt:
+            type: http
+            scheme: bearer
+            bearerFormat: JWT
+            description: >
+                JWT émis par Ofys, inclus en Authorization: Bearer <token> lors de l'appel à POST /auth/token.
+                Claims requis:
+                - sub: identifiant utilisateur Ofys
+                - exp, iat: timestamps
+                - iss: URL identifiant Ofys
+                - tid: identifiant de la clinique/client
+                Le token peut aussi être utilisé comme sso_token pour https://app.braver.net/?sso_token=...
+
+    parameters:
+        PathId:
+            name: id
+            in: path
+            required: true
+            schema:
+                type: string
+            description: Identifiant côté Ofys ou Braver selon le contexte
+
+    schemas:
+        BraverToken:
+            type: object
+            properties:
+                access_token:
+                    type: string
+                    description: JWT émis par Braver à utiliser pour les appels suivants
+                token_type:
+                    type: string
+                    enum: [Bearer]
+                    default: Bearer
+                expires_in:
+                    type: integer
+                    description: Durée de validité du token en secondes
+
+        ActiveThreadStats:
+            type: object
+            properties:
+                nbFilsActifs:
+                    type: integer
+                    description: Nombre de fils non fermés
+                nbMessagesNonLus:
+                    type: integer
+                    description: Total des messages non lus dans tous les fils actifs
+
+        ThreadList:
+            type: object
+            properties:
+                page: { type: integer }
+                pageSize: { type: integer }
+                total: { type: integer }
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ThreadSummary'
+
+        ThreadSummary:
+            type: object
+            properties:
+                id: { type: string }
+                titre: { type: string }
+                participants:
+                    type: array
+                    items: { $ref: '#/components/schemas/Participant' }
+                lieux:
+                    type: array
+                    items: { $ref: '#/components/schemas/PracticeLocation' }
+                patient:
+                    $ref: '#/components/schemas/PatientMini'
+                nbMessages: { type: integer }
+                nbMessagesNonLus: { type: integer }
+                dernierMessageAt:
+                    type: string
+                    format: date-time
+                estFerme:
+                    type: boolean
+                    default: false
+                enSourdineJusqua:
+                    type: string
+                    format: date-time
+                    nullable: true
+
+        Thread:
+            type: object
+            properties:
+                id: { type: string }
+                titre: { type: string }
+                participants:
+                    type: array
+                    items: { $ref: '#/components/schemas/Participant' }
+                lieux:
+                    type: array
+                    items: { $ref: '#/components/schemas/PracticeLocation' }
+                patient:
+                    $ref: '#/components/schemas/PatientMini'
+                messages:
+                    type: array
+                    items: { $ref: '#/components/schemas/Message' }
+                nbMessages: { type: integer }
+                nbMessagesNonLus: { type: integer }
+                estFerme: { type: boolean }
+                enSourdineJusqua:
+                    type: string
+                    format: date-time
+                    nullable: true
+                ofysPatientId:
+                    type: string
+                    nullable: true
+                    description: Identifiant Ofys associé si établi
+                braverPatientId:
+                    type: string
+                    nullable: true
+
+        ThreadUpdate:
+            type: object
+            properties:
+                marquerLuJusquaSequenceId:
+                    type: integer
+                    minimum: 0
+                    description: Marque tous les messages jusqu'à ce sequenceId comme lus
+                marquerNonLu:
+                    type: boolean
+                    description: Marque le fil globalement comme non lu
+                mettreEnSourdinePourSecondes:
+                    type: integer
+                    minimum: 0
+                associerOfysPatientId:
+                    type: string
+                    description: Associer le numéro de dossier local Ofys
+                fermer:
+                    type: boolean
+                    description: Fermer le fil
+                quitterSansFermer:
+                    type: boolean
+                    description: Quitter le fil sans le fermer
+
+        ThreadCreate:
+            type: object
+            required: [titre, participants]
+            properties:
+                titre: { type: string }
+                participants:
+                    type: array
+                    minItems: 1
+                    items: { $ref: '#/components/schemas/ThreadParticipantRef' }
+                contenuInitial:
+                    $ref: '#/components/schemas/MessageContent'
+                ofysPatientId:
+                    type: string
+                    nullable: true
+                braverPatientId:
+                    type: string
+                    nullable: true
+                piecesJointes:
+                    type: array
+                    items: { $ref: '#/components/schemas/Attachment' }
+
+        ThreadParticipantRef:
+            type: object
+            properties:
+                professionnelId:
+                    type: string
+                    nullable: true
+                cliniqueId:
+                    type: string
+                    nullable: true
+
+        Participant:
+            type: object
+            properties:
+                id: { type: string }
+                type:
+                    type: string
+                    enum: [professionnel, clinique, systeme]
+                nomAffiche: { type: string }
+                profession:
+                    type: string
+                    format: uuid
+                    nullable: true
+                    description: UUID de la profession (voir GET /professions). Applicable uniquement si type=professionnel.
+                lieu:
+                    $ref: '#/components/schemas/PracticeLocation'
+
+        PracticeLocation:
+            type: object
+            properties:
+                id: { type: string }
+                nom: { type: string }
+                typeLieu:
+                    type: string
+                    format: uuid
+                    description: UUID du type de lieu (voir GET /typesLieux)
+                adresse:
+                    type: string
+                longitude:
+                    type: number
+                    format: double
+                latitude:
+                    type: number
+                    format: double
+
+        PatientMini:
+            type: object
+            properties:
+                ofysPatientId:
+                    type: integer
+                    nullable: true
+                prenom: { type: string }
+                nom: { type: string }
+                sexeNaissance:
+                    type: string
+                    nullable: true
+                dateNaissance:
+                    type: string
+                    format: date
+                    nullable: true
+                nam:
+                    type: string
+                    nullable: true
+
+        Message:
+            type: object
+            properties:
+                id: { type: string }
+                sequenceId:
+                    type: integer
+                    description: Ordre strict des messages dans le fil
+                auteur:
+                    $ref: '#/components/schemas/Participant'
+                contenu:
+                    $ref: '#/components/schemas/MessageContent'
+                piecesJointes:
+                    type: array
+                    items: { $ref: '#/components/schemas/Attachment' }
+                creeAt:
+                    type: string
+                    format: date-time
+                nonLu:
+                    type: boolean
+
+        MessageContent:
+            type: object
+            properties:
+                texte:
+                    type: string
+                format:
+                    type: string
+                    enum: [texte, markdown]
+                    default: texte
+
+        Attachment:
+            type: object
+            properties:
+                id: { type: string }
+                nomFichier: { type: string }
+                typeMime: { type: string }
+                tailleOctets: { type: integer }
+                urlTelechargement:
+                    type: string
+
+        ProfessionalProfile:
+            type: object
+            properties:
+                id: { type: string }
+                nom: { type: string }
+                prenom: { type: string }
+                profession: { type: string }
+                numeroPratique: { type: string }
+                lieux:
+                    type: array
+                    items: { $ref: '#/components/schemas/PracticeLocation' }
+
+        ClinicProfile:
+            type: object
+            properties:
+                id: { type: string }
+                nom: { type: string }
+                typeLieu:
+                    type: string
+                    format: uuid
+                    description: UUID du type de lieu (voir GET /typesLieux)
+                lieux:
+                    type: array
+                    items: { $ref: '#/components/schemas/PracticeLocation' }
+
+        Profession:
+            type: object
+            properties:
+                id:
+                    type: string
+                    format: uuid
+                    description: Identifiant unique de la profession
+                type:
+                    type: string
+                    enum: [clinique_sans_licence, clinique_licencie, non_clinique]
+                    description: Type de profession
+                labels:
+                    type: object
+                    description: Libellés localisés et genrés de la profession
+                    properties:
+                        fr_M:
+                            type: string
+                            description: Libellé en français, genre masculin
+                        fr_F:
+                            type: string
+                            description: Libellé en français, genre féminin
+                        fr_O:
+                            type: string
+                            description: Libellé en français, genre autre/neutre
+                        en_M:
+                            type: string
+                            description: Libellé en anglais, genre masculin
+                        en_F:
+                            type: string
+                            description: Libellé en anglais, genre féminin
+                        en_O:
+                            type: string
+                            description: Libellé en anglais, genre autre/neutre
+
+        LocationType:
+            type: object
+            properties:
+                id:
+                    type: string
+                    format: uuid
+                    description: Identifiant unique du type de lieu
+                labels:
+                    type: object
+                    description: Libellés localisés du type de lieu
+                    properties:
+                        fr:
+                            type: string
+                            description: Libellé en français
+                        en:
+                            type: string
+                            description: Libellé en anglais
