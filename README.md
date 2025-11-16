@@ -1,3 +1,15 @@
+## Braver / Ofys APIs - Documentation
+
+### Acces a la documentation Swagger UI
+
+La documentation interactive des APIs est automatiquement deployee sur **GitHub Pages** a chaque push sur la branche `main`.
+
+**URL** : `https://braverhealth.github.io/ofys-api/`
+
+Un GitHub Action automatise le deploiement (voir `.github/workflows/deploy-swagger-ui.yml`).
+
+---
+
 ## Notes sur les APIs Braver / Ofys
 
 Ce dépôt contient deux définitions OpenAPI principales :
