@@ -4,9 +4,7 @@
 
 La documentation interactive des APIs est automatiquement deployee sur **GitHub Pages** a chaque push sur la branche `main`.
 
-**URL** : `https://braverhealth.github.io/ofys-api/`
-
-Un GitHub Action automatise le deploiement (voir `.github/workflows/deploy-swagger-ui.yml`).
+**URL** : https://braverhealth.github.io/ofys-api/
 
 ---
 
