@@ -2,7 +2,29 @@ openapi: 3.0.3
 info:
     title: Braver Backend API – Provisionnement et Patients
     version: 0.2.0
-    description: API consommée par le backend d'Ofys pour provisionner les professionnels et synchroniser des patients.
+    description: >
+        API consommée par le backend d'Ofys pour provisionner les professionnels et synchroniser des patients.
+
+        ## Modèle de Sécurité
+
+        L'API Backend utilise deux schémas d'authentification JWT:
+
+        1. **providerJwt** (Fournisseur Ofys):
+           - Utilisé UNIQUEMENT pour POST /clients
+           - Identifie le fournisseur Ofys (pas une clinique spécifique)
+           - Claims: iss, aud, sub (identifiant fournisseur), iat, exp
+
+        2. **clinicJwt** (Clinique/Client):
+           - Utilisé pour tous les autres endpoints
+           - Identifie la clinique/client qui effectue la requête
+           - Claims: iss, aud, tid (identifiant clinique), iat, exp
+
+        Chaque requête doit inclure un JWT valide dans l'en-tête:
+        ```
+        Authorization: Bearer <JWT>
+        ```
+
+        Aucun endpoint public. Voir SECURITY.md pour la documentation complète du modèle de sécurité.
 servers:
     - url: "<À préciser prochainement>"
       description: Production
@@ -23,7 +45,14 @@ paths:
             description: >
                 Crée un nouveau client (clinique/organisation) avec ses lieux de pratique associés.
                 Chaque client peut avoir plusieurs lieux de pratique (cliniques, pharmacies, services hospitaliers, etc.).
+
+                **Sécurité**: Authentification requise (providerJwt)
+
+                Note: Cet endpoint utilise providerJwt (identifiant le fournisseur Ofys) et non clinicJwt,
+                car le client n'existe pas encore au moment de sa création.
             operationId: createClient
+            security:
+                - providerJwt: []
             requestBody:
                 required: true
                 content:
@@ -47,7 +76,10 @@ paths:
         post:
             tags: [Utilisateurs]
             summary: Créer un professionnel confirmé (activation DSQ)
-            description: Notifie Braver qu'un professionnel confirmé (clé DSQ active) doit obtenir un accès.
+            description: >
+                Notifie Braver qu'un professionnel confirmé (clé DSQ active) doit obtenir un accès.
+
+                **Sécurité**: Authentification requise (clinicJwt)
             operationId: createUser
             requestBody:
                 required: true
@@ -72,6 +104,8 @@ paths:
         put:
             tags: [Utilisateurs]
             summary: Mettre à jour un professionnel
+            description: >
+                **Sécurité**: Authentification requise (clinicJwt)
             operationId: updateUser
             parameters:
                 - $ref: '#/components/parameters/PathId'
@@ -93,6 +127,8 @@ paths:
         delete:
             tags: [Utilisateurs]
             summary: Désactiver un professionnel (retirer l'accès)
+            description: >
+                **Sécurité**: Authentification requise (clinicJwt)
             operationId: deleteUser
             parameters:
                 - $ref: '#/components/parameters/PathId'
@@ -104,7 +140,10 @@ paths:
         post:
             tags: [Patients]
             summary: Créer un patient (profil démographique minimal confirmé)
-            description: Envoyer uniquement des dossiers complets (id, prénom, nom, dateNaissance, sexeNaissance, nam).
+            description: >
+                Envoyer uniquement des dossiers complets (id, prénom, nom, dateNaissance, sexeNaissance, nam).
+
+                **Sécurité**: Authentification requise (clinicJwt)
             operationId: createPatient
             requestBody:
                 required: true
@@ -129,6 +168,8 @@ paths:
         put:
             tags: [Patients]
             summary: Mettre à jour un patient
+            description: >
+                **Sécurité**: Authentification requise (clinicJwt)
             operationId: updatePatient
             parameters:
                 - $ref: '#/components/parameters/PathId'
@@ -150,6 +191,8 @@ paths:
         delete:
             tags: [Patients]
             summary: Archiver un patient (décès, désassociation)
+            description: >
+                **Sécurité**: Authentification requise (clinicJwt)
             operationId: deletePatient
             parameters:
                 - $ref: '#/components/parameters/PathId'
@@ -159,12 +202,24 @@ paths:
 
 components:
     securitySchemes:
+        providerJwt:
+            type: http
+            scheme: bearer
+            bearerFormat: JWT
+            description: >
+                Jeton identifiant le fournisseur Ofys (pour créer des clients).
+                Utilisé UNIQUEMENT pour POST /clients.
+                Claims suggérés:
+                - iss: émetteur Ofys
+                - aud: "<installation URL à préciser>"
+                - sub: identifiant du fournisseur Ofys
+                - iat, exp
         clinicJwt:
             type: http
             scheme: bearer
             bearerFormat: JWT
             description: >
-                Jeton backend identifiant la clinique (client).  
+                Jeton backend identifiant la clinique (client).
                 Claims suggérés:
                 - iss: émetteur Ofys
                 - aud: "<installation URL à préciser>"
