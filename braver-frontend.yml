@@ -6,6 +6,27 @@ info:
         API exposée par Braver et consommée par Ofys pour la consultation, la création et la gestion des fils de discussion,
         la consultation des statistiques sur les fils actifs, la recherche de professionnels et de cliniques,
         ainsi qu'un canal WebSocket pour les activités en temps réel liées aux fils.
+
+        ## Modèle de Sécurité
+
+        L'API utilise deux schémas d'authentification JWT:
+
+        1. **ofysJwt** (Authentification Ofys):
+           - Utilisé UNIQUEMENT pour l'endpoint POST /auth/token
+           - JWT signé par Ofys
+           - Permet d'obtenir un braverJwt
+
+        2. **braverJwt** (Authentification Braver):
+           - Utilisé pour TOUS les autres endpoints (sauf /professions et /typesLieux)
+           - JWT émis par Braver après échange via POST /auth/token
+           - Inclus dans l'en-tête Authorization: Bearer <token>
+
+        3. **Endpoints Publics** (pas d'authentification requise):
+           - GET /professions
+           - GET /typesLieux
+           - Ces endpoints retournent des données de référence statiques
+
+        Voir chaque endpoint pour son modèle de sécurité spécifique.
     contact:
         name: Braver API Team
         url: https://www.braver.net
@@ -53,6 +74,8 @@ paths:
             description: >
                 Retourne des compteurs à afficher dans Ofys.
                 Inclut le nombre de fils actifs (ouverts) et le nombre total de messages non lus.
+
+                **Sécurité**: Authentification requise (braverJwt)
             operationId: getActiveThreadStats
             responses:
                 '200':
@@ -69,6 +92,8 @@ paths:
             description: >
                 Retourne les fils actifs (non fermés) avec métadonnées, participants, lieux et infos patient minimales.
                 Les messages non lus peuvent être résumés par compteurs; le contenu détaillé se trouve via GET /fil/{id}.
+
+                **Sécurité**: Authentification requise (braverJwt)
             operationId: listActiveThreads
             parameters:
                 - in: query
@@ -89,6 +114,8 @@ paths:
         get:
             tags: [Fils]
             summary: Détails complets d'un fil (messages et métadonnées)
+            description: >
+                **Sécurité**: Authentification requise (braverJwt)
             operationId: getThread
             parameters:
                 - $ref: '#/components/parameters/PathId'
@@ -111,6 +138,8 @@ paths:
             description: >
                 Permet de marquer comme lu jusqu'à un sequenceId, marquer globalement comme non lu,
                 mettre en sourdine pour une durée, associer un numéro de dossier local, fermer ou quitter le fil.
+
+                **Sécurité**: Authentification requise (braverJwt)
             operationId: updateThread
             parameters:
                 - $ref: '#/components/parameters/PathId'
@@ -132,6 +161,39 @@ paths:
                 '404':
                     description: Fil non trouvé
 
+    /fil/{id}/messages:
+        post:
+            tags: [Fils]
+            summary: Poster un message dans un fil
+            description: >
+                Ajoute un nouveau message au fil avec contenu textuel (texte brut ou markdown)
+                et zéro ou plusieurs pièces jointes (fichiers en base64 ou URLs).
+
+                **Sécurité**: Authentification requise (braverJwt)
+            operationId: postMessage
+            parameters:
+                - $ref: '#/components/parameters/PathId'
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/MessageCreate'
+            responses:
+                '201':
+                    description: Message créé
+                    headers:
+                        Location:
+                            schema: { type: string }
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Message'
+                '400':
+                    description: Requête invalide
+                '404':
+                    description: Fil non trouvé
+
     /professions:
         get:
             tags: [Recherche]
@@ -140,6 +202,8 @@ paths:
                 Retourne la liste de toutes les professions connues par Braver, chacune avec un UUID unique,
                 des libellés localisés et genrés, ainsi que le type de profession (clinique sans licence, clinique licencié, non-clinique).
                 Ces IDs sont utilisés dans la recherche de professionnels et l'identification des participants dans les discussions.
+
+                **Sécurité**: AUCUNE authentification requise (endpoint public)
             operationId: listProfessions
             security: []
             responses:
@@ -163,6 +227,8 @@ paths:
                 Retourne la liste de tous les types de lieux connus par Braver (cliniques, pharmacies, services hospitaliers, etc.),
                 chacun avec un UUID unique et des libellés localisés.
                 Ces IDs sont utilisés dans la recherche de cliniques et l'identification des lieux dans les discussions.
+
+                **Sécurité**: AUCUNE authentification requise (endpoint public)
             operationId: listLocationTypes
             security: []
             responses:
@@ -182,6 +248,8 @@ paths:
         get:
             tags: [Recherche]
             summary: Rechercher des professionnels
+            description: >
+                **Sécurité**: Authentification requise (braverJwt)
             operationId: searchProfessionals
             parameters:
                 - in: query
@@ -217,6 +285,8 @@ paths:
         get:
             tags: [Recherche]
             summary: Rechercher des cliniques
+            description: >
+                **Sécurité**: Authentification requise (braverJwt)
             operationId: searchClinics
             parameters:
                 - in: query
@@ -255,6 +325,8 @@ paths:
             description: >
                 Crée un fil avec participants (professionnels et/ou cliniques), contenu initial et association patient.
                 Si aucun patient synchronisé au préalable, Braver peut créer un profil minimal et retourner l'id local correspondant lorsque le rapprochement est effectué.
+
+                **Sécurité**: Authentification requise (braverJwt)
             operationId: createThread
             requestBody:
                 required: true
@@ -280,14 +352,31 @@ paths:
     /fils/activites:
         get:
             tags: [Temps Réel]
-            summary: Obtenir une URL de WebSocket ou upgrader la connexion
+            summary: Établir une connexion WebSocket pour les activités en temps réel
             description: >
-                Établit une connexion WebSocket pour recevoir en temps réel les événements affectant les fils actifs
-                (nouveaux fils, nouveaux messages, changements d'état).
+                Établit une connexion WebSocket pour recevoir en temps réel les événements affectant les fils actifs.
+
+                **Sécurité**: Authentification requise (braverJwt)
+
+                **Protocole**: WebSocket standard (wss://)
+
+                **Messages reçus**: Chaque message est un objet JSON avec un champ `type` qui détermine sa structure.
+                Les types de messages possibles sont:
+
+                - **newThread**: Nouveau fil créé (contient l'objet Thread complet)
+                - **newMessage**: Nouveau message dans un fil (contient threadId et l'objet Message)
+                - **threadUpdated**: Fil mis à jour (contient threadId et l'objet Thread mis à jour)
+                - **threadClosed**: Fil fermé (contient threadId)
+
+                Voir le schéma `WebSocketMessage` pour la structure détaillée de chaque type.
             operationId: getActivitiesSocket
             responses:
                 '101':
                     description: Protocol Switch to WebSocket (si upgrade direct)
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/WebSocketMessage'
                 '401':
                     description: Non autorisé
 
@@ -415,6 +504,14 @@ components:
                 braverPatientId:
                     type: string
                     nullable: true
+                resumeDepuisDebut:
+                    type: string
+                    nullable: true
+                    description: Résumé IA de la discussion depuis le début (markdown)
+                resumeDepuisDerniereInteraction:
+                    type: string
+                    nullable: true
+                    description: Résumé IA de la discussion depuis la dernière interaction (markdown)
 
         ThreadUpdate:
             type: object
@@ -524,7 +621,18 @@ components:
                     nullable: true
 
         Message:
+            oneOf:
+                - $ref: '#/components/schemas/MessageWithContent'
+                - $ref: '#/components/schemas/MessageWithAttachment'
+            discriminator:
+                propertyName: type
+                mapping:
+                    contenu: '#/components/schemas/MessageWithContent'
+                    pieceJointe: '#/components/schemas/MessageWithAttachment'
+
+        MessageWithContent:
             type: object
+            required: [id, sequenceId, auteur, type, contenu, creeAt, nonLu]
             properties:
                 id: { type: string }
                 sequenceId:
@@ -532,11 +640,33 @@ components:
                     description: Ordre strict des messages dans le fil
                 auteur:
                     $ref: '#/components/schemas/Participant'
+                type:
+                    type: string
+                    enum: [contenu]
                 contenu:
                     $ref: '#/components/schemas/MessageContent'
-                piecesJointes:
-                    type: array
-                    items: { $ref: '#/components/schemas/Attachment' }
+                creeAt:
+                    type: string
+                    format: date-time
+                nonLu:
+                    type: boolean
+
+        MessageWithAttachment:
+            type: object
+            required: [id, sequenceId, auteur, type, pieceJointe, creeAt, nonLu]
+            properties:
+                id: { type: string }
+                sequenceId:
+                    type: integer
+                    description: Ordre strict des messages dans le fil
+                auteur:
+                    $ref: '#/components/schemas/Participant'
+                type:
+                    type: string
+                    enum: [pieceJointe]
+                pieceJointe:
+                    $ref: '#/components/schemas/Attachment'
+                    description: Une seule pièce jointe par message
                 creeAt:
                     type: string
                     format: date-time
@@ -562,6 +692,43 @@ components:
                 tailleOctets: { type: integer }
                 urlTelechargement:
                     type: string
+
+        AttachmentCreate:
+            type: object
+            required: [nomFichier, typeMime, description]
+            properties:
+                nomFichier:
+                    type: string
+                    description: Nom du fichier
+                typeMime:
+                    type: string
+                    description: Type MIME du fichier (ex. application/pdf, image/png)
+                description:
+                    type: string
+                    description: Description ou légende du fichier
+                contenuBase64:
+                    type: string
+                    format: byte
+                    nullable: true
+                    description: Contenu du fichier encodé en base64 (mutuellement exclusif avec urlTelechargement)
+                urlTelechargement:
+                    type: string
+                    format: uri
+                    nullable: true
+                    description: URL pour télécharger le fichier (mutuellement exclusif avec contenuBase64)
+
+        MessageCreate:
+            type: object
+            properties:
+                contenu:
+                    $ref: '#/components/schemas/MessageContent'
+                    nullable: true
+                    description: Contenu textuel (markdown ou texte brut). Optionnel.
+                piecesJointes:
+                    type: array
+                    minItems: 0
+                    items: { $ref: '#/components/schemas/AttachmentCreate' }
+                    description: Zéro ou plusieurs pièces jointes. Optionnel.
 
         ProfessionalProfile:
             type: object
@@ -639,3 +806,63 @@ components:
                         en:
                             type: string
                             description: Libellé en anglais
+
+        WebSocketMessage:
+            oneOf:
+                - $ref: '#/components/schemas/WebSocketMessageNewThread'
+                - $ref: '#/components/schemas/WebSocketMessageNewMessage'
+                - $ref: '#/components/schemas/WebSocketMessageThreadUpdated'
+                - $ref: '#/components/schemas/WebSocketMessageThreadClosed'
+            discriminator:
+                propertyName: type
+
+        WebSocketMessageNewThread:
+            type: object
+            required: [type, thread]
+            properties:
+                type:
+                    type: string
+                    enum: [newThread]
+                    description: Nouveau fil créé
+                thread:
+                    $ref: '#/components/schemas/Thread'
+
+        WebSocketMessageNewMessage:
+            type: object
+            required: [type, threadId, message]
+            properties:
+                type:
+                    type: string
+                    enum: [newMessage]
+                    description: Nouveau message dans un fil
+                threadId:
+                    type: string
+                    description: ID du fil auquel le message appartient
+                message:
+                    $ref: '#/components/schemas/Message'
+
+        WebSocketMessageThreadUpdated:
+            type: object
+            required: [type, threadId, thread]
+            properties:
+                type:
+                    type: string
+                    enum: [threadUpdated]
+                    description: Fil mis à jour (état, participants, etc.)
+                threadId:
+                    type: string
+                    description: ID du fil mis à jour
+                thread:
+                    $ref: '#/components/schemas/Thread'
+
+        WebSocketMessageThreadClosed:
+            type: object
+            required: [type, threadId]
+            properties:
+                type:
+                    type: string
+                    enum: [threadClosed]
+                    description: Fil fermé
+                threadId:
+                    type: string
+                    description: ID du fil fermé

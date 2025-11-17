@@ -43,6 +43,10 @@ export interface Thread {
   enSourdineJusqua?: string | null; // ISO 8601 date-time
   ofysPatientId?: string | null;
   braverPatientId?: string | null;
+  /** Résumé IA de la discussion depuis le début (markdown) */
+  resumeDepuisDebut?: string | null;
+  /** Résumé IA de la discussion depuis la dernière interaction (markdown) */
+  resumeDepuisDerniereInteraction?: string | null;
 }
 
 export interface ThreadUpdate {
@@ -114,13 +118,31 @@ export interface PatientMini {
 // Message Types
 // ============================================================================
 
-export interface Message {
+/**
+ * Message returned from GET /fil/{id}
+ * Either contains text content OR a single attachment, but not both
+ */
+export type Message = MessageWithContent | MessageWithAttachment;
+
+export interface MessageWithContent {
   id: string;
   /** Ordre strict des messages dans le fil */
   sequenceId: number;
   auteur: Participant;
+  type: 'contenu';
   contenu: MessageContent;
-  piecesJointes: Attachment[];
+  creeAt: string; // ISO 8601 date-time
+  nonLu: boolean;
+}
+
+export interface MessageWithAttachment {
+  id: string;
+  /** Ordre strict des messages dans le fil */
+  sequenceId: number;
+  auteur: Participant;
+  type: 'pieceJointe';
+  /** Une seule pièce jointe par message */
+  pieceJointe: Attachment;
   creeAt: string; // ISO 8601 date-time
   nonLu: boolean;
 }
@@ -136,6 +158,26 @@ export interface Attachment {
   typeMime: string;
   tailleOctets: number;
   urlTelechargement: string;
+}
+
+export interface AttachmentCreate {
+  /** Nom du fichier */
+  nomFichier: string;
+  /** Type MIME du fichier (ex. application/pdf, image/png) */
+  typeMime: string;
+  /** Description ou légende du fichier */
+  description: string;
+  /** Contenu du fichier encodé en base64 (mutuellement exclusif avec urlTelechargement) */
+  contenuBase64?: string | null;
+  /** URL pour télécharger le fichier (mutuellement exclusif avec contenuBase64) */
+  urlTelechargement?: string | null;
+}
+
+export interface MessageCreate {
+  /** Contenu textuel (markdown ou texte brut). Optionnel. */
+  contenu?: MessageContent | null;
+  /** Zéro ou plusieurs pièces jointes. Optionnel. */
+  piecesJointes?: AttachmentCreate[];
 }
 
 // ============================================================================
@@ -187,5 +229,40 @@ export interface LocationType {
     fr?: string;
     en?: string;
   };
+}
+
+// ============================================================================
+// WebSocket Message Types
+// ============================================================================
+
+/**
+ * WebSocket messages received from /fils/activites
+ */
+export type WebSocketMessage =
+  | WebSocketMessageNewThread
+  | WebSocketMessageNewMessage
+  | WebSocketMessageThreadUpdated
+  | WebSocketMessageThreadClosed;
+
+export interface WebSocketMessageNewThread {
+  type: 'newThread';
+  thread: Thread;
+}
+
+export interface WebSocketMessageNewMessage {
+  type: 'newMessage';
+  threadId: string;
+  message: Message;
+}
+
+export interface WebSocketMessageThreadUpdated {
+  type: 'threadUpdated';
+  threadId: string;
+  thread: Thread;
+}
+
+export interface WebSocketMessageThreadClosed {
+  type: 'threadClosed';
+  threadId: string;
 }
 

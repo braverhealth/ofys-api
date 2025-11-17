@@ -46,12 +46,21 @@ export type {
   PracticeLocation as FrontendPracticeLocation,
   PatientMini,
   Message,
+  MessageWithContent,
+  MessageWithAttachment,
   MessageContent,
+  MessageCreate,
   Attachment,
+  AttachmentCreate,
   ProfessionalProfile,
   ClinicProfile,
   Profession,
   LocationType,
+  WebSocketMessage,
+  WebSocketMessageNewThread,
+  WebSocketMessageNewMessage,
+  WebSocketMessageThreadUpdated,
+  WebSocketMessageThreadClosed,
 } from './frontend';
 
 // ============================================================================
