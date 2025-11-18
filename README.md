@@ -1,111 +1,108 @@
-## Braver / Ofys APIs - Documentation
+# Braver / Ofys APIs - Documentation
 
-### Acces a la documentation Swagger UI
+## Accès à la Documentation
 
-La documentation interactive des APIs est automatiquement deployee sur **GitHub Pages** a chaque push sur la branche `main`.
+### Swagger UI (Documentation Interactive)
+
+La documentation interactive des APIs est automatiquement déployée sur **GitHub Pages** à chaque push sur la branche `main`.
 
 **URL** : https://braverhealth.github.io/ofys-api/
 
----
+### Documentation de Sécurité
 
-## Notes sur les APIs Braver / Ofys
+Pour une documentation complète du modèle de sécurité (authentification, JWT, endpoints publics/protégés), voir:
+- **[SECURITY.md](./SECURITY.md)** - Documentation détaillée des schémas d'authentification pour les deux APIs
 
-Ce dépôt contient deux définitions OpenAPI principales :
+### TypeScript Type Definitions
 
-1. `braver-frontend.yml`
-2. `braver-backend.yml`
-
-Les sections ci‑dessous résument le rôle de chaque fichier et les mécanismes d’authentification associés.
-
----
-
-### 1. Rôle de chaque fichier
-
-#### 1.1 `braver-frontend.yml`
-
-- **But** : décrire l’API exposée par Braver et consommée par le **frontend d’Ofys**.
-- **Fonctionnalités principales** :
-  - Consultation, création et gestion des **fils de discussion**.
-  - Consultation de **statistiques** sur les fils actifs.
-  - **Recherche** de professionnels et de lieux (cliniques, pharmacies, services hospitaliers, etc.).
-  - Exposition d’un **canal temps réel** (WebSocket) pour les activités liées aux fils.
-- **Référentiels exposés sans authentification** :
-  - `GET /professions` : liste des professions connues par Braver (avec UUID, labels localisés/genrés et type de profession).
-  - `GET /typesLieux` : liste des types de lieux (clinique, pharmacie, service hospitalier, etc.) avec UUID et labels localisés.
-
-Ces référentiels sont publics (pas d’authentification) afin de permettre au frontend de construire des interfaces (filtres, formulaires) avant ou indépendamment de l’authentification de l’utilisateur.
-
-#### 1.2 `braver-backend.yml`
-
-- **But** : décrire l’API consommée par le **backend d’Ofys** pour :
-  - **Provisionner les clients** (cliniques/organisations) et leurs lieux de pratique.
-  - **Provisionner les professionnels** (création, mise à jour, désactivation).
-  - **Synchroniser les patients** (création, mise à jour, archivage).
-- Cette API n’est pas destinée au navigateur, mais à des appels **serveur-à-serveur** entre Ofys et Braver.
+Des définitions TypeScript complètes sont disponibles dans le dossier `types/`:
+- `types/frontend.ts` - Types pour l'API Frontend
+- `types/backend.ts` - Types pour l'API Backend
+- `types/common.ts` - Types partagés et utilitaires
+- `types/index.ts` - Barrel export pour tous les types
 
 ---
 
-### 2. Mécanismes d’authentification
+## Vue d'ensemble des APIs
 
-#### 2.1 Authentification dans `braver-frontend.yml`
+Ce dépôt contient deux définitions OpenAPI principales :
 
-Cette API utilise **deux types de JWT** : un JWT émis par Ofys, et un JWT émis par Braver.
+1. **`braver-frontend.yml`** - API consommée par le frontend d'Ofys
+2. **`braver-backend.yml`** - API consommée par le backend d'Ofys
 
-1. **JWT Ofys (`ofysJwt`)**
-   - Déclaré dans `components.securitySchemes.ofysJwt` comme `type: http`, `scheme: bearer`, `bearerFormat: JWT`.
-   - **Usage** : exclusivement sur l’endpoint :
-     - `POST /auth/token`
-   - **Flux** :
-     1. Ofys génère un JWT et l’envoie dans l’en-tête `Authorization: Bearer <jwt_ofys>`.
-     2. Braver valide ce JWT (claims attendus : `sub`, `exp`, `iat`, `iss`, `tid`, etc.).
-     3. Si le JWT est valide, Braver émet un **JWT Braver** et le retourne dans une réponse de type `BraverToken`.
-   - Ce même token Ofys peut également être utilisé comme `sso_token` dans l’URL web de Braver (`https://app.braver.net/?sso_token=...`).
+### 1. API Frontend (`braver-frontend.yml`)
 
-2. **JWT Braver (`braverJwt`)**
-   - Déclaré dans `components.securitySchemes.braverJwt` (Bearer JWT).
-   - Configuré comme **schéma de sécurité global** via :
-     - `security:
-         - braverJwt: []`
-   - **Usage** : pour **tous les endpoints** de l’API frontend **sauf** :
-     - `POST /auth/token` (protégé par `ofysJwt`),
-     - `GET /professions` (public, `security: []`),
-     - `GET /typesLieux` (public, `security: []`).
-   - Les clients doivent inclure ce token dans l’en-tête :
-     - `Authorization: Bearer <jwt_braver>`.
+**But**: Décrire l'API exposée par Braver et consommée par le **frontend d'Ofys**.
 
-En résumé, l’API frontend suit un modèle en **deux étapes** :
+**Fonctionnalités principales**:
+- Consultation, création et gestion des **fils de discussion**
+- Consultation de **statistiques** sur les fils actifs
+- **Recherche** de professionnels et de lieux (cliniques, pharmacies, services hospitaliers, etc.)
+- Exposition d'un **canal temps réel** (WebSocket) pour les activités liées aux fils
 
-1. Ofys → Braver : échange d’un **JWT Ofys** contre un **JWT Braver** via `POST /auth/token`.
-2. Frontend Ofys → Braver : utilisation du **JWT Braver** pour tous les appels métiers (fils, stats, WebSocket, recherches), à l’exception des deux endpoints de référentiel publics.
+**Endpoints publics** (sans authentification):
+- `GET /professions` - Liste des professions avec UUID, labels localisés/genrés
+- `GET /typesLieux` - Liste des types de lieux avec UUID et labels localisés
 
-#### 2.2 Authentification dans `braver-backend.yml`
+Ces endpoints sont publics pour permettre au frontend de construire des interfaces avant l'authentification.
 
-L’API backend utilise un **seul schéma de sécurité**, centré sur le client (clinique/organisation) :
+### 2. API Backend (`braver-backend.yml`)
 
-- **Schéma `clinicJwt`**
-  - Déclaré dans `components.securitySchemes.clinicJwt` (Bearer JWT).
-  - Appliqué globalement via :
-    - `security:
-         - clinicJwt: []`
-  - **Objet** : identifier de façon sécurisée le **client Ofys** (clinique/organisation) qui appelle l’API backend.
-  - **Claims suggérés** (dans la description du schéma) :
-    - `iss` : émetteur Ofys.
-    - `aud` : URL/identifiant de l’installation Braver.
-    - `tid` : identifiant du client/clinique.
-    - `iat`, `exp` : timestamps d’émission/expiration.
+**But**: Décrire l'API consommée par le **backend d'Ofys** pour:
+- **Provisionner les clients** (cliniques/organisations) et leurs lieux de pratique
+- **Provisionner les professionnels** (création, mise à jour, désactivation)
+- **Synchroniser les patients** (création, mise à jour, archivage)
 
-Tous les endpoints de `braver-backend.yml` (création/mise à jour de clients, professionnels, patients) requièrent ce `clinicJwt`.
-Il n’y a **pas** d’endpoint d’échange de jeton dans ce fichier : l’émission du `clinicJwt` est gérée côté Ofys ou par l’infrastructure d’intégration.
+Cette API n'est pas destinée au navigateur, mais à des appels **serveur-à-serveur** entre Ofys et Braver.
 
 ---
 
-### 3. Résumé rapide
+## Modèles d'Authentification
 
-- `braver-frontend.yml`
-  - API orientée **frontend** (Ofys → Braver) pour les fils, la recherche et le temps réel.
-  - Authentification **en deux temps** : `ofysJwt` → `BraverToken` (JWT Braver), puis `braverJwt` pour le reste.
-  - Exceptions non authentifiées : `GET /professions`, `GET /typesLieux`.
+### Frontend API - Authentification en deux étapes
 
-- `braver-backend.yml`
-  - API orientée **backend** (Ofys ↔ Braver) pour le provisioning des clients, utilisateurs et patients.
-  - Authentification **unique** par `clinicJwt` appliqué globalement à toutes les routes.
+L'API Frontend utilise **deux types de JWT**:
+
+1. **`ofysJwt`** - JWT émis par Ofys
+   - Utilisé UNIQUEMENT pour `POST /auth/token`
+   - Échangé contre un JWT Braver
+
+2. **`braverJwt`** - JWT émis par Braver
+   - Utilisé pour tous les endpoints protégés (sauf les endpoints publics)
+   - Obtenu via `POST /auth/token` en échangeant un `ofysJwt`
+
+**Flux**:
+```
+1. Frontend envoie ofysJwt à POST /auth/token
+2. Braver valide et émet un braverJwt
+3. Frontend utilise braverJwt pour tous les autres appels
+```
+
+### Backend API - Authentification par fournisseur et clinique
+
+L'API Backend utilise **deux schémas JWT**:
+
+1. **`providerJwt`** - JWT identifiant le fournisseur Ofys
+   - Utilisé UNIQUEMENT pour `POST /clients`
+   - Identifie Ofys (pas une clinique spécifique)
+   - Raison: Le client n'existe pas encore au moment de sa création
+
+2. **`clinicJwt`** - JWT identifiant une clinique/client
+   - Utilisé pour tous les autres endpoints
+   - Contient l'identifiant clinique (tid) pour l'isolation des données
+   - Permet à Braver de traiter la requête dans le contexte de la clinique
+
+**Endpoints et authentification**:
+- `POST /clients` → `providerJwt`
+- Tous les autres endpoints → `clinicJwt`
+
+---
+
+## Pour plus de détails
+
+Voir **[SECURITY.md](./SECURITY.md)** pour:
+- Description complète des schémas JWT
+- Claims requis pour chaque schéma
+- Flux d'authentification détaillés
+- Gestion des erreurs
+- Recommandations de sécurité
