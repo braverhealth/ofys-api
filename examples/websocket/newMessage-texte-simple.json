@@ -1,0 +1,25 @@
+{
+  "type": "newMessage",
+  "threadId": "thread-123",
+  "timestamp": "2025-11-19T14:35:00Z",
+  "message": {
+    "id": "msg-456",
+    "sequenceId": 1,
+    "auteur": {
+      "id": "prof-456",
+      "nomAffiche": "Dr. Sophie Martin",
+      "type": "professionnel",
+      "status": "active",
+      "profession": "550e8400-e29b-41d4-a716-446655440000",
+      "permissions": ["full"]
+    },
+    "type": "contenu",
+    "contenu": {
+      "texte": "Le patient présente une amélioration notable.",
+      "format": "texte"
+    },
+    "creeAt": "2025-11-19T14:35:00Z",
+    "nonLu": true
+  }
+}
+

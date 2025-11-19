@@ -1,0 +1,52 @@
+{
+  "type": "threadUpdated",
+  "threadId": "thread-123",
+  "timestamp": "2025-11-19T15:00:00Z",
+  "thread": {
+    "id": "thread-123",
+    "titre": "Discussion patient Jean Dupont - URGENT",
+    "participants": [
+      {
+        "id": "prof-456",
+        "nomAffiche": "Dr. Sophie Martin",
+        "type": "professionnel",
+        "status": "active",
+        "profession": "550e8400-e29b-41d4-a716-446655440000",
+        "permissions": ["full"]
+      },
+      {
+        "id": "clinic-789",
+        "nomAffiche": "Clinique Centrale",
+        "type": "clinique",
+        "status": "active",
+        "profession": null,
+        "permissions": ["read_only"]
+      }
+    ],
+    "lieux": [
+      {
+        "id": "lieu-001",
+        "nom": "Cabinet Principal",
+        "typeLieu": "660e8400-e29b-41d4-a716-446655440001",
+        "adresse": "123 rue Principale, Montréal, QC",
+        "longitude": -73.5673,
+        "latitude": 45.5017
+      }
+    ],
+    "patient": {
+      "ofysPatientId": 12345,
+      "prenom": "Jean",
+      "nom": "Dupont",
+      "sexeNaissance": "M",
+      "dateNaissance": "1990-05-15",
+      "nam": "DUPJ90051512"
+    },
+    "ofysPatientId": "patient-123",
+    "estFerme": false,
+    "enSourdineJusqua": null,
+    "nbMessagesNonLus": 2,
+    "resumeDepuisDebut": null,
+    "resumeDepuisDerniereInteraction": null
+  }
+}
+

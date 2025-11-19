@@ -1,0 +1,73 @@
+{
+  "websocketExamples": {
+    "newThread": [
+      {
+        "file": "newThread-avec-patient.json",
+        "description": "Fil créé avec patient Ofys associé, participants multiples (professionnel + clinique)"
+      },
+      {
+        "file": "newThread-sans-patient.json",
+        "description": "Discussion générale entre professionnels sans patient associé"
+      },
+      {
+        "file": "newThread-avec-message-initial.json",
+        "description": "Fil créé avec un premier message, patient Ofys et Braver associés"
+      },
+      {
+        "file": "newThread-avec-participant-pending.json",
+        "description": "Fil avec un participant en statut 'pending' (invitation non acceptée)"
+      }
+    ],
+    "newMessage": [
+      {
+        "file": "newMessage-texte-simple.json",
+        "description": "Message texte standard d'un professionnel"
+      },
+      {
+        "file": "newMessage-markdown.json",
+        "description": "Message avec formatage markdown (gras, italique, listes, titres)"
+      },
+      {
+        "file": "newMessage-piece-jointe.json",
+        "description": "Message de type 'pieceJointe' avec document PDF"
+      },
+      {
+        "file": "newMessage-systeme.json",
+        "description": "Message automatique généré par le système"
+      }
+    ],
+    "threadUpdated": [
+      {
+        "file": "threadUpdated-ajout-participant.json",
+        "description": "Nouveau participant ajouté au fil avec permissions spécifiques"
+      },
+      {
+        "file": "threadUpdated-changement-titre.json",
+        "description": "Titre du fil modifié (ex: ajout de 'URGENT')"
+      },
+      {
+        "file": "threadUpdated-association-patient.json",
+        "description": "Patient Ofys associé au fil après création"
+      },
+      {
+        "file": "threadUpdated-mise-en-sourdine.json",
+        "description": "Fil mis en sourdine jusqu'à une date spécifique"
+      },
+      {
+        "file": "threadUpdated-marquage-lu.json",
+        "description": "Messages marqués comme lus (nbMessagesNonLus mis à jour)"
+      },
+      {
+        "file": "threadUpdated-avec-resumes-ia.json",
+        "description": "Résumés IA générés et ajoutés au fil"
+      }
+    ],
+    "threadClosed": [
+      {
+        "file": "threadClosed-fermeture-normale.json",
+        "description": "Fil fermé par un participant (discussion terminée)"
+      }
+    ]
+  }
+}
+

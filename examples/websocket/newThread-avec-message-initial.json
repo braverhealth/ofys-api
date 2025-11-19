@@ -1,0 +1,66 @@
+{
+  "type": "newThread",
+  "timestamp": "2025-11-19T16:00:00Z",
+  "thread": {
+    "id": "thread-789",
+    "titre": "Suivi post-opératoire",
+    "participants": [
+      {
+        "id": "prof-333",
+        "nomAffiche": "Dr. Anne Leblanc",
+        "type": "professionnel",
+        "status": "active",
+        "profession": "550e8400-e29b-41d4-a716-446655440000",
+        "permissions": ["full"]
+      }
+    ],
+    "lieux": [
+      {
+        "id": "lieu-002",
+        "nom": "Hôpital Général",
+        "typeLieu": "660e8400-e29b-41d4-a716-446655440003",
+        "adresse": "456 avenue Santé, Québec, QC",
+        "longitude": -71.2082,
+        "latitude": 46.8139
+      }
+    ],
+    "patient": {
+      "ofysPatientId": 67890,
+      "prenom": "Marie",
+      "nom": "Lavoie",
+      "sexeNaissance": "F",
+      "dateNaissance": "1985-03-22",
+      "nam": "LAVM85032234"
+    },
+    "ofysPatientId": "patient-789",
+    "braverPatientId": "braver-patient-999",
+    "estFerme": false,
+    "enSourdineJusqua": null,
+    "messages": [
+      {
+        "id": "msg-001",
+        "sequenceId": 0,
+        "auteur": {
+          "id": "prof-333",
+          "nomAffiche": "Dr. Anne Leblanc",
+          "type": "professionnel",
+          "status": "active",
+          "profession": "550e8400-e29b-41d4-a716-446655440000",
+          "permissions": ["full"]
+        },
+        "type": "contenu",
+        "contenu": {
+          "texte": "Patiente opérée ce matin, tout s'est bien passé.",
+          "format": "texte"
+        },
+        "creeAt": "2025-11-19T16:00:00Z",
+        "nonLu": true
+      }
+    ],
+    "nbMessages": 1,
+    "nbMessagesNonLus": 1,
+    "resumeDepuisDebut": null,
+    "resumeDepuisDerniereInteraction": null
+  }
+}
+

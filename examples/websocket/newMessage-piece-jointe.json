@@ -1,0 +1,29 @@
+{
+  "type": "newMessage",
+  "threadId": "thread-123",
+  "timestamp": "2025-11-19T14:45:00Z",
+  "message": {
+    "id": "msg-458",
+    "sequenceId": 3,
+    "auteur": {
+      "id": "prof-456",
+      "nomAffiche": "Dr. Sophie Martin",
+      "type": "professionnel",
+      "status": "active",
+      "profession": "550e8400-e29b-41d4-a716-446655440000",
+      "permissions": ["full"]
+    },
+    "type": "pieceJointe",
+    "pieceJointe": {
+      "id": "attach-001",
+      "nomFichier": "resultats-analyses.pdf",
+      "typeMime": "application/pdf",
+      "taille": 2457600,
+      "description": "Résultats des analyses sanguines du 19 novembre",
+      "urlTelechargement": "https://storage.braver.net/files/attach-001/resultats-analyses.pdf"
+    },
+    "creeAt": "2025-11-19T14:45:00Z",
+    "nonLu": true
+  }
+}
+

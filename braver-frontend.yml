@@ -121,6 +121,7 @@ info:
         ## Pièces Jointes
 
         ### Limites des Pièces Jointes
+        - **Taille par fichier en base64**: 50 MB maximum (≈ 37.5 MB de données réelles)
         - **Taille totale par message**: 2 GB maximum
         - **Nombre de fichiers par message**: 10 fichiers maximum
         - **Types MIME autorisés**: Tous les types sauf les types à risque
@@ -719,6 +720,15 @@ paths:
                 - **threadClosed**: Fil fermé (contient threadId)
 
                 Voir le schéma `WebSocketMessage` pour la structure détaillée de chaque type.
+
+                **Exemples détaillés**: Voir le dossier `examples/websocket/` pour des exemples JSON complets couvrant tous les cas d'usage :
+
+                - **newThread** : 4 exemples (avec patient, sans patient, avec message initial, avec participant pending)
+                - **newMessage** : 4 exemples (texte simple, markdown, pièce jointe, système)
+                - **threadUpdated** : 6 exemples (ajout participant, changement titre, association patient, mise en sourdine, marquage lu, résumés IA)
+                - **threadClosed** : 1 exemple (fermeture normale)
+
+                **Note importante** : Les cliniques ne peuvent pas écrire de messages (permissions read_only uniquement).
             operationId: getActivitiesSocket
             responses:
                 '101':
@@ -1003,7 +1013,11 @@ components:
                 type:
                     type: string
                     enum: [professionnel, clinique, systeme]
-                    description: Type de participant
+                    description: >
+                        Type de participant.
+                        - professionnel: Professionnel de santé (peut écrire des messages)
+                        - clinique: Clinique (lecture seule, ne peut pas écrire de messages)
+                        - systeme: Système Braver (messages automatiques)
                 status:
                     type: string
                     enum: [pending, active, left]
@@ -1321,6 +1335,58 @@ components:
                     type: string
                     format: date-time
                     description: Timestamp ISO 8601 de l'événement
+            description: >
+                Événement déclenché lors de la création d'un nouveau fil de discussion.
+
+                **Exemples détaillés** : Voir `examples/websocket/newThread-*.json` pour 4 cas d'usage complets.
+            example:
+                type: newThread
+                timestamp: "2025-11-19T14:32:00Z"
+                thread:
+                    id: "thread-123"
+                    titre: "Discussion patient Jean Dupont"
+                    participants:
+                        - id: "prof-456"
+                          nomAffiche: "Dr. Sophie Martin"
+                          type: professionnel
+                          status: active
+                          profession: "550e8400-e29b-41d4-a716-446655440000"
+                          permissions: [full]
+                        - id: "clinic-789"
+                          nomAffiche: "Clinique Centrale"
+                          type: clinique
+                          status: active
+                          profession: null
+                          permissions: [read_only]
+                        - id: "prof-999"
+                          nomAffiche: "Dr. Pierre Leclerc"
+                          type: professionnel
+                          status: pending
+                          profession: "550e8400-e29b-41d4-a716-446655440000"
+                          permissions: [read_only]
+                    lieux:
+                        - id: "lieu-001"
+                          nom: "Cabinet Principal"
+                          typeLieu: "660e8400-e29b-41d4-a716-446655440001"
+                          adresse: "123 rue Principale, Montréal, QC"
+                          longitude: -73.5673
+                          latitude: 45.5017
+                    patient:
+                        ofysPatientId: 12345
+                        prenom: "Jean"
+                        nom: "Dupont"
+                        sexeNaissance: "M"
+                        dateNaissance: "1990-05-15"
+                        nam: "DUPJ90051512"
+                    ofysPatientId: "patient-123"
+                    braverPatientId: null
+                    estFerme: false
+                    enSourdineJusqua: null
+                    messages: []
+                    nbMessages: 0
+                    nbMessagesNonLus: 0
+                    resumeDepuisDebut: null
+                    resumeDepuisDerniereInteraction: null
 
         WebSocketMessageNewMessage:
             type: object
@@ -1340,6 +1406,30 @@ components:
                     type: string
                     format: date-time
                     description: Timestamp ISO 8601 de l'événement
+            description: >
+                Événement déclenché lors de l'ajout d'un nouveau message dans un fil existant.
+
+                **Exemples détaillés** : Voir `examples/websocket/newMessage-*.json` pour 5 cas d'usage complets.
+            example:
+                type: newMessage
+                threadId: "thread-123"
+                timestamp: "2025-11-19T14:35:00Z"
+                message:
+                    id: "msg-456"
+                    sequenceId: 1
+                    auteur:
+                        id: "prof-456"
+                        nomAffiche: "Dr. Sophie Martin"
+                        type: professionnel
+                        status: active
+                        profession: "550e8400-e29b-41d4-a716-446655440000"
+                        permissions: [full]
+                    type: contenu
+                    contenu:
+                        texte: "Le patient présente une amélioration notable."
+                        format: texte
+                    creeAt: "2025-11-19T14:35:00Z"
+                    nonLu: true
 
         WebSocketMessageThreadUpdated:
             type: object
@@ -1353,12 +1443,62 @@ components:
                     type: string
                     description: ID du fil mis à jour
                 thread:
-                    $ref: '#/components/schemas/Thread'
-                    description: Objet Thread complet avec les modifications
+                    $ref: '#/components/schemas/ThreadSummary'
+                    description: Résumé du fil avec les modifications (sans les messages complets)
                 timestamp:
                     type: string
                     format: date-time
                     description: Timestamp ISO 8601 de l'événement
+            description: >
+                Événement déclenché lors de la mise à jour d'un fil existant (titre, participants, patient, sourdine, messages lus, résumés IA, etc.).
+
+                **Exemples détaillés** : Voir `examples/websocket/threadUpdated-*.json` pour 6 cas d'usage complets.
+            example:
+                type: threadUpdated
+                threadId: "thread-123"
+                timestamp: "2025-11-19T14:40:00Z"
+                thread:
+                    id: "thread-123"
+                    titre: "Discussion patient Jean Dupont - URGENT"
+                    participants:
+                        - id: "prof-456"
+                          nomAffiche: "Dr. Sophie Martin"
+                          type: professionnel
+                          status: active
+                          profession: "550e8400-e29b-41d4-a716-446655440000"
+                          permissions: [full]
+                        - id: "clinic-789"
+                          nomAffiche: "Clinique Centrale"
+                          type: clinique
+                          status: active
+                          profession: null
+                          permissions: [read_only]
+                        - id: "prof-999"
+                          nomAffiche: "Dr. Pierre Leclerc"
+                          type: professionnel
+                          status: active
+                          profession: "550e8400-e29b-41d4-a716-446655440000"
+                          permissions: [read_only]
+                    lieux:
+                        - id: "lieu-001"
+                          nom: "Cabinet Principal"
+                          typeLieu: "660e8400-e29b-41d4-a716-446655440001"
+                          adresse: "123 rue Principale, Montréal, QC"
+                          longitude: -73.5673
+                          latitude: 45.5017
+                    patient:
+                        ofysPatientId: 12345
+                        prenom: "Jean"
+                        nom: "Dupont"
+                        sexeNaissance: "M"
+                        dateNaissance: "1990-05-15"
+                        nam: "DUPJ90051512"
+                    ofysPatientId: "patient-123"
+                    estFerme: false
+                    enSourdineJusqua: "2025-11-20T08:00:00Z"
+                    nbMessagesNonLus: 0
+                    resumeDepuisDebut: "Discussion concernant le suivi du patient Jean Dupont. Amélioration notable de son état."
+                    resumeDepuisDerniereInteraction: "Nouveau participant ajouté avec permissions en lecture seule."
 
         WebSocketMessageThreadClosed:
             type: object
@@ -1375,3 +1515,11 @@ components:
                     type: string
                     format: date-time
                     description: Timestamp ISO 8601 de l'événement
+            description: >
+                Événement déclenché lors de la fermeture d'un fil. Après fermeture, le fil reste accessible en lecture seule mais aucun nouveau message ne peut être ajouté.
+
+                **Exemples détaillés** : Voir `examples/websocket/threadClosed-*.json` pour un exemple complet.
+            example:
+                type: threadClosed
+                threadId: "thread-123"
+                timestamp: "2025-11-19T15:00:00Z"

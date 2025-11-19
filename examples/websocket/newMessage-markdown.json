@@ -1,0 +1,25 @@
+{
+  "type": "newMessage",
+  "threadId": "thread-123",
+  "timestamp": "2025-11-19T14:40:00Z",
+  "message": {
+    "id": "msg-457",
+    "sequenceId": 2,
+    "auteur": {
+      "id": "prof-456",
+      "nomAffiche": "Dr. Sophie Martin",
+      "type": "professionnel",
+      "status": "active",
+      "profession": "550e8400-e29b-41d4-a716-446655440000",
+      "permissions": ["full"]
+    },
+    "type": "contenu",
+    "contenu": {
+      "texte": "# Résumé de la consultation\n\n## Observations\n- **Tension artérielle**: 120/80 mmHg\n- **Température**: 37.2°C\n- **Poids**: 75 kg\n\n## Recommandations\n1. Continuer le traitement actuel\n2. Revoir dans 2 semaines\n3. Surveiller les effets secondaires\n\n*Note: Patient très coopératif*",
+      "format": "markdown"
+    },
+    "creeAt": "2025-11-19T14:40:00Z",
+    "nonLu": true
+  }
+}
+

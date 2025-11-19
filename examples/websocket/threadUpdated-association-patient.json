@@ -1,0 +1,43 @@
+{
+  "type": "threadUpdated",
+  "threadId": "thread-456",
+  "timestamp": "2025-11-19T15:40:00Z",
+  "thread": {
+    "id": "thread-456",
+    "titre": "Question générale sur protocole",
+    "participants": [
+      {
+        "id": "prof-111",
+        "nomAffiche": "Dr. Marc Tremblay",
+        "type": "professionnel",
+        "status": "active",
+        "profession": "550e8400-e29b-41d4-a716-446655440000",
+        "permissions": ["full"]
+      },
+      {
+        "id": "prof-222",
+        "nomAffiche": "Dr. Julie Gagnon",
+        "type": "professionnel",
+        "status": "active",
+        "profession": "660e8400-e29b-41d4-a716-446655440002",
+        "permissions": ["full"]
+      }
+    ],
+    "lieux": [],
+    "patient": {
+      "ofysPatientId": 54321,
+      "prenom": "Paul",
+      "nom": "Bergeron",
+      "sexeNaissance": "M",
+      "dateNaissance": "1978-11-30",
+      "nam": "BERP78113056"
+    },
+    "ofysPatientId": "patient-456",
+    "estFerme": false,
+    "enSourdineJusqua": null,
+    "nbMessagesNonLus": 1,
+    "resumeDepuisDebut": null,
+    "resumeDepuisDerniereInteraction": null
+  }
+}
+

@@ -1,0 +1,25 @@
+{
+  "type": "newMessage",
+  "threadId": "thread-123",
+  "timestamp": "2025-11-19T14:50:00Z",
+  "message": {
+    "id": "msg-459",
+    "sequenceId": 4,
+    "auteur": {
+      "id": "system-001",
+      "nomAffiche": "Système Braver",
+      "type": "systeme",
+      "status": "active",
+      "profession": null,
+      "permissions": ["full"]
+    },
+    "type": "contenu",
+    "contenu": {
+      "texte": "Dr. Pierre Leclerc a été ajouté à la discussion.",
+      "format": "texte"
+    },
+    "creeAt": "2025-11-19T14:50:00Z",
+    "nonLu": true
+  }
+}
+
