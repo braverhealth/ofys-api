@@ -83,6 +83,60 @@ export const PARTICIPANT_TYPE_LABELS_EN: Record<ParticipantType, string> = {
 };
 
 // ============================================================================
+// Participant Status Types
+// ============================================================================
+
+export type ParticipantStatus = 'pending' | 'active' | 'left';
+
+export const PARTICIPANT_STATUSES = ['pending', 'active', 'left'] as const;
+
+/**
+ * Participant status labels in French
+ */
+export const PARTICIPANT_STATUS_LABELS_FR: Record<ParticipantStatus, string> = {
+  pending: 'En attente',
+  active: 'Actif',
+  left: 'Parti',
+};
+
+/**
+ * Participant status labels in English
+ */
+export const PARTICIPANT_STATUS_LABELS_EN: Record<ParticipantStatus, string> = {
+  pending: 'Pending',
+  active: 'Active',
+  left: 'Left',
+};
+
+// ============================================================================
+// Participant Permission Types
+// ============================================================================
+
+export type ParticipantPermission = 'read_only' | 'reactions_only' | 'messages_only' | 'full';
+
+export const PARTICIPANT_PERMISSIONS = ['read_only', 'reactions_only', 'messages_only', 'full'] as const;
+
+/**
+ * Participant permission labels in French
+ */
+export const PARTICIPANT_PERMISSION_LABELS_FR: Record<ParticipantPermission, string> = {
+  read_only: 'Lecture seule',
+  reactions_only: 'Réactions uniquement',
+  messages_only: 'Messages uniquement',
+  full: 'Accès complet',
+};
+
+/**
+ * Participant permission labels in English
+ */
+export const PARTICIPANT_PERMISSION_LABELS_EN: Record<ParticipantPermission, string> = {
+  read_only: 'Read only',
+  reactions_only: 'Reactions only',
+  messages_only: 'Messages only',
+  full: 'Full access',
+};
+
+// ============================================================================
 // Message Format Types
 // ============================================================================
 

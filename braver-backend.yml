@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
     title: Braver Backend API – Provisionnement et Patients
-    version: 0.2.0
+    version: 0.2.2
     description: >
         API consommée par le backend d'Ofys pour provisionner les professionnels et synchroniser des patients.
 
@@ -25,6 +25,27 @@ info:
         ```
 
         Aucun endpoint public. Voir SECURITY.md pour la documentation complète du modèle de sécurité.
+
+        ## Idempotence
+
+        ### Support de l'Idempotency-Key
+        Tous les endpoints POST et PUT supportent le header standard `Idempotency-Key` pour garantir l'idempotence.
+
+        **Format**: UUID v4 (ex: `550e8400-e29b-41d4-a716-446655440000`)
+
+        **Durée de garantie**: 1 heure
+
+        **Utilisation**: Inclure le header `Idempotency-Key` dans la requête:
+        ```
+        POST /clients
+        Idempotency-Key: 550e8400-e29b-41d4-a716-446655440000
+        ```
+
+        **Comportement**:
+        - Si la même requête est envoyée avec la même `Idempotency-Key` dans l'heure, la réponse en cache est retournée
+        - Évite les doublons en cas de retry réseau
+        - Applicable à: POST /clients, POST /utilisateurs, POST /patients, PUT /utilisateur/{id}, PUT /patient/{id}
+
 servers:
     - url: "<À préciser prochainement>"
       description: Production
@@ -53,6 +74,11 @@ paths:
             operationId: createClient
             security:
                 - providerJwt: []
+            parameters:
+                - in: header
+                  name: Idempotency-Key
+                  schema: { type: string, format: uuid }
+                  description: UUID v4 pour garantir l'idempotence (optionnel, durée 1h)
             requestBody:
                 required: true
                 content:
@@ -69,8 +95,34 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Client'
-                '400': { description: Données invalides }
-                '409': { description: Existe déjà }
+                '400':
+                    description: Données invalides
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ApiError'
+                            example:
+                                error:
+                                    code: VALIDATION_REQUIRED_FIELD
+                                    message: Le champ 'nom' est obligatoire
+                                    details:
+                                        field: nom
+                                    timestamp: "2025-11-18T14:32:00Z"
+                                    traceId: abc-123-def
+                '409':
+                    description: Client existe déjà
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ApiError'
+                            example:
+                                error:
+                                    code: CLIENT_ALREADY_EXISTS
+                                    message: Un client avec l'ID 'clinic-123' existe déjà
+                                    details:
+                                        clientId: clinic-123
+                                    timestamp: "2025-11-18T14:32:00Z"
+                                    traceId: abc-123-def
 
     /utilisateurs:
         post:
@@ -81,6 +133,11 @@ paths:
 
                 **Sécurité**: Authentification requise (clinicJwt)
             operationId: createUser
+            parameters:
+                - in: header
+                  name: Idempotency-Key
+                  schema: { type: string, format: uuid }
+                  description: UUID v4 pour garantir l'idempotence (optionnel, durée 1h)
             requestBody:
                 required: true
                 content:
@@ -97,8 +154,34 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/User'
-                '400': { description: Données invalides }
-                '409': { description: Existe déjà }
+                '400':
+                    description: Données invalides
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ApiError'
+                            example:
+                                error:
+                                    code: VALIDATION_REQUIRED_FIELD
+                                    message: Le champ 'prenom' est obligatoire
+                                    details:
+                                        field: prenom
+                                    timestamp: "2025-11-18T14:32:00Z"
+                                    traceId: abc-123-def
+                '409':
+                    description: Utilisateur existe déjà
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ApiError'
+                            example:
+                                error:
+                                    code: USER_ALREADY_EXISTS
+                                    message: Un utilisateur avec le ID Ofys existe déjà
+                                    details:
+                                        userId: prof-123
+                                    timestamp: "2025-11-18T14:32:00Z"
+                                    traceId: abc-123-def
 
     /utilisateur/{id}:
         put:
@@ -122,8 +205,26 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/User'
-                '400': { description: Données invalides }
-                '404': { description: Introuvable }
+                '400':
+                    description: Données invalides
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ApiError'
+                '404':
+                    description: Utilisateur introuvable
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ApiError'
+                            example:
+                                error:
+                                    code: USER_NOT_FOUND
+                                    message: L'utilisateur avec l'ID 'prof-123' n'existe pas
+                                    details:
+                                        userId: prof-123
+                                    timestamp: "2025-11-18T14:32:00Z"
+                                    traceId: abc-123-def
         delete:
             tags: [Utilisateurs]
             summary: Désactiver un professionnel (retirer l'accès)
@@ -134,7 +235,12 @@ paths:
                 - $ref: '#/components/parameters/PathId'
             responses:
                 '204': { description: Désactivé }
-                '404': { description: Introuvable }
+                '404':
+                    description: Utilisateur introuvable
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ApiError'
 
     /patients:
         post:
@@ -145,6 +251,11 @@ paths:
 
                 **Sécurité**: Authentification requise (clinicJwt)
             operationId: createPatient
+            parameters:
+                - in: header
+                  name: Idempotency-Key
+                  schema: { type: string, format: uuid }
+                  description: UUID v4 pour garantir l'idempotence (optionnel, durée 1h)
             requestBody:
                 required: true
                 content:
@@ -161,8 +272,34 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Patient'
-                '400': { description: Données invalides }
-                '409': { description: Existe déjà }
+                '400':
+                    description: Données invalides
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ApiError'
+                            example:
+                                error:
+                                    code: VALIDATION_REQUIRED_FIELD
+                                    message: Le champ 'nam' est obligatoire
+                                    details:
+                                        field: nam
+                                    timestamp: "2025-11-18T14:32:00Z"
+                                    traceId: abc-123-def
+                '409':
+                    description: Patient existe déjà
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ApiError'
+                            example:
+                                error:
+                                    code: PATIENT_ALREADY_EXISTS
+                                    message: Un patient avec le NAM 'nam-123' existe déjà
+                                    details:
+                                        nam: nam-123
+                                    timestamp: "2025-11-18T14:32:00Z"
+                                    traceId: abc-123-def
 
     /patient/{id}:
         put:
@@ -186,8 +323,26 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Patient'
-                '400': { description: Données invalides }
-                '404': { description: Introuvable }
+                '400':
+                    description: Données invalides
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ApiError'
+                '404':
+                    description: Patient introuvable
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ApiError'
+                            example:
+                                error:
+                                    code: PATIENT_NOT_FOUND
+                                    message: Le patient avec l'ID 'patient-123' n'existe pas
+                                    details:
+                                        patientId: patient-123
+                                    timestamp: "2025-11-18T14:32:00Z"
+                                    traceId: abc-123-def
         delete:
             tags: [Patients]
             summary: Archiver un patient (décès, désassociation)
@@ -198,7 +353,12 @@ paths:
                 - $ref: '#/components/parameters/PathId'
             responses:
                 '204': { description: Archivé }
-                '404': { description: Introuvable }
+                '404':
+                    description: Patient introuvable
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ApiError'
 
 components:
     securitySchemes:
@@ -255,7 +415,7 @@ components:
                     description: Valeurs fixes à convenir
                 numeroPratique:
                     type: string
-                    description: Issu des données DSQ
+                    description: Numéro de pratique (ex. numéro de licence)
         UserUpdate:
             type: object
             properties:
@@ -389,3 +549,35 @@ components:
                       id:
                           type: string
                           description: Identifiant unique du lieu côté Braver
+
+        ApiError:
+            type: object
+            required: [error]
+            properties:
+                error:
+                    type: object
+                    required: [code, message, timestamp, traceId]
+                    properties:
+                        code:
+                            type: string
+                            description: Code d'erreur machine-readable (ex. VALIDATION_REQUIRED_FIELD, USER_ALREADY_EXISTS)
+                            example: USER_ALREADY_EXISTS
+                        message:
+                            type: string
+                            description: Message d'erreur lisible par l'humain
+                            example: Un utilisateur avec le ID Ofys 'prof-123' existe déjà
+                        details:
+                            type: object
+                            description: Détails additionnels spécifiques à l'erreur
+                            additionalProperties: true
+                            example:
+                                userId: prof-123
+                                field: id
+                        timestamp:
+                            type: string
+                            format: date-time
+                            description: Timestamp ISO 8601 de l'erreur
+                        traceId:
+                            type: string
+                            description: Identifiant unique pour tracer l'erreur en production
+                            example: abc-123-def-456

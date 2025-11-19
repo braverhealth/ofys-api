@@ -110,7 +110,17 @@ export interface Client extends ClientCreate {
 // ============================================================================
 
 export interface ApiError {
-  status: number;
-  message: string;
+  error: {
+    /** Machine-readable error code (ex. USER_ALREADY_EXISTS, PATIENT_NOT_FOUND) */
+    code: string;
+    /** Human-readable error message */
+    message: string;
+    /** Additional error-specific details */
+    details?: Record<string, any>;
+    /** ISO 8601 timestamp of the error */
+    timestamp: string;
+    /** Unique identifier for tracing the error in production */
+    traceId: string;
+  };
 }
 

@@ -3,6 +3,27 @@
  * Type definitions for the frontend API exposed by Braver
  */
 
+import { ParticipantStatus, ParticipantPermission } from './common';
+
+// ============================================================================
+// Error Types
+// ============================================================================
+
+export interface ApiError {
+  error: {
+    /** Machine-readable error code (ex. AUTH_TOKEN_EXPIRED, VALIDATION_REQUIRED_FIELD) */
+    code: string;
+    /** Human-readable error message */
+    message: string;
+    /** Additional error-specific details */
+    details?: Record<string, any>;
+    /** ISO 8601 timestamp of the error */
+    timestamp: string;
+    /** Unique identifier for tracing the error in production */
+    traceId: string;
+  };
+}
+
 // ============================================================================
 // Authentication Types
 // ============================================================================
@@ -10,6 +31,7 @@
 export interface BraverToken {
   /** JWT token issued by Braver */
   token: string;
+  /** Token expiration time in seconds (typically 86400 for 24 hours) */
   expiresIn?: number;
 }
 
@@ -24,11 +46,30 @@ export interface ActiveThreadStats {
   nbMessagesNonLus: number;
 }
 
-export interface ThreadList {
-  threads: Thread[];
-  page: number;
-  pageSize: number;
-  total: number;
+export interface ThreadListResponse {
+  /** Liste des fils actifs résumés (du plus récent au plus ancien) */
+  threads: ThreadSummary[];
+  /** Indique s'il y a d'autres fils à récupérer */
+  hasMore: boolean;
+  /** ID du dernier fil pour la prochaine requête (null si hasMore=false) */
+  nextCursor: string | null;
+}
+
+export interface ThreadSummary {
+  id: string;
+  titre: string;
+  participants: Participant[];
+  lieux: PracticeLocation[];
+  patient?: PatientMini | null;
+  estFerme: boolean;
+  enSourdineJusqua?: string | null; // ISO 8601 date-time
+  ofysPatientId?: string | null;
+  /** Nombre de messages non lus dans ce fil */
+  nbMessagesNonLus: number;
+  /** Résumé IA de la discussion depuis le début (markdown) */
+  resumeDepuisDebut?: string | null;
+  /** Résumé IA de la discussion depuis la dernière interaction (markdown) */
+  resumeDepuisDerniereInteraction?: string | null;
 }
 
 export interface Thread {
@@ -56,19 +97,46 @@ export interface ThreadUpdate {
   marquerNonLu?: boolean;
   /** Mettre en sourdine pour N secondes */
   mettreEnSourdinePourSecondes?: number;
-  /** Associer le numéro de dossier local Ofys */
-  associerOfysPatientId?: string;
+  /** Associer un patient Ofys au fil avec ses détails complets */
+  associerPatient?: PatientCreateForThread;
   /** Fermer le fil */
   fermer?: boolean;
   /** Quitter le fil sans le fermer */
   quitterSansFermer?: boolean;
 }
 
+export interface PatientDetails {
+  /** Identifiant Ofys du patient */
+  id: string;
+  prenom: string;
+  nom: string;
+  /** Sexe à la naissance */
+  sexeNaissance?: 'M' | 'F' | 'O' | 'NA' | null;
+  /** Date de naissance (format ISO 8601) */
+  dateNaissance?: string | null;
+  /** Numéro d'assurance maladie */
+  nam?: string | null;
+}
+
+export interface PatientCreateForThread {
+  /** Identifiant Ofys du patient */
+  id: string;
+  prenom: string;
+  nom: string;
+  /** Sexe à la naissance */
+  sexeNaissance?: 'M' | 'F' | 'O' | 'NA' | null;
+  /** Date de naissance (format ISO 8601) */
+  dateNaissance: string;
+  /** Numéro d'assurance maladie */
+  nam: string;
+}
+
 export interface ThreadCreate {
   titre: string;
   participants: ThreadParticipantRef[];
   contenuInitial?: MessageContent;
-  ofysPatientId?: string | null;
+  /** Détails complets du patient Ofys associé au fil */
+  patient?: PatientCreateForThread;
   braverPatientId?: string | null;
   piecesJointes?: Attachment[];
 }
@@ -85,9 +153,13 @@ export interface ThreadParticipantRef {
 export interface Participant {
   id: string;
   type: 'professionnel' | 'clinique' | 'systeme';
+  /** Status of the participant in the discussion */
+  status?: ParticipantStatus;
   nomAffiche: string;
   /** UUID de la profession (voir GET /professions). Applicable uniquement si type=professionnel. */
   profession?: string | null;
+  /** Permissions of the participant in the discussion */
+  permissions?: ParticipantPermission[];
   lieu?: PracticeLocation;
 }
 
@@ -167,7 +239,11 @@ export interface AttachmentCreate {
   typeMime: string;
   /** Description ou légende du fichier */
   description: string;
-  /** Contenu du fichier encodé en base64 (mutuellement exclusif avec urlTelechargement) */
+  /**
+   * Contenu du fichier encodé en base64 (mutuellement exclusif avec urlTelechargement).
+   * Limite: max 50 MB par fichier en base64 (≈ 37.5 MB de données réelles).
+   * Limites globales: max 2 GB total par message, max 10 fichiers par message
+   */
   contenuBase64?: string | null;
   /** URL pour télécharger le fichier (mutuellement exclusif avec contenuBase64) */
   urlTelechargement?: string | null;
@@ -246,23 +322,37 @@ export type WebSocketMessage =
 
 export interface WebSocketMessageNewThread {
   type: 'newThread';
+  /** Complete Thread object of the newly created thread */
   thread: Thread;
+  /** ISO 8601 timestamp of the event */
+  timestamp: string;
 }
 
 export interface WebSocketMessageNewMessage {
   type: 'newMessage';
+  /** ID of the thread the message belongs to */
   threadId: string;
+  /** Message object */
   message: Message;
+  /** ISO 8601 timestamp of the event */
+  timestamp: string;
 }
 
 export interface WebSocketMessageThreadUpdated {
   type: 'threadUpdated';
+  /** ID of the updated thread */
   threadId: string;
+  /** Complete Thread object with modifications (all fields can be modified) */
   thread: Thread;
+  /** ISO 8601 timestamp of the event */
+  timestamp: string;
 }
 
 export interface WebSocketMessageThreadClosed {
   type: 'threadClosed';
+  /** ID of the closed thread */
   threadId: string;
+  /** ISO 8601 timestamp of the event */
+  timestamp: string;
 }
 
