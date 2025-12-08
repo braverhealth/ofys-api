@@ -31,6 +31,7 @@ info:
         ## Limites et Pagination
 
         ### Fils de Discussion
+
         - **Limite max par requête**: 50 fils
         - **Limite par défaut**: 20 fils
         - **Pagination**: Basée sur l'ID du dernier fil connu (cursor-based)
@@ -40,36 +41,43 @@ info:
           - Requête suivante: Passer l'ID du dernier fil reçu → retourne les 20 fils suivants
 
         ### Messages
+
         - **Limite max par requête**: 100 messages
         - **Limite par défaut**: 50 messages
         - **Pagination**: Basée sur `sequenceId` avec `offset` et `limit` (voir GET /fil/{id})
         - **Ordre**: Du plus récent au moins récent
 
         ### Pièces Jointes
+
         - **Taille max totale par message**: 2 GB
         - **Nombre max de fichiers par message**: 10
         - **Types MIME autorisés**: Tous sauf les types à risque (.exe, .bat, .com, .cmd, .scr, .vbs, .js, .jar, etc.)
 
         ### Recherche
+
         - **Limite max de résultats**: 100 résultats
         - **Pagination**: Basée sur `limit` et `offset`
 
         ### Rate Limiting
+
         - À déterminer (voir documentation de déploiement)
 
         ## Authentification et Tokens
 
         ### Obtention du Token
+
         - **Endpoint**: POST /auth/token
         - **Authentification requise**: ofysJwt (JWT signé par Ofys)
         - **Réponse**: braverJwt avec `expires_in` en secondes
 
         ### Durée d'Expiration
+
         - **Token Braver (braverJwt)**: 24 heures (86400 secondes)
         - **Refresh**: Un nouveau token peut être obtenu en utilisant le token Ofys que contrôle Ofys
         - **Méthode**: Appeler à nouveau POST /auth/token avec un nouveau ofysJwt
 
         ### WebSocket
+
         - **Token requis**: braverJwt passé en query parameter lors de la connexion initiale
         - **Expiration**: Le token n'expire PAS tant que la connexion WebSocket reste ouverte
         - **Reconnexion**: Si la connexion est fermée, un nouveau token doit être obtenu pour se reconnecter
@@ -77,6 +85,7 @@ info:
         ## Idempotence
 
         ### Support de l'Idempotency-Key
+
         Tous les endpoints POST et PUT supportent le header standard `Idempotency-Key` pour garantir l'idempotence.
 
         **Format**: UUID v4 (ex: `550e8400-e29b-41d4-a716-446655440000`)
@@ -84,12 +93,14 @@ info:
         **Durée de garantie**: 1 heure
 
         **Utilisation**: Inclure le header `Idempotency-Key` dans la requête:
+
         ```
         POST /fils
         Idempotency-Key: 550e8400-e29b-41d4-a716-446655440000
         ```
 
         **Comportement**:
+
         - Si la même requête est envoyée avec la même `Idempotency-Key` dans l'heure, la réponse en cache est retournée
         - Évite les doublons en cas de retry réseau ou de clics multiples
         - Applicable à: POST /fils, POST /fil/{id}/messages, POST /utilisateurs, POST /patients, etc.
@@ -97,6 +108,7 @@ info:
         ## Statuts et Permissions des Participants
 
         ### Statuts des Participants
+
         Chaque participant dans une discussion a un statut qui détermine son accès:
 
         - **pending**: En attente d'activation (invitation envoyée, pas encore acceptée)
@@ -104,11 +116,13 @@ info:
         - **left**: Participant qui a quitté la discussion (perd accès aux messages)
 
         **Comportement lors du départ**:
+
         - Quand un professionnel quitte une clinique, il perd ses accès aux discussions liées au client Ofys
         - Ces discussions peuvent être récupérées par la clinique
         - Les discussions peuvent être transférées à un autre médecin au besoin
 
         ### Permissions des Participants
+        
         Chaque participant peut avoir des contraintes qui restreignent ce qu'il peut contribuer:
 
         - **read_only**: Peut lire les messages mais ne peut pas contribuer
@@ -121,12 +135,14 @@ info:
         ## Pièces Jointes
 
         ### Limites des Pièces Jointes
+
         - **Taille par fichier en base64**: 50 MB maximum (≈ 37.5 MB de données réelles)
         - **Taille totale par message**: 2 GB maximum
         - **Nombre de fichiers par message**: 10 fichiers maximum
         - **Types MIME autorisés**: Tous les types sauf les types à risque
 
         ### Types MIME Interdits
+
         Les types MIME suivants sont interdits pour des raisons de sécurité:
         - Exécutables: `.exe`, `.bat`, `.com`, `.cmd`, `.scr`, `.vbs`, `.js`, `.jar`, `.msi`, `.dll`, `.sys`
         - Scripts: `.ps1`, `.sh`, `.bash`, `.zsh`, `.fish`
@@ -134,11 +150,13 @@ info:
         - Autres: `.app`, `.dmg`, `.pkg`, `.deb`, `.rpm`
 
         ### Formats de Transmission
+
         Les pièces jointes peuvent être transmises de deux façons:
         1. **Base64**: Contenu encodé en base64 dans le champ `contenuBase64`
         2. **URL**: Lien de téléchargement dans le champ `urlTelechargement`
 
         ### Exemple de Requête
+
         ```json
         POST /fil/{id}/messages
         {
