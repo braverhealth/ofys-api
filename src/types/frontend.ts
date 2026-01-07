@@ -20,9 +20,7 @@ export const BraverToken = Type.Object({
   access_token: Type.String({
     description: 'JWT émis par Braver à utiliser pour les appels suivants',
   }),
-  token_type: Type.Optional(
-    Type.Literal('Bearer', { default: 'Bearer' }),
-  ),
+  token_type: Type.Optional(Type.Literal('Bearer', { default: 'Bearer' })),
   expires_in: Type.Integer({
     description: 'Durée de validité du token en secondes',
   }),

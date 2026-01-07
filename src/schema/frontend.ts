@@ -345,7 +345,7 @@ Le contenu détaillé (messages) se trouve via GET /fil/{id}.
             name: 'afterThreadId',
             schema: { type: 'string', format: 'uuid' },
             description:
-              "Optionnel—ID du dernier fil connu. Si fourni, retourne les fils créés avant celui-ci. Omettez ce paramètre pour obtenir les fils les plus récents.",
+              'Optionnel—ID du dernier fil connu. Si fourni, retourne les fils créés avant celui-ci. Omettez ce paramètre pour obtenir les fils les plus récents.',
           },
           {
             in: 'query',
@@ -546,8 +546,7 @@ et zéro ou plusieurs pièces jointes (fichiers en base64 ou URLs).
                     value: {
                       error: {
                         code: 'VALIDATION_ATTACHMENT_TOO_LARGE',
-                        message:
-                          'Taille totale des pièces jointes dépasse 2GB',
+                        message: 'Taille totale des pièces jointes dépasse 2GB',
                         details: {
                           maxSize: 2147483648,
                           currentSize: 2500000000,
@@ -726,7 +725,9 @@ Ces IDs sont utilisés dans la recherche de cliniques et l'identification des li
                   properties: {
                     results: {
                       type: 'array',
-                      items: { $ref: '#/components/schemas/ProfessionalProfile' },
+                      items: {
+                        $ref: '#/components/schemas/ProfessionalProfile',
+                      },
                     },
                     total: {
                       type: 'integer',
