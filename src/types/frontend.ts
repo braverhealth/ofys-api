@@ -17,13 +17,15 @@ import {
 // ============================================================================
 
 export const BraverToken = Type.Object({
-  token: Type.String({ description: 'JWT token issued by Braver' }),
-  expiresIn: Type.Optional(
-    Type.Number({
-      description:
-        'Token expiration time in seconds (typically 86400 for 24 hours)',
-    }),
+  access_token: Type.String({
+    description: 'JWT émis par Braver à utiliser pour les appels suivants',
+  }),
+  token_type: Type.Optional(
+    Type.Literal('Bearer', { default: 'Bearer' }),
   ),
+  expires_in: Type.Integer({
+    description: 'Durée de validité du token en secondes',
+  }),
 });
 export type BraverToken = Static<typeof BraverToken>;
 
@@ -32,7 +34,7 @@ export type BraverToken = Static<typeof BraverToken>;
 // ============================================================================
 
 export const PracticeLocation = Type.Object({
-  id: Type.String({ format: 'uuid' }),
+  id: Type.String(),
   nom: Type.String(),
   typeLieu: Type.String({ format: 'uuid' }),
   adresse: Type.String(),
@@ -64,7 +66,7 @@ export type Participant = Static<typeof Participant>;
 // ============================================================================
 
 export const PatientMini = Type.Object({
-  ofysPatientId: Type.Optional(Nullable(Type.Number())),
+  ofysPatientId: Type.Optional(Nullable(Type.Integer())),
   prenom: Type.String(),
   nom: Type.String(),
   sexeNaissance: Type.Optional(Nullable(Gender)),
@@ -78,10 +80,10 @@ export type PatientMini = Static<typeof PatientMini>;
 // ============================================================================
 
 export const Attachment = Type.Object({
-  id: Type.String({ format: 'uuid' }),
+  id: Type.String(),
   nomFichier: Type.String(),
   typeMime: Type.String(),
-  tailleOctets: Type.Number(),
+  tailleOctets: Type.Integer(),
   urlTelechargement: Type.String({ format: 'uri' }),
 });
 export type Attachment = Static<typeof Attachment>;
@@ -100,7 +102,7 @@ export type MessageContent = Static<typeof MessageContent>;
 
 export const MessageWithContent = Type.Object({
   id: Type.String({ format: 'uuid' }),
-  sequenceId: Type.Number({
+  sequenceId: Type.Integer({
     description: 'Ordre strict des messages dans le fil',
   }),
   auteur: Participant,
@@ -113,7 +115,7 @@ export type MessageWithContent = Static<typeof MessageWithContent>;
 
 export const MessageWithAttachment = Type.Object({
   id: Type.String({ format: 'uuid' }),
-  sequenceId: Type.Number({
+  sequenceId: Type.Integer({
     description: 'Ordre strict des messages dans le fil',
   }),
   auteur: Participant,
@@ -170,9 +172,9 @@ export type MessageCreate = Static<typeof MessageCreate>;
 // ============================================================================
 
 export const ActiveThreadStats = Type.Object({
-  nbFilsActifs: Type.Number({ description: 'Nombre de fils actifs (ouverts)' }),
-  nbMessagesNonLus: Type.Number({
-    description: 'Nombre total de messages non lus',
+  nbFilsActifs: Type.Integer({ description: 'Nombre de fils non fermés' }),
+  nbMessagesNonLus: Type.Integer({
+    description: 'Total des messages non lus dans tous les fils actifs',
   }),
 });
 export type ActiveThreadStats = Static<typeof ActiveThreadStats>;
@@ -196,7 +198,7 @@ export const ThreadSummary = Type.Object({
       description: 'Identifiant Ofys associé si établi',
     }),
   ),
-  nbMessagesNonLus: Type.Number({
+  nbMessagesNonLus: Type.Integer({
     description: 'Nombre de messages non lus dans ce fil',
   }),
   resumeDepuisDebut: Type.Optional(
@@ -235,12 +237,13 @@ export const Thread = Type.Object({
   id: Type.String({ format: 'uuid' }),
   titre: Type.String(),
   participants: Type.Array(Participant),
+  lieux: Type.Array(PracticeLocation),
   patient: Type.Optional(PatientMini),
   messages: Type.Array(Message),
-  nbMessages: Type.Number({
+  nbMessages: Type.Integer({
     description: 'Nombre total de messages dans ce fil',
   }),
-  nbMessagesNonLus: Type.Number({
+  nbMessagesNonLus: Type.Integer({
     description: 'Nombre de messages non lus dans ce fil',
   }),
   estFerme: Type.Boolean({ description: 'Indique si le fil est fermé' }),
@@ -300,14 +303,14 @@ export type PatientCreateForThread = Static<typeof PatientCreateForThread>;
 
 export const ThreadUpdate = Type.Partial(
   Type.Object({
-    marquerLuJusquaSequenceId: Type.Number({
+    marquerLuJusquaSequenceId: Type.Integer({
       minimum: 0,
       description: 'Marque tous les messages jusqu’à ce sequenceId comme lus',
     }),
     marquerNonLu: Type.Boolean({
       description: 'Marque le fil globalement comme non lu',
     }),
-    mettreEnSourdinePourSecondes: Type.Number({
+    mettreEnSourdinePourSecondes: Type.Integer({
       minimum: 0,
       description:
         'Mettre en sourdine pour N secondes (0 pour retirer la sourdine)',

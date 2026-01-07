@@ -1,6 +1,7 @@
 import fs from 'fs';
 import yaml from 'js-yaml';
 import { schema as backendSchema } from '../src/schema/backend.js';
+import { schema as frontendSchema } from '../src/schema/frontend.js';
 import type { OpenAPIV3_1 } from 'openapi-types';
 
 const generate = (filename: string, schema: OpenAPIV3_1.Document) => {
@@ -11,3 +12,4 @@ const generate = (filename: string, schema: OpenAPIV3_1.Document) => {
 };
 
 generate('schema/braver-backend.yml', backendSchema);
+generate('schema/braver-frontend.yml', frontendSchema);
