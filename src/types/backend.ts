@@ -94,6 +94,8 @@ export const PracticeLocationCreate = Type.Object({
 });
 export type PracticeLocationCreate = Static<typeof PracticeLocationCreate>;
 
+export const PracticeLocationUpdate = Type.Partial(PracticeLocationCreate);
+
 export const PracticeLocation = Type.Intersect([
   PracticeLocationCreate,
   Type.Object({
