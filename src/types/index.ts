@@ -1,9 +1,9 @@
 /**
  * Braver API Type Definitions
- * 
+ *
  * This package exports TypeScript type definitions for both the Braver Backend
  * and Frontend APIs used in the Ofys integration.
- * 
+ *
  * Usage:
  * ```typescript
  * import { User, Patient, Client } from './types/backend';
@@ -27,15 +27,13 @@ export type {
   PracticeLocation,
   ClientCreate,
   Client,
-  ApiError,
-} from './backend';
+} from './backend.js';
 
 // ============================================================================
 // Frontend API Exports
 // ============================================================================
 
 export type {
-  ApiError as FrontendApiError,
   BraverToken,
   ActiveThreadStats,
   ThreadListResponse,
@@ -65,13 +63,14 @@ export type {
   WebSocketMessageNewMessage,
   WebSocketMessageThreadUpdated,
   WebSocketMessageThreadClosed,
-} from './frontend';
+} from './frontend.js';
 
 // ============================================================================
 // Common Types & Utilities Exports
 // ============================================================================
 
 export type {
+  ApiError,
   Gender,
   ProfessionType,
   ParticipantType,
@@ -80,7 +79,7 @@ export type {
   MessageFormat,
   ISOCountryCode,
   UUID,
-} from './common';
+} from './common.js';
 
 export {
   GENDER_VALUES,
@@ -104,5 +103,4 @@ export {
   ISO_COUNTRY_CODES,
   isUUID,
   asUUID,
-} from './common';
-
+} from './common.js';

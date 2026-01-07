@@ -1,3 +1,5 @@
+dist/
+
 # IDE
 .vscode/
 .idea/
@@ -13,6 +15,10 @@ Thumbs.db
 node_modules/
 npm-debug.log
 yarn-error.log
+
+# Typescript
+tsconfig.tsbuildinfo
+tsconfig.tsbuildinfo.d.ts
 
 # Python (if needed for future tooling)
 __pycache__/
