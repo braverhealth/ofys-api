@@ -20,6 +20,10 @@ export const UserCreate = Type.Object({
   numeroPratique: Type.String({
     description: 'Numéro de pratique (ex. numéro de licence)',
   }),
+  lieuxPratiqueIds: Type.Array(Type.String(), {
+    description:
+      'Liste des IDs Ofys des lieux de pratique associés à cet utilisateur',
+  }),
 });
 export type UserCreate = Static<typeof UserCreate>;
 
@@ -30,6 +34,10 @@ export const UserUpdate = Type.Partial(
     courriel: Nullable(Type.String()),
     genre: Nullable(Gender),
     professions: Type.Array(Type.String()),
+    lieuxPratiqueIds: Type.Array(Type.String(), {
+      description:
+        'Liste des IDs Ofys des lieux de pratique associés à cet utilisateur',
+    }),
   }),
 );
 export type UserUpdate = Static<typeof UserUpdate>;

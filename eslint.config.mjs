@@ -18,6 +18,8 @@ export default [
     ignores: [
       'eslint.config.mjs',
       'dist/*',
+      'schema/**/*.yml', 
+      'scripts/*'
     ],
   },
   ...compat.extends(

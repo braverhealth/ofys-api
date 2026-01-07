@@ -5,7 +5,10 @@
   "scripts": {
     "lint": "eslint . --fix",
     "lint:check": "eslint .",
-    "build": "tsc -p tsconfig.json"
+    "build": "tsc -p tsconfig.json",
+    "postbuild": "npm run openapi:schema_gen",
+    "openapi:schema_gen": "tsx scripts/openapi_schema_gen.ts",
+    "serve": "serve"
   },
   "private": true,
   "dependencies": {
@@ -14,6 +17,8 @@
     "uuid": "^11.0"
   },
   "devDependencies": {
+    "@sinclair/typebox-codegen": "^0.11",
+    "@types/js-yaml": "^4.0.9",
     "@types/node": "^22.9",
     "@types/uuid": "^10.0",
     "@typescript-eslint/eslint-plugin": "^8.44",
@@ -21,7 +26,10 @@
     "eslint": "^9.36",
     "eslint-config-prettier": "^10.1",
     "eslint-plugin-prettier": "^5.5",
+    "js-yaml": "^4.1",
     "prettier": "^3.6",
+    "serve": "^14.2.5",
+    "tsx": "^4.21.0",
     "typescript": "^5.9"
   },
   "packageManager": "npm@10.9.0",

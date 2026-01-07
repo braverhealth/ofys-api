@@ -671,7 +671,7 @@ components:
                 pays:
                     type: string
                     nullable: true
-                    description: Pays (code ISO 3166-1 alpha-2 recommandé, ex. CH, FR)
+                    description: Pays (code ISO 3166-1 alpha-2 recommandé, ex. CA, US)
                 longitude:
                     type: number
                     format: double
@@ -708,7 +708,7 @@ components:
                 pays:
                     type: string
                     nullable: true
-                    description: Pays (code ISO 3166-1 alpha-2 recommandé, ex. CH, FR)
+                    description: Pays (code ISO 3166-1 alpha-2 recommandé, ex. CA, US)
                 longitude:
                     type: number
                     format: double
