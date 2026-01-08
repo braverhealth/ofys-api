@@ -1,13 +1,51 @@
 {
   "name": "ofys-api",
   "version": "0.0.1",
-  "main": "src/index.ts",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./types/frontend": {
+      "types": "./dist/types/frontend.d.ts",
+      "import": "./dist/types/frontend.js"
+    },
+    "./types/backend": {
+      "types": "./dist/types/backend.d.ts",
+      "import": "./dist/types/backend.js"
+    },
+    "./types/common": {
+      "types": "./dist/types/common.d.ts",
+      "import": "./dist/types/common.js"
+    },
+    "./schema/frontend": {
+      "types": "./dist/schema/frontend.d.ts",
+      "import": "./dist/schema/frontend.js"
+    },
+    "./schema/backend": {
+      "types": "./dist/schema/backend.d.ts",
+      "import": "./dist/schema/backend.js"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "types/frontend": ["./dist/types/frontend.d.ts"],
+      "types/backend": ["./dist/types/backend.d.ts"],
+      "types/common": ["./dist/types/common.d.ts"],
+      "schema/frontend": ["./dist/schema/frontend.d.ts"],
+      "schema/backend": ["./dist/schema/backend.d.ts"]
+    }
+  },
   "scripts": {
     "lint": "eslint . --fix",
     "lint:check": "eslint .",
     "build": "tsc -p tsconfig.json",
-    "postbuild": "npm run openapi:schema_gen",
-    "openapi:schema_gen": "tsx scripts/openapi_schema_gen.ts",
+    "postbuild": "npm run codegen",
+    "codegen": "tsx scripts/codegen.ts",
+    "prepare": "npm run build",
     "serve": "serve"
   },
   "private": true,
@@ -31,6 +69,5 @@
     "serve": "^14.2.5",
     "tsx": "^4.21.0",
     "typescript": "^5.9"
-  },
-  "type": "module"
+  }
 }
