@@ -1,48 +1,84 @@
 {
-  "name": "ofys-api",
+  "name": "@braver/ofys-api",
   "version": "0.0.1",
-  "type": "module",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/cjs/index.js",
+  "types": "./dist/cjs/index.d.ts",
+  "module": "./dist/esm/index.js",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index.js"
+      }
     },
     "./types/frontend": {
-      "types": "./dist/types/frontend.d.ts",
-      "import": "./dist/types/frontend.js"
+      "import": {
+        "types": "./dist/esm/types/frontend.d.ts",
+        "default": "./dist/esm/types/frontend.js"
+      },
+      "require": {
+        "types": "./dist/cjs/types/frontend.d.ts",
+        "default": "./dist/cjs/types/frontend.js"
+      }
     },
     "./types/backend": {
-      "types": "./dist/types/backend.d.ts",
-      "import": "./dist/types/backend.js"
+      "import": {
+        "types": "./dist/esm/types/backend.d.ts",
+        "default": "./dist/esm/types/backend.js"
+      },
+      "require": {
+        "types": "./dist/cjs/types/backend.d.ts",
+        "default": "./dist/cjs/types/backend.js"
+      }
     },
     "./types/common": {
-      "types": "./dist/types/common.d.ts",
-      "import": "./dist/types/common.js"
+      "import": {
+        "types": "./dist/esm/types/common.d.ts",
+        "default": "./dist/esm/types/common.js"
+      },
+      "require": {
+        "types": "./dist/cjs/types/common.d.ts",
+        "default": "./dist/cjs/types/common.js"
+      }
     },
     "./schema/frontend": {
-      "types": "./dist/schema/frontend.d.ts",
-      "import": "./dist/schema/frontend.js"
+      "import": {
+        "types": "./dist/esm/schema/frontend.d.ts",
+        "default": "./dist/esm/schema/frontend.js"
+      },
+      "require": {
+        "types": "./dist/cjs/schema/frontend.d.ts",
+        "default": "./dist/cjs/schema/frontend.js"
+      }
     },
     "./schema/backend": {
-      "types": "./dist/schema/backend.d.ts",
-      "import": "./dist/schema/backend.js"
+      "import": {
+        "types": "./dist/esm/schema/backend.d.ts",
+        "default": "./dist/esm/schema/backend.js"
+      },
+      "require": {
+        "types": "./dist/cjs/schema/backend.d.ts",
+        "default": "./dist/cjs/schema/backend.js"
+      }
     }
   },
   "typesVersions": {
     "*": {
-      "types/frontend": ["./dist/types/frontend.d.ts"],
-      "types/backend": ["./dist/types/backend.d.ts"],
-      "types/common": ["./dist/types/common.d.ts"],
-      "schema/frontend": ["./dist/schema/frontend.d.ts"],
-      "schema/backend": ["./dist/schema/backend.d.ts"]
+      "types/frontend": ["./dist/esm/types/frontend.d.ts"],
+      "types/backend": ["./dist/esm/types/backend.d.ts"],
+      "types/common": ["./dist/esm/types/common.d.ts"],
+      "schema/frontend": ["./dist/esm/schema/frontend.d.ts"],
+      "schema/backend": ["./dist/esm/schema/backend.d.ts"]
     }
   },
   "scripts": {
     "lint": "eslint . --fix",
     "lint:check": "eslint .",
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.esm.json && tsc -p tsconfig.cjs.json && echo '{\"type\":\"commonjs\"}' > dist/cjs/package.json && echo '{\"type\":\"module\"}' > dist/esm/package.json",
     "postbuild": "npm run codegen",
     "codegen": "tsx scripts/codegen.ts",
     "prepare": "npm run build",

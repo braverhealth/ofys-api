@@ -2,7 +2,6 @@
     "compilerOptions": {
       "incremental": true,
       "target": "esnext",
-      "module": "nodenext",
       "declaration": true,
       "declarationMap": true,
       "sourceMap": true,
@@ -13,7 +12,6 @@
       "resolveJsonModule": true,
       "baseUrl": ".",
       "lib": ["esnext"],
-      "outDir": "dist"
     },
     "include": ["src/**/*.ts"]
   }
