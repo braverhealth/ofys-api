@@ -1,9 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.schema = void 0;
-const backend_js_1 = require("../types/backend.js");
-const common_js_1 = require("../types/common.js");
-exports.schema = {
+import { UserCreate, UserUpdate, User, PatientCreate, PatientUpdate, Patient, ClientCreate, Client, PracticeLocationCreate, PracticeLocationUpdate, PracticeLocation, } from '../types/backend.js';
+import { ApiError } from '../types/common.js';
+export const schema = {
     openapi: '3.1.0',
     info: {
         title: 'Braver Backend API – Provisionnement et Patients',
@@ -595,18 +592,18 @@ Claims suggérés:
             },
         },
         schemas: {
-            UserCreate: backend_js_1.UserCreate,
-            UserUpdate: backend_js_1.UserUpdate,
-            User: backend_js_1.User,
-            PatientCreate: backend_js_1.PatientCreate,
-            PatientUpdate: backend_js_1.PatientUpdate,
-            Patient: backend_js_1.Patient,
-            ClientCreate: backend_js_1.ClientCreate,
-            Client: backend_js_1.Client,
-            PracticeLocationCreate: backend_js_1.PracticeLocationCreate,
-            PracticeLocationUpdate: backend_js_1.PracticeLocationUpdate,
-            PracticeLocation: backend_js_1.PracticeLocation,
-            ApiError: common_js_1.ApiError,
+            UserCreate,
+            UserUpdate,
+            User,
+            PatientCreate,
+            PatientUpdate,
+            Patient,
+            ClientCreate,
+            Client,
+            PracticeLocationCreate,
+            PracticeLocationUpdate,
+            PracticeLocation,
+            ApiError,
         },
     },
 };

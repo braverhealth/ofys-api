@@ -1,28 +1,22 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ApiError = exports.ISO_COUNTRY_CODES = exports.ISOCountryCode = exports.MESSAGE_FORMAT_LABELS_EN = exports.MESSAGE_FORMAT_LABELS_FR = exports.MESSAGE_FORMATS = exports.MessageFormat = exports.PARTICIPANT_PERMISSION_LABELS_EN = exports.PARTICIPANT_PERMISSION_LABELS_FR = exports.PARTICIPANT_PERMISSIONS = exports.ParticipantPermission = exports.PARTICIPANT_STATUS_LABELS_EN = exports.PARTICIPANT_STATUS_LABELS_FR = exports.PARTICIPANT_STATUSES = exports.ParticipantStatus = exports.PARTICIPANT_TYPE_LABELS_EN = exports.PARTICIPANT_TYPE_LABELS_FR = exports.PARTICIPANT_TYPES = exports.ParticipantType = exports.PROFESSION_TYPE_LABELS_EN = exports.PROFESSION_TYPE_LABELS_FR = exports.PROFESSION_TYPES = exports.ProfessionType = exports.GENDER_LABELS_EN = exports.GENDER_LABELS_FR = exports.GENDER_VALUES = exports.Gender = exports.Nullable = void 0;
-exports.isUUID = isUUID;
-exports.asUUID = asUUID;
-const typebox_1 = require("@sinclair/typebox");
-const Nullable = (schema) => typebox_1.Type.Union([schema, typebox_1.Type.Null()]);
-exports.Nullable = Nullable;
+import { Type } from '@sinclair/typebox';
+export const Nullable = (schema) => Type.Union([schema, Type.Null()]);
 /**
  * Common types shared across Braver APIs
  */
 // ============================================================================
 // Gender/Sexe Types
 // ============================================================================
-exports.Gender = typebox_1.Type.Union([
-    typebox_1.Type.Literal('M'),
-    typebox_1.Type.Literal('F'),
-    typebox_1.Type.Literal('O'),
-    typebox_1.Type.Literal('NA'),
+export const Gender = Type.Union([
+    Type.Literal('M'),
+    Type.Literal('F'),
+    Type.Literal('O'),
+    Type.Literal('NA'),
 ]);
-exports.GENDER_VALUES = ['M', 'F', 'O', 'NA'];
+export const GENDER_VALUES = ['M', 'F', 'O', 'NA'];
 /**
  * Gender labels in French
  */
-exports.GENDER_LABELS_FR = {
+export const GENDER_LABELS_FR = {
     M: 'Masculin',
     F: 'Féminin',
     O: 'Autre/Neutre',
@@ -31,7 +25,7 @@ exports.GENDER_LABELS_FR = {
 /**
  * Gender labels in English
  */
-exports.GENDER_LABELS_EN = {
+export const GENDER_LABELS_EN = {
     M: 'Masculine',
     F: 'Feminine',
     O: 'Other/Neutral',
@@ -40,12 +34,12 @@ exports.GENDER_LABELS_EN = {
 // ============================================================================
 // Profession Types
 // ============================================================================
-exports.ProfessionType = typebox_1.Type.Union([
-    typebox_1.Type.Literal('clinique_sans_licence'),
-    typebox_1.Type.Literal('clinique_licencie'),
-    typebox_1.Type.Literal('non_clinique'),
+export const ProfessionType = Type.Union([
+    Type.Literal('clinique_sans_licence'),
+    Type.Literal('clinique_licencie'),
+    Type.Literal('non_clinique'),
 ]);
-exports.PROFESSION_TYPES = [
+export const PROFESSION_TYPES = [
     'clinique_sans_licence',
     'clinique_licencie',
     'non_clinique',
@@ -53,7 +47,7 @@ exports.PROFESSION_TYPES = [
 /**
  * Profession type labels in French
  */
-exports.PROFESSION_TYPE_LABELS_FR = {
+export const PROFESSION_TYPE_LABELS_FR = {
     clinique_sans_licence: 'Clinique sans licence',
     clinique_licencie: 'Clinique licencié',
     non_clinique: 'Non-clinique',
@@ -61,7 +55,7 @@ exports.PROFESSION_TYPE_LABELS_FR = {
 /**
  * Profession type labels in English
  */
-exports.PROFESSION_TYPE_LABELS_EN = {
+export const PROFESSION_TYPE_LABELS_EN = {
     clinique_sans_licence: 'Unlicensed clinician',
     clinique_licencie: 'Licensed clinician',
     non_clinique: 'Non-clinical',
@@ -69,12 +63,12 @@ exports.PROFESSION_TYPE_LABELS_EN = {
 // ============================================================================
 // Participant Types
 // ============================================================================
-exports.ParticipantType = typebox_1.Type.Union([
-    typebox_1.Type.Literal('professionnel'),
-    typebox_1.Type.Literal('clinique'),
-    typebox_1.Type.Literal('systeme'),
+export const ParticipantType = Type.Union([
+    Type.Literal('professionnel'),
+    Type.Literal('clinique'),
+    Type.Literal('systeme'),
 ]);
-exports.PARTICIPANT_TYPES = [
+export const PARTICIPANT_TYPES = [
     'professionnel',
     'clinique',
     'systeme',
@@ -82,7 +76,7 @@ exports.PARTICIPANT_TYPES = [
 /**
  * Participant type labels in French
  */
-exports.PARTICIPANT_TYPE_LABELS_FR = {
+export const PARTICIPANT_TYPE_LABELS_FR = {
     professionnel: 'Professionnel',
     clinique: 'Clinique',
     systeme: 'Système',
@@ -90,7 +84,7 @@ exports.PARTICIPANT_TYPE_LABELS_FR = {
 /**
  * Participant type labels in English
  */
-exports.PARTICIPANT_TYPE_LABELS_EN = {
+export const PARTICIPANT_TYPE_LABELS_EN = {
     professionnel: 'Professional',
     clinique: 'Clinic',
     systeme: 'System',
@@ -98,12 +92,12 @@ exports.PARTICIPANT_TYPE_LABELS_EN = {
 // ============================================================================
 // Participant Status Types
 // ============================================================================
-exports.ParticipantStatus = typebox_1.Type.Union([
-    typebox_1.Type.Literal('pending'),
-    typebox_1.Type.Literal('active'),
-    typebox_1.Type.Literal('left'),
+export const ParticipantStatus = Type.Union([
+    Type.Literal('pending'),
+    Type.Literal('active'),
+    Type.Literal('left'),
 ]);
-exports.PARTICIPANT_STATUSES = [
+export const PARTICIPANT_STATUSES = [
     'pending',
     'active',
     'left',
@@ -111,7 +105,7 @@ exports.PARTICIPANT_STATUSES = [
 /**
  * Participant status labels in French
  */
-exports.PARTICIPANT_STATUS_LABELS_FR = {
+export const PARTICIPANT_STATUS_LABELS_FR = {
     pending: 'En attente',
     active: 'Actif',
     left: 'Parti',
@@ -119,7 +113,7 @@ exports.PARTICIPANT_STATUS_LABELS_FR = {
 /**
  * Participant status labels in English
  */
-exports.PARTICIPANT_STATUS_LABELS_EN = {
+export const PARTICIPANT_STATUS_LABELS_EN = {
     pending: 'Pending',
     active: 'Active',
     left: 'Left',
@@ -127,13 +121,13 @@ exports.PARTICIPANT_STATUS_LABELS_EN = {
 // ============================================================================
 // Participant Permission Types
 // ============================================================================
-exports.ParticipantPermission = typebox_1.Type.Union([
-    typebox_1.Type.Literal('read_only'),
-    typebox_1.Type.Literal('reactions_only'),
-    typebox_1.Type.Literal('messages_only'),
-    typebox_1.Type.Literal('full'),
+export const ParticipantPermission = Type.Union([
+    Type.Literal('read_only'),
+    Type.Literal('reactions_only'),
+    Type.Literal('messages_only'),
+    Type.Literal('full'),
 ]);
-exports.PARTICIPANT_PERMISSIONS = [
+export const PARTICIPANT_PERMISSIONS = [
     'read_only',
     'reactions_only',
     'messages_only',
@@ -142,7 +136,7 @@ exports.PARTICIPANT_PERMISSIONS = [
 /**
  * Participant permission labels in French
  */
-exports.PARTICIPANT_PERMISSION_LABELS_FR = {
+export const PARTICIPANT_PERMISSION_LABELS_FR = {
     read_only: 'Lecture seule',
     reactions_only: 'Réactions uniquement',
     messages_only: 'Messages uniquement',
@@ -151,7 +145,7 @@ exports.PARTICIPANT_PERMISSION_LABELS_FR = {
 /**
  * Participant permission labels in English
  */
-exports.PARTICIPANT_PERMISSION_LABELS_EN = {
+export const PARTICIPANT_PERMISSION_LABELS_EN = {
     read_only: 'Read only',
     reactions_only: 'Reactions only',
     messages_only: 'Messages only',
@@ -160,69 +154,69 @@ exports.PARTICIPANT_PERMISSION_LABELS_EN = {
 // ============================================================================
 // Message Format Types
 // ============================================================================
-exports.MessageFormat = typebox_1.Type.Union([
-    typebox_1.Type.Literal('texte'),
-    typebox_1.Type.Literal('markdown'),
+export const MessageFormat = Type.Union([
+    Type.Literal('texte'),
+    Type.Literal('markdown'),
 ]);
-exports.MESSAGE_FORMATS = [
+export const MESSAGE_FORMATS = [
     'texte',
     'markdown',
 ];
 /**
  * Message format labels in French
  */
-exports.MESSAGE_FORMAT_LABELS_FR = {
+export const MESSAGE_FORMAT_LABELS_FR = {
     texte: 'Texte brut',
     markdown: 'Markdown',
 };
 /**
  * Message format labels in English
  */
-exports.MESSAGE_FORMAT_LABELS_EN = {
+export const MESSAGE_FORMAT_LABELS_EN = {
     texte: 'Plain text',
     markdown: 'Markdown',
 };
 // ============================================================================
 // ISO Country Codes
 // ============================================================================
-exports.ISOCountryCode = typebox_1.Type.Union([
-    typebox_1.Type.Literal('CA'),
-    typebox_1.Type.Literal('US'),
+export const ISOCountryCode = Type.Union([
+    Type.Literal('CA'),
+    Type.Literal('US'),
 ]);
-exports.ISO_COUNTRY_CODES = {
+export const ISO_COUNTRY_CODES = {
     CA: 'Canada',
     US: 'United States',
 };
 /**
  * Type guard to check if a string is a valid UUID
  */
-function isUUID(value) {
+export function isUUID(value) {
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     return uuidRegex.test(value);
 }
 /**
  * Create a branded UUID type from a string (use with caution - no validation)
  */
-function asUUID(value) {
+export function asUUID(value) {
     return value;
 }
 // ============================================================================
 // API Types
 // ============================================================================
-exports.ApiError = typebox_1.Type.Object({
-    error: typebox_1.Type.Object({
-        code: typebox_1.Type.String({
+export const ApiError = Type.Object({
+    error: Type.Object({
+        code: Type.String({
             description: "Code d'erreur machine-readable (ex. USER_ALREADY_EXISTS, PATIENT_NOT_FOUND)",
         }),
-        message: typebox_1.Type.String({
+        message: Type.String({
             description: "Message d'erreur lisible par l'humain",
         }),
-        details: typebox_1.Type.Optional(typebox_1.Type.Record(typebox_1.Type.String(), typebox_1.Type.Any())),
-        timestamp: typebox_1.Type.String({
+        details: Type.Optional(Type.Record(Type.String(), Type.Any())),
+        timestamp: Type.String({
             format: 'date-time',
             description: "Timestamp ISO 8601 de l'erreur",
         }),
-        traceId: typebox_1.Type.String({
+        traceId: Type.String({
             description: "Identifiant unique pour tracer l'erreur en production",
         }),
     }),

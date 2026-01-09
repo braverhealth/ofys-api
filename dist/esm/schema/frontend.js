@@ -1,8 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.schema = void 0;
-const frontend_js_1 = require("../types/frontend.js");
-const common_js_1 = require("../types/common.js");
+import { BraverToken, ActiveThreadStats, ThreadListResponse, ThreadSummary, Thread, ThreadCreate, ThreadUpdate, ThreadParticipantRef, Participant, PracticeLocation, PatientMini, PatientDetails, PatientCreateForThread, Message, MessageWithContent, MessageWithAttachment, MessageContent, MessageCreate, Attachment, AttachmentCreate, ProfessionalProfile, ClinicProfile, Profession, LocationType, WebSocketMessage, WebSocketMessageNewThread, WebSocketMessageNewMessage, WebSocketMessageThreadUpdated, WebSocketMessageThreadClosed, } from '../types/frontend.js';
+import { ApiError } from '../types/common.js';
 const INFO_DESCRIPTION = `API exposée par Braver et consommée par Ofys pour la consultation, la création et la gestion des fils de discussion,
 la consultation des statistiques sur les fils actifs, la recherche de professionnels et de cliniques,
 ainsi qu'un canal WebSocket pour les activités en temps réel liées aux fils.
@@ -172,7 +169,7 @@ POST /fil/{id}/messages
   ]
 }
 \`\`\``;
-exports.schema = {
+export const schema = {
     openapi: '3.1.0',
     info: {
         title: 'Braver API (Ofys Integration)',
@@ -948,36 +945,36 @@ Le token peut aussi être utilisé comme sso_token pour https://app.braver.net/?
             },
         },
         schemas: {
-            BraverToken: frontend_js_1.BraverToken,
-            ActiveThreadStats: frontend_js_1.ActiveThreadStats,
-            ThreadListResponse: frontend_js_1.ThreadListResponse,
-            ThreadSummary: frontend_js_1.ThreadSummary,
-            Thread: frontend_js_1.Thread,
-            ThreadCreate: frontend_js_1.ThreadCreate,
-            ThreadUpdate: frontend_js_1.ThreadUpdate,
-            ThreadParticipantRef: frontend_js_1.ThreadParticipantRef,
-            Participant: frontend_js_1.Participant,
-            PracticeLocation: frontend_js_1.PracticeLocation,
-            PatientMini: frontend_js_1.PatientMini,
-            PatientDetails: frontend_js_1.PatientDetails,
-            PatientCreateForThread: frontend_js_1.PatientCreateForThread,
-            Message: frontend_js_1.Message,
-            MessageWithContent: frontend_js_1.MessageWithContent,
-            MessageWithAttachment: frontend_js_1.MessageWithAttachment,
-            MessageContent: frontend_js_1.MessageContent,
-            MessageCreate: frontend_js_1.MessageCreate,
-            Attachment: frontend_js_1.Attachment,
-            AttachmentCreate: frontend_js_1.AttachmentCreate,
-            ProfessionalProfile: frontend_js_1.ProfessionalProfile,
-            ClinicProfile: frontend_js_1.ClinicProfile,
-            Profession: frontend_js_1.Profession,
-            LocationType: frontend_js_1.LocationType,
-            WebSocketMessage: frontend_js_1.WebSocketMessage,
-            WebSocketMessageNewThread: frontend_js_1.WebSocketMessageNewThread,
-            WebSocketMessageNewMessage: frontend_js_1.WebSocketMessageNewMessage,
-            WebSocketMessageThreadUpdated: frontend_js_1.WebSocketMessageThreadUpdated,
-            WebSocketMessageThreadClosed: frontend_js_1.WebSocketMessageThreadClosed,
-            ApiError: common_js_1.ApiError,
+            BraverToken,
+            ActiveThreadStats,
+            ThreadListResponse,
+            ThreadSummary,
+            Thread,
+            ThreadCreate,
+            ThreadUpdate,
+            ThreadParticipantRef,
+            Participant,
+            PracticeLocation,
+            PatientMini,
+            PatientDetails,
+            PatientCreateForThread,
+            Message,
+            MessageWithContent,
+            MessageWithAttachment,
+            MessageContent,
+            MessageCreate,
+            Attachment,
+            AttachmentCreate,
+            ProfessionalProfile,
+            ClinicProfile,
+            Profession,
+            LocationType,
+            WebSocketMessage,
+            WebSocketMessageNewThread,
+            WebSocketMessageNewMessage,
+            WebSocketMessageThreadUpdated,
+            WebSocketMessageThreadClosed,
+            ApiError,
         },
     },
 };
