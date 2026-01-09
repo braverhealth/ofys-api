@@ -1,22 +1,44 @@
 {
   "name": "@braver/ofys-api",
   "version": "0.0.1",
-  "type": "module",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/cjs/index.js",
   "exports": {
-    ".": "./src/index.ts",
-    "./types/frontend": "./src/types/frontend.ts",
-    "./types/backend": "./src/types/backend.ts",
-    "./types/common": "./src/types/common.ts",
-    "./schema/frontend": "./src/schema/frontend.ts",
-    "./schema/backend": "./src/schema/backend.ts"
+    ".": {
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./types/frontend": {
+      "import": "./dist/esm/types/frontend.js",
+      "require": "./dist/cjs/types/frontend.js"
+    },
+    "./types/backend": {
+      "import": "./dist/esm/types/backend.js",
+      "require": "./dist/cjs/types/backend.js"
+    },
+    "./types/common": {
+      "import": "./dist/esm/types/common.js",
+      "require": "./dist/cjs/types/common.js"
+    },
+    "./schema/frontend": {
+      "import": "./dist/esm/schema/frontend.js",
+      "require": "./dist/cjs/schema/frontend.js"
+    },
+    "./schema/backend": {
+      "import": "./dist/esm/schema/backend.js",
+      "require": "./dist/cjs/schema/backend.js"
+    }
   },
   "scripts": {
     "lint": "eslint . --fix",
     "lint:check": "eslint .",
-    "build": "tsc -p tsconfig.json",
-    "postbuild": "npm run codegen",
+    "prebuild": "rm -rf dist/",
+    "build": "npm run build:cjs && npm run build:esm && npm run build:subpackages && npm run build:codegen",
+    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "build:esm": "tsc -p tsconfig.esm.json",
+    "build:codegen": "npm run codegen",
+    "build:subpackages": "echo '{\"type\":\"module\"}' > dist/esm/package.json && echo '{\"type\":\"commonjs\"}' > dist/cjs/package.json",
     "codegen": "tsx scripts/codegen.ts",
     "serve": "serve"
   },

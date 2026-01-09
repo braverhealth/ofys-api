@@ -29,9 +29,19 @@ jobs:
       - name: Run build
         run: npm run build
 
+      - name: Verify dist files are up to date
+        run: |
+          if git diff --exit-code dist/; then
+            echo "✅ Dist files are up to date"
+          else
+            echo "❌ Dist files have changed after build!"
+            echo "Please run 'npm run build' locally and commit the updated dist files."
+            exit 1
+          fi
+
       - name: Verify schema files are up to date
         run: |
-          if git diff --exit-code schema/*.yml; then
+          if git diff --exit-code schema/; then
             echo "✅ Schema files are up to date"
           else
             echo "❌ Schema files have changed after build!"
