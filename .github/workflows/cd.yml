@@ -1,0 +1,55 @@
+name: CD
+
+on:
+  push:
+    branches: [main]
+  # TODO: do not commit to main
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  cd:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.tool-versions'
+          cache: 'npm'
+
+      - name: Authenticate to GCloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/78526959552/locations/global/workloadIdentityPools/github/providers/ofys-api
+          service_account: github-ofys-api@braver-ops.iam.gserviceaccount.com
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Login to Artifact Registry
+        run: npm run artifactregistry-login
+
+      - name: Get branch and commit info
+        id: git-info
+        run: |
+          BRANCH_NAME=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
+          # Sanitize branch name for npm tag (replace / with -)
+          BRANCH_TAG=$(echo "$BRANCH_NAME" | sed 's/[^a-zA-Z0-9.-]/-/g')
+          COMMIT_SHORT=$(git rev-parse --short HEAD)
+          echo "branch-tag=$BRANCH_TAG" >> $GITHUB_OUTPUT
+          echo "commit-short=$COMMIT_SHORT" >> $GITHUB_OUTPUT
+
+      - name: Publish to Artifact Registry
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+
+          npm publish --tag ${{ steps.git-info.outputs.commit-short }}
+          npm dist-tag add @braver/ofys-api@$VERSION ${{ steps.git-info.outputs.branch-tag }}
