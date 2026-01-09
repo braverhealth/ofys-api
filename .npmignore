@@ -1,0 +1,41 @@
+# Source files (dist is published instead)
+src/
+
+# TypeScript config
+tsconfig.json
+tsconfig.*.json
+
+# Build scripts
+scripts/
+
+# Development config
+eslint.config.mjs
+.gitattributes
+.github/
+
+# Documentation (keep README.md for npm)
+CONTRIBUTING.md
+SECURITY.md
+OFYS_API_FOR_BRAVER.md
+
+# Examples and demos
+examples/
+index.html
+
+# Lock files
+package-lock.json
+
+# Editor and IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Tool versions
+.tool-versions
+.nvmrc
+.node-version
