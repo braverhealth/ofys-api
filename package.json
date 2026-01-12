@@ -1,0 +1,68 @@
+{
+  "name": "@braver/ofys-api",
+  "version": "0.0.2",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/cjs/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./types/frontend": {
+      "import": "./dist/esm/types/frontend.js",
+      "require": "./dist/cjs/types/frontend.js"
+    },
+    "./types/backend": {
+      "import": "./dist/esm/types/backend.js",
+      "require": "./dist/cjs/types/backend.js"
+    },
+    "./types/common": {
+      "import": "./dist/esm/types/common.js",
+      "require": "./dist/cjs/types/common.js"
+    },
+    "./schema/frontend": {
+      "import": "./dist/esm/schema/frontend.js",
+      "require": "./dist/cjs/schema/frontend.js"
+    },
+    "./schema/backend": {
+      "import": "./dist/esm/schema/backend.js",
+      "require": "./dist/cjs/schema/backend.js"
+    }
+  },
+  "scripts": {
+    "artifactregistry-login": "npx google-artifactregistry-auth",
+    "lint": "eslint . --fix",
+    "lint:check": "eslint .",
+    "prebuild": "rm -rf dist/",
+    "build": "npm run build:cjs && npm run build:esm && npm run build:subpackages && npm run build:codegen",
+    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "build:esm": "tsc -p tsconfig.esm.json",
+    "build:codegen": "npm run codegen",
+    "build:subpackages": "echo '{\"type\":\"module\"}' > dist/esm/package.json && echo '{\"type\":\"commonjs\"}' > dist/cjs/package.json",
+    "prepare": "npm run build",
+    "codegen": "tsx scripts/codegen.ts",
+    "serve": "serve"
+  },
+  "dependencies": {
+    "@sinclair/typebox": "^0.34",
+    "openapi-types": "^12.1",
+    "uuid": "^11.0"
+  },
+  "devDependencies": {
+    "@sinclair/typebox-codegen": "^0.11",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^22.9",
+    "@types/uuid": "^10.0",
+    "@typescript-eslint/eslint-plugin": "^8.44",
+    "@typescript-eslint/parser": "^8.44",
+    "eslint": "^9.36",
+    "eslint-config-prettier": "^10.1",
+    "eslint-plugin-prettier": "^5.5",
+    "js-yaml": "^4.1",
+    "prettier": "^3.6",
+    "serve": "^14.2.5",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9"
+  }
+}

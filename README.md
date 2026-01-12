@@ -13,13 +13,60 @@ La documentation interactive des APIs est automatiquement déployée sur **GitHu
 Pour une documentation complète du modèle de sécurité (authentification, JWT, endpoints publics/protégés), voir:
 - **[SECURITY.md](./SECURITY.md)** - Documentation détaillée des schémas d'authentification pour les deux APIs
 
-### TypeScript Type Definitions
+---
 
-Des définitions TypeScript complètes sont disponibles dans le dossier `types/`:
-- `types/frontend.ts` - Types pour l'API Frontend
-- `types/backend.ts` - Types pour l'API Backend
-- `types/common.ts` - Types partagés et utilitaires
-- `types/index.ts` - Barrel export pour tous les types
+## Structure du Projet
+
+```
+ofys-api/
+├── schema/                    # Définitions OpenAPI
+│   ├── braver-frontend.yml    # API consommée par le frontend d'Ofys
+│   └── braver-backend.yml     # API consommée par le backend d'Ofys
+├── src/                       # Code source TypeScript
+│   ├── types/                 # Définitions de types TypeScript
+│   │   ├── frontend.ts        # Types pour l'API Frontend
+│   │   ├── backend.ts         # Types pour l'API Backend
+│   │   └── common.ts          # Types partagés et utilitaires
+│   ├── schema/                # Schémas TypeBox exportables
+│   │   ├── frontend.ts        # Schémas pour l'API Frontend
+│   │   └── backend.ts         # Schémas pour l'API Backend
+│   └── index.ts               # Point d'entrée principal
+├── scripts/                   # Scripts utilitaires
+│   └── codegen.ts             # Génération de code TypeScript
+├── examples/                  # Exemples d'utilisation
+│   └── websocket/             # Exemples de messages WebSocket
+└── package.json               # Configuration du package npm
+```
+
+### Installation
+
+```bash
+# Configurer le registre privé Braver
+cat >> .npmrc << EOF
+@braver:registry=https://northamerica-northeast1-npm.pkg.dev/braver-registries/npm/
+//northamerica-northeast1-npm.pkg.dev/braver-registries/npm/:always-auth=true
+EOF
+
+# Installer le package
+npm install @braver/ofys-api
+```
+
+### Utilisation
+
+```typescript
+// Import des types Frontend
+import { ... } from '@braver/ofys-api/types/frontend';
+
+// Import des types Backend
+import { ... } from '@braver/ofys-api/types/backend';
+
+// Import des types communs
+import { ... } from '@braver/ofys-api/types/common';
+
+// Import des schémas TypeBox
+import { ... } from '@braver/ofys-api/schema/frontend';
+import { ... } from '@braver/ofys-api/schema/backend';
+```
 
 ---
 
@@ -27,8 +74,8 @@ Des définitions TypeScript complètes sont disponibles dans le dossier `types/`
 
 Ce dépôt contient deux définitions OpenAPI principales :
 
-1. **`braver-frontend.yml`** - API consommée par le frontend d'Ofys
-2. **`braver-backend.yml`** - API consommée par le backend d'Ofys
+1. **`schema/braver-frontend.yml`** - API consommée par le frontend d'Ofys
+2. **`schema/braver-backend.yml`** - API consommée par le backend d'Ofys
 
 ### 1. API Frontend (`braver-frontend.yml`)
 

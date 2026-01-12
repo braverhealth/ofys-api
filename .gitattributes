@@ -1,0 +1,3 @@
+# Mark dist folder as generated files
+dist/** linguist-generated=true
+
