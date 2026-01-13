@@ -343,7 +343,7 @@ Le contenu détaillé (messages) se trouve via GET /fil/{id}.
           {
             in: 'query',
             name: 'afterThreadId',
-            schema: { type: 'string', format: 'uuid' },
+            schema: { type: 'string' },
             description:
               'Optionnel—ID du dernier fil connu. Si fourni, retourne les fils créés avant celui-ci. Omettez ce paramètre pour obtenir les fils les plus récents.',
           },

@@ -704,7 +704,6 @@ components:
                 description: Nom du lieu de pratique
                 type: string
               typeLieu:
-                format: uuid
                 description: >-
                   UUID du type de lieu (voir GET /typesLieux dans l'API
                   frontend)
@@ -757,7 +756,6 @@ components:
           description: Nom du lieu de pratique
           type: string
         typeLieu:
-          format: uuid
           description: UUID du type de lieu (voir GET /typesLieux dans l'API frontend)
           type: string
         rue:

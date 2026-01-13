@@ -5,12 +5,7 @@ import { Type, Static } from '@sinclair/typebox';
  * Type definitions for the frontend API exposed by Braver
  */
 
-import {
-  ParticipantStatus,
-  ParticipantPermission,
-  Nullable,
-  Gender,
-} from './common.js';
+import { ParticipantStatus, ParticipantPermission, Gender } from './common.js';
 
 // ============================================================================
 // Authentication Types
@@ -34,7 +29,7 @@ export type BraverToken = Static<typeof BraverToken>;
 export const PracticeLocation = Type.Object({
   id: Type.String(),
   nom: Type.String(),
-  typeLieu: Type.String({ format: 'uuid' }),
+  typeLieu: Type.String(),
   adresse: Type.String(),
   longitude: Type.Number(),
   latitude: Type.Number(),
@@ -49,11 +44,11 @@ export const ParticipantType = Type.Union([
 export type ParticipantType = Static<typeof ParticipantType>;
 
 export const Participant = Type.Object({
-  id: Type.String({ format: 'uuid' }),
+  id: Type.String(),
   type: ParticipantType,
   status: Type.Optional(ParticipantStatus),
   nomAffiche: Type.String(),
-  profession: Type.Optional(Nullable(Type.String({ format: 'uuid' }))),
+  profession: Type.Optional(Type.String()),
   permissions: Type.Optional(Type.Array(ParticipantPermission)),
   lieu: Type.Optional(PracticeLocation),
 });
@@ -64,12 +59,12 @@ export type Participant = Static<typeof Participant>;
 // ============================================================================
 
 export const PatientMini = Type.Object({
-  ofysPatientId: Type.Optional(Nullable(Type.Integer())),
+  ofysPatientId: Type.Optional(Type.String()),
   prenom: Type.String(),
   nom: Type.String(),
-  sexeNaissance: Type.Optional(Nullable(Gender)),
-  dateNaissance: Type.Optional(Nullable(Type.String({ format: 'date' }))),
-  nam: Type.Optional(Nullable(Type.String())),
+  sexeNaissance: Type.Optional(Gender),
+  dateNaissance: Type.Optional(Type.String({ format: 'date' })),
+  nam: Type.Optional(Type.String()),
 });
 export type PatientMini = Static<typeof PatientMini>;
 
@@ -99,7 +94,7 @@ export const MessageContent = Type.Object({
 export type MessageContent = Static<typeof MessageContent>;
 
 export const MessageWithContent = Type.Object({
-  id: Type.String({ format: 'uuid' }),
+  id: Type.String(),
   sequenceId: Type.Integer({
     description: 'Ordre strict des messages dans le fil',
   }),
@@ -112,7 +107,7 @@ export const MessageWithContent = Type.Object({
 export type MessageWithContent = Static<typeof MessageWithContent>;
 
 export const MessageWithAttachment = Type.Object({
-  id: Type.String({ format: 'uuid' }),
+  id: Type.String(),
   sequenceId: Type.Integer({
     description: 'Ordre strict des messages dans le fil',
   }),
@@ -160,7 +155,7 @@ export const AttachmentCreate = Type.Object({
 export type AttachmentCreate = Static<typeof AttachmentCreate>;
 
 export const MessageCreate = Type.Object({
-  contenu: Type.Optional(Nullable(MessageContent)),
+  contenu: Type.Optional(MessageContent),
   piecesJointes: Type.Optional(Type.Array(AttachmentCreate)),
 });
 export type MessageCreate = Static<typeof MessageCreate>;
@@ -178,7 +173,7 @@ export const ActiveThreadStats = Type.Object({
 export type ActiveThreadStats = Static<typeof ActiveThreadStats>;
 
 export const ThreadSummary = Type.Object({
-  id: Type.String({ format: 'uuid' }),
+  id: Type.String(),
   titre: Type.String(),
   participants: Type.Array(Participant),
   lieux: Type.Array(PracticeLocation),
@@ -223,7 +218,6 @@ export const ThreadListResponse = Type.Object({
   }),
   nextCursor: Type.Optional(
     Type.String({
-      format: 'uuid',
       description:
         'ID du dernier fil pour la prochaine requête (null si hasMore=false)',
     }),
@@ -232,7 +226,7 @@ export const ThreadListResponse = Type.Object({
 export type ThreadListResponse = Static<typeof ThreadListResponse>;
 
 export const Thread = Type.Object({
-  id: Type.String({ format: 'uuid' }),
+  id: Type.String(),
   titre: Type.String(),
   participants: Type.Array(Participant),
   lieux: Type.Array(PracticeLocation),
@@ -281,10 +275,10 @@ export const PatientDetails = Type.Object({
   id: Type.String({ description: 'Identifiant Ofys du patient' }),
   prenom: Type.String(),
   nom: Type.String(),
-  sexeNaissance: Type.Optional(Nullable(Gender)),
-  dateNaissance: Type.Optional(Nullable(Type.String({ format: 'date' }))),
+  sexeNaissance: Type.Optional(Gender),
+  dateNaissance: Type.Optional(Type.String({ format: 'date' })),
   nam: Type.Optional(
-    Nullable(Type.String({ description: "Numéro d'assurance maladie" })),
+    Type.String({ description: "Numéro d'assurance maladie" }),
   ),
 });
 export type PatientDetails = Static<typeof PatientDetails>;
@@ -293,7 +287,7 @@ export const PatientCreateForThread = Type.Object({
   id: Type.String({ description: 'Identifiant Ofys du patient' }),
   prenom: Type.String(),
   nom: Type.String(),
-  sexeNaissance: Type.Optional(Nullable(Gender)),
+  sexeNaissance: Type.Optional(Gender),
   dateNaissance: Type.String({ format: 'date' }),
   nam: Type.String({ description: "Numéro d'assurance maladie" }),
 });
@@ -327,8 +321,8 @@ export type ThreadUpdate = Static<typeof ThreadUpdate>;
 
 export const ThreadParticipantRef = Type.Partial(
   Type.Object({
-    professionnelId: Nullable(Type.String()),
-    cliniqueId: Nullable(Type.String()),
+    professionnelId: Type.String(),
+    cliniqueId: Type.String(),
   }),
 );
 export type ThreadParticipantRef = Static<typeof ThreadParticipantRef>;
@@ -338,7 +332,7 @@ export const ThreadCreate = Type.Object({
   participants: Type.Array(ThreadParticipantRef),
   contenuInitial: Type.Optional(MessageContent),
   patient: Type.Optional(PatientCreateForThread),
-  braverPatientId: Type.Optional(Nullable(Type.String())),
+  braverPatientId: Type.Optional(Type.String()),
   piecesJointes: Type.Optional(Type.Array(Attachment)),
 });
 export type ThreadCreate = Static<typeof ThreadCreate>;
@@ -348,19 +342,19 @@ export type ThreadCreate = Static<typeof ThreadCreate>;
 // ============================================================================
 
 export const ProfessionalProfile = Type.Object({
-  id: Type.String({ format: 'uuid' }),
+  id: Type.String(),
   nom: Type.String(),
   prenom: Type.String(),
-  profession: Type.String({ format: 'uuid' }),
+  profession: Type.String(),
   numeroPratique: Type.String(),
   lieux: Type.Array(PracticeLocation),
 });
 export type ProfessionalProfile = Static<typeof ProfessionalProfile>;
 
 export const ClinicProfile = Type.Object({
-  id: Type.String({ format: 'uuid' }),
+  id: Type.String(),
   nom: Type.String(),
-  typeLieu: Type.String({ format: 'uuid' }),
+  typeLieu: Type.String(),
   lieux: Type.Array(PracticeLocation),
 });
 export type ClinicProfile = Static<typeof ClinicProfile>;
@@ -378,7 +372,6 @@ export type ProfessionType = Static<typeof ProfessionType>;
 
 export const Profession = Type.Object({
   id: Type.String({
-    format: 'uuid',
     description: 'Identifiant unique de la profession',
   }),
   type: ProfessionType,
@@ -398,7 +391,6 @@ export type Profession = Static<typeof Profession>;
 
 export const LocationType = Type.Object({
   id: Type.String({
-    format: 'uuid',
     description: 'Identifiant unique du type de lieu',
   }),
   labels: Type.Partial(
@@ -426,7 +418,7 @@ export type WebSocketMessageNewThread = Static<
 
 export const WebSocketMessageNewMessage = Type.Object({
   type: Type.Literal('newMessage'),
-  threadId: Type.String({ format: 'uuid' }),
+  threadId: Type.String(),
   message: Message,
   timestamp: Type.String({ format: 'date-time' }),
 });
