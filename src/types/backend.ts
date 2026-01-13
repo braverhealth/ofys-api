@@ -87,7 +87,6 @@ export type Patient = Static<typeof Patient>;
 export const PracticeLocationCreate = Type.Object({
   nom: Type.String({ description: 'Nom du lieu de pratique' }),
   typeLieu: Type.String({
-    format: 'uuid',
     description:
       "UUID du type de lieu (voir GET /typesLieux dans l'API frontend)",
   }),

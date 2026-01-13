@@ -418,7 +418,6 @@ paths:
           name: afterThreadId
           schema:
             type: string
-            format: uuid
           description: >-
             Optionnel—ID du dernier fil connu. Si fourni, retourne les fils
             créés avant celui-ci. Omettez ce paramètre pour obtenir les fils les
@@ -1084,7 +1083,6 @@ components:
               - nbMessagesNonLus
             properties:
               id:
-                format: uuid
                 type: string
               titre:
                 type: string
@@ -1098,7 +1096,6 @@ components:
                     - nomAffiche
                   properties:
                     id:
-                      format: uuid
                       type: string
                     type:
                       anyOf:
@@ -1119,10 +1116,7 @@ components:
                     nomAffiche:
                       type: string
                     profession:
-                      anyOf:
-                        - format: uuid
-                          type: string
-                        - type: 'null'
+                      type: string
                     permissions:
                       type: array
                       items:
@@ -1150,7 +1144,6 @@ components:
                         nom:
                           type: string
                         typeLieu:
-                          format: uuid
                           type: string
                         adresse:
                           type: string
@@ -1171,35 +1164,26 @@ components:
                   - nom
                 properties: &ref_6
                   ofysPatientId:
-                    anyOf:
-                      - type: integer
-                      - type: 'null'
+                    type: string
                   prenom:
                     type: string
                   nom:
                     type: string
                   sexeNaissance:
-                    anyOf:
-                      - &ref_9
-                        anyOf:
-                          - const: M
-                            type: string
-                          - const: F
-                            type: string
-                          - const: O
-                            type: string
-                          - const: NA
-                            type: string
-                      - type: 'null'
-                  dateNaissance:
-                    anyOf:
-                      - format: date
+                    anyOf: &ref_9
+                      - const: M
                         type: string
-                      - type: 'null'
+                      - const: F
+                        type: string
+                      - const: O
+                        type: string
+                      - const: NA
+                        type: string
+                  dateNaissance:
+                    format: date
+                    type: string
                   nam:
-                    anyOf:
-                      - type: string
-                      - type: 'null'
+                    type: string
               estFerme:
                 description: Indique si le fil est fermé
                 type: boolean
@@ -1227,7 +1211,6 @@ components:
           description: Indique s’il y a d’autres fils à récupérer
           type: boolean
         nextCursor:
-          format: uuid
           description: ID du dernier fil pour la prochaine requête (null si hasMore=false)
           type: string
     ThreadSummary: *ref_2
@@ -1244,7 +1227,6 @@ components:
         - estFerme
       properties:
         id:
-          format: uuid
           type: string
         titre:
           type: string
@@ -1277,7 +1259,6 @@ components:
                   - nonLu
                 properties:
                   id:
-                    format: uuid
                     type: string
                   sequenceId:
                     description: Ordre strict des messages dans le fil
@@ -1316,7 +1297,6 @@ components:
                   - nonLu
                 properties:
                   id:
-                    format: uuid
                     type: string
                   sequenceId:
                     description: Ordre strict des messages dans le fil
@@ -1391,13 +1371,9 @@ components:
             type: object
             properties:
               professionnelId:
-                anyOf:
-                  - type: string
-                  - type: 'null'
+                type: string
               cliniqueId:
-                anyOf:
-                  - type: string
-                  - type: 'null'
+                type: string
         contenuInitial:
           type: object
           required: *ref_7
@@ -1419,9 +1395,7 @@ components:
             nom:
               type: string
             sexeNaissance:
-              anyOf:
-                - *ref_9
-                - type: 'null'
+              anyOf: *ref_9
             dateNaissance:
               format: date
               type: string
@@ -1429,9 +1403,7 @@ components:
               description: Numéro d'assurance maladie
               type: string
         braverPatientId:
-          anyOf:
-            - type: string
-            - type: 'null'
+          type: string
         piecesJointes:
           type: array
           items: *ref_10
@@ -1482,19 +1454,13 @@ components:
         nom:
           type: string
         sexeNaissance:
-          anyOf:
-            - *ref_9
-            - type: 'null'
+          anyOf: *ref_9
         dateNaissance:
-          anyOf:
-            - format: date
-              type: string
-            - type: 'null'
+          format: date
+          type: string
         nam:
-          anyOf:
-            - description: Numéro d'assurance maladie
-              type: string
-            - type: 'null'
+          description: Numéro d'assurance maladie
+          type: string
     PatientCreateForThread:
       type: object
       required: *ref_11
@@ -1507,9 +1473,9 @@ components:
       type: object
       properties:
         contenu:
-          anyOf:
-            - *ref_17
-            - type: 'null'
+          type: object
+          required: *ref_7
+          properties: *ref_8
         piecesJointes:
           type: array
           items: &ref_18
@@ -1556,14 +1522,12 @@ components:
         - lieux
       properties:
         id:
-          format: uuid
           type: string
         nom:
           type: string
         prenom:
           type: string
         profession:
-          format: uuid
           type: string
         numeroPratique:
           type: string
@@ -1579,12 +1543,10 @@ components:
         - lieux
       properties:
         id:
-          format: uuid
           type: string
         nom:
           type: string
         typeLieu:
-          format: uuid
           type: string
         lieux:
           type: array
@@ -1597,7 +1559,6 @@ components:
         - labels
       properties:
         id:
-          format: uuid
           description: Identifiant unique de la profession
           type: string
         type:
@@ -1631,7 +1592,6 @@ components:
         - labels
       properties:
         id:
-          format: uuid
           description: Identifiant unique du type de lieu
           type: string
         labels:
@@ -1673,7 +1633,6 @@ components:
               const: newMessage
               type: string
             threadId:
-              format: uuid
               type: string
             message: *ref_14
             timestamp:

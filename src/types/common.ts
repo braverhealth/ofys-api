@@ -1,4 +1,76 @@
 import { Static, TSchema, Type } from '@sinclair/typebox';
+import { FormatRegistry } from '@sinclair/typebox';
+
+// ============================================================================
+// Format Registration
+// ============================================================================
+
+const UUID_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
+const DATE_TIME_REGEX =
+  /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})?$/;
+const URI_REGEX = /^[a-zA-Z][a-zA-Z0-9+.-]*:/;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/**
+ * Registers custom TypeBox formats for validation.
+ * Call this function once at application startup before using TypeBox validation.
+ *
+ * Registered formats:
+ * - `uuid`: UUID v4 format (e.g., "550e8400-e29b-41d4-a716-446655440000")
+ * - `date`: ISO 8601 date format (e.g., "2024-01-15")
+ * - `date-time`: ISO 8601 date-time format (e.g., "2024-01-15T10:30:00Z")
+ * - `uri`: URI format (e.g., "https://example.com")
+ * - `email`: Email format (e.g., "user@example.com")
+ * - `byte`: Base64 encoded string
+ */
+export function registerTypes(): void {
+  // UUID format
+  if (!FormatRegistry.Has('uuid')) {
+    FormatRegistry.Set('uuid', (value) => UUID_REGEX.test(value));
+  }
+
+  // ISO 8601 date format (YYYY-MM-DD)
+  if (!FormatRegistry.Has('date')) {
+    FormatRegistry.Set('date', (value) => {
+      if (!DATE_REGEX.test(value)) return false;
+      const date = new Date(value);
+      return !isNaN(date.getTime());
+    });
+  }
+
+  // ISO 8601 date-time format
+  if (!FormatRegistry.Has('date-time')) {
+    FormatRegistry.Set('date-time', (value) => {
+      if (!DATE_TIME_REGEX.test(value)) return false;
+      const date = new Date(value);
+      return !isNaN(date.getTime());
+    });
+  }
+
+  // URI format
+  if (!FormatRegistry.Has('uri')) {
+    FormatRegistry.Set('uri', (value) => URI_REGEX.test(value));
+  }
+
+  // Email format
+  if (!FormatRegistry.Has('email')) {
+    FormatRegistry.Set('email', (value) => EMAIL_REGEX.test(value));
+  }
+
+  // Base64 encoded string (byte format)
+  if (!FormatRegistry.Has('byte')) {
+    FormatRegistry.Set('byte', (value) => {
+      try {
+        // Check if string is valid base64
+        return /^[A-Za-z0-9+/]*={0,2}$/.test(value) && value.length % 4 === 0;
+      } catch {
+        return false;
+      }
+    });
+  }
+}
 
 export const Nullable = <T extends TSchema>(schema: T) =>
   Type.Union([schema, Type.Null()]);
@@ -254,9 +326,7 @@ export type UUID = string & { readonly __brand: 'UUID' };
  * Type guard to check if a string is a valid UUID
  */
 export function isUUID(value: string): value is UUID {
-  const uuidRegex =
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  return uuidRegex.test(value);
+  return UUID_REGEX.test(value);
 }
 
 /**
