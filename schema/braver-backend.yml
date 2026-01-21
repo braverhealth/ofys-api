@@ -680,7 +680,7 @@ components:
             braverPatientId:
               description: Identifiant unique du patient côté Braver
               type: string
-    ClientCreate: &ref_3
+    ClientCreate:
       type: object
       required:
         - id
@@ -694,12 +694,16 @@ components:
           type: string
         lieux:
           type: array
-          items: &ref_4
+          items: &ref_3
             type: object
             required:
+              - ofysId
               - nom
               - typeLieu
             properties:
+              ofysId:
+                description: Identifiant Ofys
+                type: string
               nom:
                 description: Nom du lieu de pratique
                 type: string
@@ -709,20 +713,20 @@ components:
                   frontend)
                 type: string
               rue:
-                anyOf: &ref_5
+                anyOf: &ref_4
                   - description: Numéro et nom de la rue
                     type: string
                   - type: 'null'
               codePostal:
-                anyOf: &ref_6
+                anyOf: &ref_5
                   - type: string
                   - type: 'null'
               ville:
-                anyOf: &ref_7
+                anyOf: &ref_6
                   - type: string
                   - type: 'null'
               pays:
-                anyOf: &ref_8
+                anyOf: &ref_7
                   - anyOf:
                       - const: CA
                         type: string
@@ -730,28 +734,28 @@ components:
                         type: string
                   - type: 'null'
               longitude:
-                anyOf: &ref_9
+                anyOf: &ref_8
                   - type: number
                   - type: 'null'
               latitude:
-                anyOf: &ref_10
+                anyOf: &ref_9
                   - type: number
                   - type: 'null'
     Client:
       type: object
-      allOf:
-        - *ref_3
-        - type: object
-          required:
-            - braverOrganizationId
-          properties:
-            braverOrganizationId:
-              description: Identifiant unique du client côté Braver
-              type: string
-    PracticeLocationCreate: *ref_4
+      required:
+        - braverOrganizationId
+      properties:
+        braverOrganizationId:
+          description: Identifiant unique du client côté Braver
+          type: string
+    PracticeLocationCreate: *ref_3
     PracticeLocationUpdate:
       type: object
       properties:
+        ofysId:
+          description: Identifiant Ofys
+          type: string
         nom:
           description: Nom du lieu de pratique
           type: string
@@ -759,28 +763,25 @@ components:
           description: UUID du type de lieu (voir GET /typesLieux dans l'API frontend)
           type: string
         rue:
-          anyOf: *ref_5
+          anyOf: *ref_4
         codePostal:
-          anyOf: *ref_6
+          anyOf: *ref_5
         ville:
-          anyOf: *ref_7
+          anyOf: *ref_6
         pays:
-          anyOf: *ref_8
+          anyOf: *ref_7
         longitude:
-          anyOf: *ref_9
+          anyOf: *ref_8
         latitude:
-          anyOf: *ref_10
+          anyOf: *ref_9
     PracticeLocation:
       type: object
-      allOf:
-        - *ref_4
-        - type: object
-          required:
-            - braverWorkplaceId
-          properties:
-            braverWorkplaceId:
-              description: Identifiant unique du lieu côté Braver
-              type: string
+      required:
+        - braverWorkplaceId
+      properties:
+        braverWorkplaceId:
+          description: Identifiant unique du lieu côté Braver
+          type: string
     ApiError:
       type: object
       required:
