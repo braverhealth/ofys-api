@@ -85,6 +85,7 @@ export type Patient = Static<typeof Patient>;
 // ============================================================================
 
 export const PracticeLocationCreate = Type.Object({
+  ofysId: Type.String({ description: 'Identifiant Ofys' }),
   nom: Type.String({ description: 'Nom du lieu de pratique' }),
   typeLieu: Type.String({
     description:
@@ -103,14 +104,11 @@ export type PracticeLocationCreate = Static<typeof PracticeLocationCreate>;
 
 export const PracticeLocationUpdate = Type.Partial(PracticeLocationCreate);
 
-export const PracticeLocation = Type.Intersect([
-  PracticeLocationCreate,
-  Type.Object({
-    braverWorkplaceId: Type.String({
-      description: 'Identifiant unique du lieu côté Braver',
-    }),
+export const PracticeLocation = Type.Object({
+  braverWorkplaceId: Type.String({
+    description: 'Identifiant unique du lieu côté Braver',
   }),
-]);
+});
 export type PracticeLocation = Static<typeof PracticeLocation>;
 
 export const ClientCreate = Type.Object({
@@ -120,12 +118,9 @@ export const ClientCreate = Type.Object({
 });
 export type ClientCreate = Static<typeof ClientCreate>;
 
-export const Client = Type.Intersect([
-  ClientCreate,
-  Type.Object({
-    braverOrganizationId: Type.String({
-      description: 'Identifiant unique du client côté Braver',
-    }),
+export const Client = Type.Object({
+  braverOrganizationId: Type.String({
+    description: 'Identifiant unique du client côté Braver',
   }),
-]);
+});
 export type Client = Static<typeof Client>;
