@@ -696,51 +696,53 @@ components:
           type: array
           items: &ref_3
             type: object
-            required:
-              - ofysId
-              - nom
-              - typeLieu
-            properties:
-              ofysId:
-                description: Identifiant Ofys
-                type: string
-              nom:
-                description: Nom du lieu de pratique
-                type: string
-              typeLieu:
-                description: >-
-                  UUID du type de lieu (voir GET /typesLieux dans l'API
-                  frontend)
-                type: string
-              rue:
-                anyOf: &ref_4
-                  - description: Numéro et nom de la rue
+            allOf:
+              - type: object
+                required:
+                  - ofysId
+                  - nom
+                  - typeLieu
+                properties:
+                  ofysId:
+                    description: Identifiant Ofys
                     type: string
-                  - type: 'null'
-              codePostal:
-                anyOf: &ref_5
-                  - type: string
-                  - type: 'null'
-              ville:
-                anyOf: &ref_6
-                  - type: string
-                  - type: 'null'
-              pays:
-                anyOf: &ref_7
-                  - anyOf:
+                  nom:
+                    description: Nom du lieu de pratique
+                    type: string
+                  typeLieu:
+                    description: >-
+                      UUID du type de lieu (voir GET /typesLieux dans l'API
+                      frontend)
+                    type: string
+              - &ref_4
+                type: object
+                required:
+                  - rue
+                  - codePostal
+                  - ville
+                  - pays
+                properties:
+                  rue:
+                    description: Numéro et nom de la rue
+                    type: string
+                  codePostal:
+                    type: string
+                  ville:
+                    type: string
+                  pays:
+                    anyOf:
                       - const: CA
                         type: string
                       - const: US
                         type: string
-                  - type: 'null'
-              longitude:
-                anyOf: &ref_8
-                  - type: number
-                  - type: 'null'
-              latitude:
-                anyOf: &ref_9
-                  - type: number
-                  - type: 'null'
+                  longitude:
+                    anyOf:
+                      - type: number
+                      - type: 'null'
+                  latitude:
+                    anyOf:
+                      - type: number
+                      - type: 'null'
     Client:
       type: object
       required:
@@ -752,28 +754,26 @@ components:
     PracticeLocationCreate: *ref_3
     PracticeLocationUpdate:
       type: object
+      required:
+        - ofysId
       properties:
         ofysId:
           description: Identifiant Ofys
           type: string
         nom:
-          description: Nom du lieu de pratique
-          type: string
+          anyOf:
+            - description: Nom du lieu de pratique
+              type: string
+            - type: 'null'
         typeLieu:
-          description: UUID du type de lieu (voir GET /typesLieux dans l'API frontend)
-          type: string
-        rue:
-          anyOf: *ref_4
-        codePostal:
-          anyOf: *ref_5
-        ville:
-          anyOf: *ref_6
-        pays:
-          anyOf: *ref_7
-        longitude:
-          anyOf: *ref_8
-        latitude:
-          anyOf: *ref_9
+          anyOf:
+            - description: UUID du type de lieu (voir GET /typesLieux dans l'API frontend)
+              type: string
+            - type: 'null'
+        adresse:
+          anyOf:
+            - *ref_4
+            - type: 'null'
     PracticeLocation:
       type: object
       required:
