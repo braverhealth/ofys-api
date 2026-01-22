@@ -84,25 +84,45 @@ export type Patient = Static<typeof Patient>;
 // Client & Practice Location Types
 // ============================================================================
 
-export const PracticeLocationCreate = Type.Object({
-  ofysId: Type.String({ description: 'Identifiant Ofys' }),
-  nom: Type.String({ description: 'Nom du lieu de pratique' }),
-  typeLieu: Type.String({
-    description:
-      "UUID du type de lieu (voir GET /typesLieux dans l'API frontend)",
-  }),
-  rue: Type.Optional(
-    Nullable(Type.String({ description: 'Numéro et nom de la rue' })),
-  ),
-  codePostal: Type.Optional(Nullable(Type.String())),
-  ville: Type.Optional(Nullable(Type.String())),
-  pays: Type.Optional(Nullable(ISOCountryCode)),
+export const PracticeLocationInfo = Type.Object({
+  rue: Type.String({ description: 'Numéro et nom de la rue' }),
+  codePostal: Type.String(),
+  ville: Type.String(),
+  pays: ISOCountryCode,
   longitude: Type.Optional(Nullable(Type.Number())),
   latitude: Type.Optional(Nullable(Type.Number())),
 });
+export type PracticeLocationInfo = Static<typeof PracticeLocationInfo>;
+
+export const PracticeLocationCreate = Type.Intersect([
+  Type.Object({
+    ofysId: Type.String({ description: 'Identifiant Ofys' }),
+    nom: Type.String({ description: 'Nom du lieu de pratique' }),
+    typeLieu: Type.String({
+      description:
+        "UUID du type de lieu (voir GET /typesLieux dans l'API frontend)",
+    }),
+  }),
+  PracticeLocationInfo,
+]);
 export type PracticeLocationCreate = Static<typeof PracticeLocationCreate>;
 
-export const PracticeLocationUpdate = Type.Partial(PracticeLocationCreate);
+export const PracticeLocationUpdate = Type.Object({
+  ofysId: Type.String({ description: 'Identifiant Ofys' }),
+  nom: Type.Optional(
+    Nullable(Type.String({ description: 'Nom du lieu de pratique' })),
+  ),
+  typeLieu: Type.Optional(
+    Nullable(
+      Type.String({
+        description:
+          "UUID du type de lieu (voir GET /typesLieux dans l'API frontend)",
+      }),
+    ),
+  ),
+  adresse: Type.Optional(Nullable(PracticeLocationInfo)),
+});
+export type PracticeLocationUpdate = Static<typeof PracticeLocationUpdate>;
 
 export const PracticeLocation = Type.Object({
   braverWorkplaceId: Type.String({
