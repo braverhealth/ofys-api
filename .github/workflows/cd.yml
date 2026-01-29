@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 permissions:
-  contents: read
+  contents: write
   id-token: write
 
 jobs:
@@ -34,19 +34,5 @@ jobs:
       - name: Login to Artifact Registry
         run: npm run artifactregistry-login
 
-      - name: Get branch and commit info
-        id: git-info
-        run: |
-          BRANCH_NAME=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
-          # Sanitize branch name for npm tag (replace / with -)
-          BRANCH_TAG=$(echo "$BRANCH_NAME" | sed 's/[^a-zA-Z0-9.-]/-/g')
-          COMMIT_SHORT=$(git rev-parse --short HEAD)
-          echo "branch-tag=$BRANCH_TAG" >> $GITHUB_OUTPUT
-          echo "commit-short=$COMMIT_SHORT" >> $GITHUB_OUTPUT
-
       - name: Publish to Artifact Registry
-        run: |
-          VERSION=$(node -p "require('./package.json').version")
-
-          npm publish --tag ${{ steps.git-info.outputs.commit-short }}
-          npm dist-tag add @braver/ofys-api@$VERSION ${{ steps.git-info.outputs.branch-tag }}
+        run: ./scripts/publish.sh main --bump patch

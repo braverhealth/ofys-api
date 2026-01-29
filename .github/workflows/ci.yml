@@ -1,10 +1,12 @@
 name: CI
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
+
+permissions:
+  contents: read
+  id-token: write
 
 jobs:
   ci:
@@ -49,3 +51,14 @@ jobs:
             exit 1
           fi
 
+      - name: Authenticate to GCloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/78526959552/locations/global/workloadIdentityPools/github/providers/ofys-api
+          service_account: github-ofys-api@braver-ops.iam.gserviceaccount.com
+
+      - name: Login to Artifact Registry
+        run: npm run artifactregistry-login
+
+      - name: Publish RC
+        run: ./scripts/publish.sh --rc
