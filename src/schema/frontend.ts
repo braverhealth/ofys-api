@@ -22,8 +22,12 @@ import {
   AttachmentCreate,
   ProfessionalProfile,
   ClinicProfile,
+  ProfessionalSearchResponse,
+  ClinicSearchResponse,
   Profession,
   LocationType,
+  ProfessionListResponse,
+  LocationTypeListResponse,
   WebSocketMessage,
   WebSocketMessageNewThread,
   WebSocketMessageNewMessage,
@@ -624,15 +628,7 @@ Ces IDs sont utilisés dans la recherche de professionnels et l'identification d
             description: 'Liste des professions',
             content: {
               'application/json': {
-                schema: {
-                  type: 'object',
-                  properties: {
-                    professions: {
-                      type: 'array',
-                      items: { $ref: '#/components/schemas/Profession' },
-                    },
-                  },
-                },
+                schema: { $ref: '#/components/schemas/ProfessionListResponse' },
               },
             },
           },
@@ -656,13 +652,7 @@ Ces IDs sont utilisés dans la recherche de cliniques et l'identification des li
             content: {
               'application/json': {
                 schema: {
-                  type: 'object',
-                  properties: {
-                    typesLieux: {
-                      type: 'array',
-                      items: { $ref: '#/components/schemas/LocationType' },
-                    },
-                  },
+                  $ref: '#/components/schemas/LocationTypeListResponse',
                 },
               },
             },
@@ -721,19 +711,7 @@ Ces IDs sont utilisés dans la recherche de cliniques et l'identification des li
             content: {
               'application/json': {
                 schema: {
-                  type: 'object',
-                  properties: {
-                    results: {
-                      type: 'array',
-                      items: {
-                        $ref: '#/components/schemas/ProfessionalProfile',
-                      },
-                    },
-                    total: {
-                      type: 'integer',
-                      description: 'Nombre total de résultats disponibles',
-                    },
-                  },
+                  $ref: '#/components/schemas/ProfessionalSearchResponse',
                 },
               },
             },
@@ -791,19 +769,7 @@ Ces IDs sont utilisés dans la recherche de cliniques et l'identification des li
             description: 'Résultats',
             content: {
               'application/json': {
-                schema: {
-                  type: 'object',
-                  properties: {
-                    results: {
-                      type: 'array',
-                      items: { $ref: '#/components/schemas/ClinicProfile' },
-                    },
-                    total: {
-                      type: 'integer',
-                      description: 'Nombre total de résultats disponibles',
-                    },
-                  },
-                },
+                schema: { $ref: '#/components/schemas/ClinicSearchResponse' },
               },
             },
           },
@@ -1007,8 +973,12 @@ Le token peut aussi être utilisé comme sso_token pour https://app.braver.net/?
       AttachmentCreate,
       ProfessionalProfile,
       ClinicProfile,
+      ProfessionalSearchResponse,
+      ClinicSearchResponse,
       Profession,
       LocationType,
+      ProfessionListResponse,
+      LocationTypeListResponse,
       WebSocketMessage,
       WebSocketMessageNewThread,
       WebSocketMessageNewMessage,
