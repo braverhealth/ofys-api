@@ -60,10 +60,5 @@ jobs:
       - name: Login to Artifact Registry
         run: npm run artifactregistry-login
 
-      - name: Configure Git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
       - name: Publish RC
         run: ./scripts/publish.sh --rc
