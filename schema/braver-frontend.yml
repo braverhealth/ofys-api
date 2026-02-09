@@ -676,12 +676,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  professions:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Profession'
+                $ref: '#/components/schemas/ProfessionListResponse'
   /typesLieux:
     get:
       tags:
@@ -706,12 +701,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  typesLieux:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/LocationType'
+                $ref: '#/components/schemas/LocationTypeListResponse'
   /rechercheDeProfessionnels:
     get:
       tags:
@@ -762,15 +752,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  results:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/ProfessionalProfile'
-                  total:
-                    type: integer
-                    description: Nombre total de résultats disponibles
+                $ref: '#/components/schemas/ProfessionalSearchResponse'
   /rechercheDeCliniques:
     get:
       tags:
@@ -821,15 +803,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  results:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/ClinicProfile'
-                  total:
-                    type: integer
-                    description: Nombre total de résultats disponibles
+                $ref: '#/components/schemas/ClinicSearchResponse'
   /fils:
     post:
       tags:
@@ -1214,7 +1188,7 @@ components:
           description: ID du dernier fil pour la prochaine requête (null si hasMore=false)
           type: string
     ThreadSummary: *ref_2
-    Thread: &ref_19
+    Thread: &ref_23
       type: object
       required:
         - id
@@ -1511,7 +1485,7 @@ components:
                 type: string
     Attachment: *ref_10
     AttachmentCreate: *ref_18
-    ProfessionalProfile:
+    ProfessionalProfile: &ref_19
       type: object
       required:
         - id
@@ -1534,7 +1508,7 @@ components:
         lieux:
           type: array
           items: *ref_4
-    ClinicProfile:
+    ClinicProfile: &ref_20
       type: object
       required:
         - id
@@ -1551,7 +1525,31 @@ components:
         lieux:
           type: array
           items: *ref_4
-    Profession:
+    ProfessionalSearchResponse:
+      type: object
+      required:
+        - results
+        - total
+      properties:
+        results:
+          type: array
+          items: *ref_19
+        total:
+          description: Nombre total de résultats disponibles
+          type: integer
+    ClinicSearchResponse:
+      type: object
+      required:
+        - results
+        - total
+      properties:
+        results:
+          type: array
+          items: *ref_20
+        total:
+          description: Nombre total de résultats disponibles
+          type: integer
+    Profession: &ref_21
       type: object
       required:
         - id
@@ -1585,7 +1583,7 @@ components:
             en_O:
               type: string
           description: Libellés localisés et genrés de la profession
-    LocationType:
+    LocationType: &ref_22
       type: object
       required:
         - id
@@ -1602,12 +1600,28 @@ components:
             en:
               type: string
           description: Libellés localisés du type de lieu
+    ProfessionListResponse:
+      type: object
+      required:
+        - professions
+      properties:
+        professions:
+          type: array
+          items: *ref_21
+    LocationTypeListResponse:
+      type: object
+      required:
+        - typesLieux
+      properties:
+        typesLieux:
+          type: array
+          items: *ref_22
     WebSocketMessage:
       type: discriminator
       discriminator: type
       description: Message retourné par le WebSocket /fils/activites
       anyOf:
-        - &ref_20
+        - &ref_24
           type: object
           required:
             - type
@@ -1617,11 +1631,11 @@ components:
             type:
               const: newThread
               type: string
-            thread: *ref_19
+            thread: *ref_23
             timestamp:
               format: date-time
               type: string
-        - &ref_21
+        - &ref_25
           type: object
           required:
             - type
@@ -1638,7 +1652,7 @@ components:
             timestamp:
               format: date-time
               type: string
-        - &ref_22
+        - &ref_26
           type: object
           required:
             - type
@@ -1656,7 +1670,7 @@ components:
             timestamp:
               format: date-time
               type: string
-        - &ref_23
+        - &ref_27
           type: object
           required:
             - type
@@ -1672,10 +1686,10 @@ components:
             timestamp:
               format: date-time
               type: string
-    WebSocketMessageNewThread: *ref_20
-    WebSocketMessageNewMessage: *ref_21
-    WebSocketMessageThreadUpdated: *ref_22
-    WebSocketMessageThreadClosed: *ref_23
+    WebSocketMessageNewThread: *ref_24
+    WebSocketMessageNewMessage: *ref_25
+    WebSocketMessageThreadUpdated: *ref_26
+    WebSocketMessageThreadClosed: *ref_27
     ApiError:
       type: object
       required:

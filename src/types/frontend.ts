@@ -359,6 +359,24 @@ export const ClinicProfile = Type.Object({
 });
 export type ClinicProfile = Static<typeof ClinicProfile>;
 
+export const ProfessionalSearchResponse = Type.Object({
+  results: Type.Array(ProfessionalProfile),
+  total: Type.Integer({
+    description: 'Nombre total de résultats disponibles',
+  }),
+});
+export type ProfessionalSearchResponse = Static<
+  typeof ProfessionalSearchResponse
+>;
+
+export const ClinicSearchResponse = Type.Object({
+  results: Type.Array(ClinicProfile),
+  total: Type.Integer({
+    description: 'Nombre total de résultats disponibles',
+  }),
+});
+export type ClinicSearchResponse = Static<typeof ClinicSearchResponse>;
+
 // ============================================================================
 // Reference Data Types
 // ============================================================================
@@ -402,6 +420,16 @@ export const LocationType = Type.Object({
   ),
 });
 export type LocationType = Static<typeof LocationType>;
+
+export const ProfessionListResponse = Type.Object({
+  professions: Type.Array(Profession),
+});
+export type ProfessionListResponse = Static<typeof ProfessionListResponse>;
+
+export const LocationTypeListResponse = Type.Object({
+  typesLieux: Type.Array(LocationType),
+});
+export type LocationTypeListResponse = Static<typeof LocationTypeListResponse>;
 
 // ============================================================================
 // WebSocket Message Types
