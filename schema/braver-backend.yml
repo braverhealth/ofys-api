@@ -75,7 +75,7 @@ info:
     - Évite les doublons en cas de retry réseau
 
     - Applicable à: POST /clients, POST /lieux, POST /utilisateurs, POST
-    /patients, PUT /lieu/{id}, PUT /utilisateur/{id}, PUT /patient/{id}
+    /patients, PUT /lieux/{id}, PUT /utilisateurs/{id}, PUT /patients/{id}
 servers:
   - url: <À préciser prochainement>
     description: Production
@@ -216,7 +216,7 @@ paths:
                     practiceLocationId: lieu-123
                   timestamp: '2025-11-18T14:32:00Z'
                   traceId: abc-123-def
-  /lieu/{id}:
+  /lieux/{id}:
     put:
       tags:
         - Lieux de Pratique
@@ -335,7 +335,7 @@ paths:
                     userId: prof-123
                   timestamp: '2025-11-18T14:32:00Z'
                   traceId: abc-123-def
-  /utilisateur/{id}:
+  /utilisateurs/{id}:
     put:
       tags:
         - Utilisateurs
@@ -453,7 +453,7 @@ paths:
                     nam: nam-123
                   timestamp: '2025-11-18T14:32:00Z'
                   traceId: abc-123-def
-  /patient/{id}:
+  /patients/{id}:
     put:
       tags:
         - Patients
@@ -754,12 +754,7 @@ components:
     PracticeLocationCreate: *ref_3
     PracticeLocationUpdate:
       type: object
-      required:
-        - ofysId
       properties:
-        ofysId:
-          description: Identifiant Ofys
-          type: string
         nom:
           anyOf:
             - description: Nom du lieu de pratique
