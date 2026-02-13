@@ -108,7 +108,6 @@ export const PracticeLocationCreate = Type.Intersect([
 export type PracticeLocationCreate = Static<typeof PracticeLocationCreate>;
 
 export const PracticeLocationUpdate = Type.Object({
-  ofysId: Type.String({ description: 'Identifiant Ofys' }),
   nom: Type.Optional(
     Nullable(Type.String({ description: 'Nom du lieu de pratique' })),
   ),
