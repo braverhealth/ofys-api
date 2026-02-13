@@ -625,7 +625,7 @@ components:
           items:
             type: string
     User: *ref_1
-    PatientCreate: &ref_2
+    PatientCreate:
       type: object
       required:
         - id
@@ -648,6 +648,10 @@ components:
         dateNaissance:
           format: date
           type: string
+        courriel:
+          anyOf:
+            - type: string
+            - type: 'null'
         nam:
           description: Numéro d'assurance maladie
           type: string
@@ -658,10 +662,13 @@ components:
           type: string
         nom:
           type: string
-        sexeActuel:
+        sexeNaissance:
           anyOf:
             - *ref_0
             - type: 'null'
+        dateNaissance:
+          format: date
+          type: string
         courriel:
           anyOf:
             - type: string
@@ -671,15 +678,12 @@ components:
           type: string
     Patient:
       type: object
-      allOf:
-        - *ref_2
-        - type: object
-          required:
-            - braverPatientId
-          properties:
-            braverPatientId:
-              description: Identifiant unique du patient côté Braver
-              type: string
+      required:
+        - braverPatientId
+      properties:
+        braverPatientId:
+          description: Identifiant unique du patient côté Braver
+          type: string
     ClientCreate:
       type: object
       required:
@@ -694,7 +698,7 @@ components:
           type: string
         lieux:
           type: array
-          items: &ref_3
+          items: &ref_2
             type: object
             allOf:
               - type: object
@@ -714,7 +718,7 @@ components:
                       UUID du type de lieu (voir GET /typesLieux dans l'API
                       frontend)
                     type: string
-              - &ref_4
+              - &ref_3
                 type: object
                 required:
                   - rue
@@ -751,7 +755,7 @@ components:
         braverOrganizationId:
           description: Identifiant unique du client côté Braver
           type: string
-    PracticeLocationCreate: *ref_3
+    PracticeLocationCreate: *ref_2
     PracticeLocationUpdate:
       type: object
       properties:
@@ -767,7 +771,7 @@ components:
             - type: 'null'
         adresse:
           anyOf:
-            - *ref_4
+            - *ref_3
             - type: 'null'
     PracticeLocation:
       type: object
