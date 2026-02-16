@@ -65,7 +65,7 @@ Idempotency-Key: 550e8400-e29b-41d4-a716-446655440000
 
 - Si la même requête est envoyée avec la même \`Idempotency-Key\` dans l'heure, la réponse en cache est retournée
 - Évite les doublons en cas de retry réseau
-- Applicable à: POST /clients, POST /lieux, POST /utilisateurs, POST /patients, PUT /lieu/{id}, PUT /utilisateur/{id}, PUT /patient/{id}`,
+- Applicable à: POST /clients, POST /lieux, POST /utilisateurs, POST /patients, PUT /lieux/{id}, PUT /utilisateurs/{id}, PUT /patients/{id}`,
   },
   servers: [
     {
@@ -223,7 +223,7 @@ car le client n'existe pas encore au moment de sa création.`,
         },
       },
     },
-    '/lieu/{id}': {
+    '/lieux/{id}': {
       put: {
         tags: ['Lieux de Pratique'],
         summary: 'Modifier un lieu de pratique',
@@ -357,7 +357,7 @@ car le client n'existe pas encore au moment de sa création.`,
         },
       },
     },
-    '/utilisateur/{id}': {
+    '/utilisateurs/{id}': {
       put: {
         tags: ['Utilisateurs'],
         summary: 'Mettre à jour un professionnel',
@@ -493,7 +493,7 @@ car le client n'existe pas encore au moment de sa création.`,
         },
       },
     },
-    '/patient/{id}': {
+    '/patients/{id}': {
       put: {
         tags: ['Patients'],
         summary: 'Mettre à jour un patient',

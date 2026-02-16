@@ -75,7 +75,7 @@ info:
     - Évite les doublons en cas de retry réseau
 
     - Applicable à: POST /clients, POST /lieux, POST /utilisateurs, POST
-    /patients, PUT /lieu/{id}, PUT /utilisateur/{id}, PUT /patient/{id}
+    /patients, PUT /lieux/{id}, PUT /utilisateurs/{id}, PUT /patients/{id}
 servers:
   - url: <À préciser prochainement>
     description: Production
@@ -216,7 +216,7 @@ paths:
                     practiceLocationId: lieu-123
                   timestamp: '2025-11-18T14:32:00Z'
                   traceId: abc-123-def
-  /lieu/{id}:
+  /lieux/{id}:
     put:
       tags:
         - Lieux de Pratique
@@ -335,7 +335,7 @@ paths:
                     userId: prof-123
                   timestamp: '2025-11-18T14:32:00Z'
                   traceId: abc-123-def
-  /utilisateur/{id}:
+  /utilisateurs/{id}:
     put:
       tags:
         - Utilisateurs
@@ -453,7 +453,7 @@ paths:
                     nam: nam-123
                   timestamp: '2025-11-18T14:32:00Z'
                   traceId: abc-123-def
-  /patient/{id}:
+  /patients/{id}:
     put:
       tags:
         - Patients
@@ -625,7 +625,7 @@ components:
           items:
             type: string
     User: *ref_1
-    PatientCreate: &ref_2
+    PatientCreate:
       type: object
       required:
         - id
@@ -648,6 +648,10 @@ components:
         dateNaissance:
           format: date
           type: string
+        courriel:
+          anyOf:
+            - type: string
+            - type: 'null'
         nam:
           description: Numéro d'assurance maladie
           type: string
@@ -658,10 +662,13 @@ components:
           type: string
         nom:
           type: string
-        sexeActuel:
+        sexeNaissance:
           anyOf:
             - *ref_0
             - type: 'null'
+        dateNaissance:
+          format: date
+          type: string
         courriel:
           anyOf:
             - type: string
@@ -671,15 +678,12 @@ components:
           type: string
     Patient:
       type: object
-      allOf:
-        - *ref_2
-        - type: object
-          required:
-            - braverPatientId
-          properties:
-            braverPatientId:
-              description: Identifiant unique du patient côté Braver
-              type: string
+      required:
+        - braverPatientId
+      properties:
+        braverPatientId:
+          description: Identifiant unique du patient côté Braver
+          type: string
     ClientCreate:
       type: object
       required:
@@ -694,7 +698,7 @@ components:
           type: string
         lieux:
           type: array
-          items: &ref_3
+          items: &ref_2
             type: object
             allOf:
               - type: object
@@ -714,7 +718,7 @@ components:
                       UUID du type de lieu (voir GET /typesLieux dans l'API
                       frontend)
                     type: string
-              - &ref_4
+              - &ref_3
                 type: object
                 required:
                   - rue
@@ -751,15 +755,10 @@ components:
         braverOrganizationId:
           description: Identifiant unique du client côté Braver
           type: string
-    PracticeLocationCreate: *ref_3
+    PracticeLocationCreate: *ref_2
     PracticeLocationUpdate:
       type: object
-      required:
-        - ofysId
       properties:
-        ofysId:
-          description: Identifiant Ofys
-          type: string
         nom:
           anyOf:
             - description: Nom du lieu de pratique
@@ -772,7 +771,7 @@ components:
             - type: 'null'
         adresse:
           anyOf:
-            - *ref_4
+            - *ref_3
             - type: 'null'
     PracticeLocation:
       type: object

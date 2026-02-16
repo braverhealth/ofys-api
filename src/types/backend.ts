@@ -55,29 +55,28 @@ export const PatientCreate = Type.Object({
   nom: Type.String(),
   sexeNaissance: Type.Optional(Nullable(Gender)),
   dateNaissance: Type.String({ format: 'date' }),
+  courriel: Type.Optional(Nullable(Type.String())),
   nam: Type.String({ description: "Numéro d'assurance maladie" }),
 });
 export type PatientCreate = Static<typeof PatientCreate>;
 
 export const PatientUpdate = Type.Partial(
   Type.Object({
-    prenom: Type.String(),
-    nom: Type.String(),
-    sexeActuel: Nullable(Gender),
-    courriel: Nullable(Type.String()),
+    prenom: Type.Optional(Type.String()),
+    nom: Type.Optional(Type.String()),
+    sexeNaissance: Type.Optional(Nullable(Gender)),
+    dateNaissance: Type.String({ format: 'date' }),
+    courriel: Type.Optional(Nullable(Type.String())),
     nam: Type.String({ description: "Ne change qu'exceptionnellement" }),
   }),
 );
 export type PatientUpdate = Static<typeof PatientUpdate>;
 
-export const Patient = Type.Intersect([
-  PatientCreate,
-  Type.Object({
-    braverPatientId: Type.String({
-      description: 'Identifiant unique du patient côté Braver',
-    }),
+export const Patient = Type.Object({
+  braverPatientId: Type.String({
+    description: 'Identifiant unique du patient côté Braver',
   }),
-]);
+});
 export type Patient = Static<typeof Patient>;
 
 // ============================================================================
@@ -108,7 +107,6 @@ export const PracticeLocationCreate = Type.Intersect([
 export type PracticeLocationCreate = Static<typeof PracticeLocationCreate>;
 
 export const PracticeLocationUpdate = Type.Object({
-  ofysId: Type.String({ description: 'Identifiant Ofys' }),
   nom: Type.Optional(
     Nullable(Type.String({ description: 'Nom du lieu de pratique' })),
   ),
