@@ -11,15 +11,16 @@ import { Gender, ISOCountryCode, Nullable } from './common.js';
 // ============================================================================
 
 export const UserCreate = Type.Object({
-  id: Type.String({ description: 'Identifiant Ofys' }),
+  tokenId: Type.String({ description: 'Token utilisateur signé' }),
   prenom: Type.String(),
   nom: Type.String(),
-  courriel: Type.Optional(Nullable(Type.String())),
   genre: Type.Optional(Nullable(Gender)),
-  professions: Type.Array(Type.String()),
-  numeroPratique: Type.String({
-    description: 'Numéro de pratique (ex. numéro de licence)',
-  }),
+  professions: Type.Array(
+    Type.Object({
+      professionId: Type.String(),
+      numeroPratique: Type.String(),
+    }),
+  ),
   lieuxPratiqueIds: Type.Array(Type.String(), {
     description:
       'Liste des IDs Ofys des lieux de pratique associés à cet utilisateur',
@@ -29,14 +30,19 @@ export type UserCreate = Static<typeof UserCreate>;
 
 export const UserUpdate = Type.Partial(
   Type.Object({
+    tokenId: Type.String({ description: 'Token utilisateur signé' }),
     prenom: Type.String(),
     nom: Type.String(),
-    courriel: Nullable(Type.String()),
-    genre: Nullable(Gender),
-    professions: Type.Array(Type.String()),
+    genre: Type.Optional(Nullable(Gender)),
+    professions: Type.Array(
+      Type.Object({
+        professionId: Type.String(),
+        numeroPratique: Type.String(),
+      }),
+      { description: "Permet d'ajouter des professions" },
+    ),
     lieuxPratiqueIds: Type.Array(Type.String(), {
-      description:
-        'Liste des IDs Ofys des lieux de pratique associés à cet utilisateur',
+      description: "Permet d'ajouter des lieux de pratique",
     }),
   }),
 );
