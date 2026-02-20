@@ -335,7 +335,6 @@ paths:
                     userId: prof-123
                   timestamp: '2025-11-18T14:32:00Z'
                   traceId: abc-123-def
-  /utilisateurs/{id}:
     put:
       tags:
         - Utilisateurs
@@ -602,9 +601,17 @@ components:
             type: string
     UserUpdate:
       type: object
+      required:
+        - tokenId
+        - prenom
+        - nom
+        - professions
+        - lieuxPratiqueIds
       properties:
         tokenId:
-          description: Token utilisateur signé
+          description: >-
+            Token utilisateur signé. L'utilisateur identifié par ce token sera
+            mis à jour
           type: string
         prenom:
           type: string

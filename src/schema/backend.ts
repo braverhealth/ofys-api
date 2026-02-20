@@ -356,8 +356,6 @@ car le client n'existe pas encore au moment de sa création.`,
           },
         },
       },
-    },
-    '/utilisateurs/{id}': {
       put: {
         tags: ['Utilisateurs'],
         summary: 'Mettre à jour un professionnel',
