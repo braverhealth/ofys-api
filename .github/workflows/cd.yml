@@ -1,8 +1,9 @@
 name: CD
 
 on:
-  push:
+  pull_request:
     branches: [main]
+    types: [closed]
 
 permissions:
   contents: write
@@ -11,12 +12,14 @@ permissions:
 jobs:
   cd:
     runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           ssh-key: ${{ secrets.DEPLOY_KEY }}
+          ref: main
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
