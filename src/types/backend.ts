@@ -15,6 +15,7 @@ export const UserCreate = Type.Object({
   prenom: Type.String(),
   nom: Type.String(),
   genre: Type.Optional(Nullable(Gender)),
+  courriel: Type.Optional(Nullable(Type.String())),
   professions: Type.Array(
     Type.Object({
       professionId: Type.String(),
@@ -28,24 +29,26 @@ export const UserCreate = Type.Object({
 });
 export type UserCreate = Static<typeof UserCreate>;
 
-export const UserUpdate = Type.Partial(
-  Type.Object({
-    tokenId: Type.String({ description: 'Token utilisateur signé' }),
-    prenom: Type.String(),
-    nom: Type.String(),
-    genre: Type.Optional(Nullable(Gender)),
-    professions: Type.Array(
-      Type.Object({
-        professionId: Type.String(),
-        numeroPratique: Type.String(),
-      }),
-      { description: "Permet d'ajouter des professions" },
-    ),
-    lieuxPratiqueIds: Type.Array(Type.String(), {
-      description: "Permet d'ajouter des lieux de pratique",
-    }),
+export const UserUpdate = Type.Object({
+  tokenId: Type.String({
+    description:
+      "Token utilisateur signé. L'utilisateur identifié par ce token sera mis à jour",
   }),
-);
+  prenom: Type.String(),
+  nom: Type.String(),
+  genre: Type.Optional(Nullable(Gender)),
+  courriel: Type.Optional(Nullable(Type.String())),
+  professions: Type.Array(
+    Type.Object({
+      professionId: Type.String(),
+      numeroPratique: Type.String(),
+    }),
+    { description: "Permet d'ajouter des professions" },
+  ),
+  lieuxPratiqueIds: Type.Array(Type.String(), {
+    description: "Permet d'ajouter des lieux de pratique",
+  }),
+});
 export type UserUpdate = Static<typeof UserUpdate>;
 
 export const User = UserCreate;

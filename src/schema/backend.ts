@@ -337,31 +337,13 @@ car le client n'existe pas encore au moment de sa création.`,
               },
             },
           },
-          '409': {
-            description: 'Utilisateur existe déjà',
-            content: {
-              'application/json': {
-                schema: { $ref: '#/components/schemas/ApiError' },
-                example: {
-                  error: {
-                    code: 'USER_ALREADY_EXISTS',
-                    message: 'Un utilisateur avec le ID Ofys existe déjà',
-                    details: { userId: 'prof-123' },
-                    timestamp: '2025-11-18T14:32:00Z',
-                    traceId: 'abc-123-def',
-                  },
-                },
-              },
-            },
-          },
         },
       },
-    },
-    '/utilisateurs/{id}': {
       put: {
         tags: ['Utilisateurs'],
         summary: 'Mettre à jour un professionnel',
-        description: '**Sécurité**: Authentification requise (clinicJwt)',
+        description:
+          "**Sécurité**: Authentification requise (clinicJwt). Cette opération est additive, les groupes/professions/etc seront ajoutés à l'utilisateur existant. Les informations comme le nom seront mis à jour",
         operationId: 'updateUser',
         parameters: [{ $ref: '#/components/parameters/PathId' }],
         requestBody: {
