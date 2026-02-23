@@ -15,6 +15,7 @@ export const UserCreate = Type.Object({
   prenom: Type.String(),
   nom: Type.String(),
   genre: Type.Optional(Nullable(Gender)),
+  courriel: Type.Optional(Nullable(Type.String())),
   professions: Type.Array(
     Type.Object({
       professionId: Type.String(),
@@ -36,6 +37,7 @@ export const UserUpdate = Type.Object({
   prenom: Type.String(),
   nom: Type.String(),
   genre: Type.Optional(Nullable(Gender)),
+  courriel: Type.Optional(Nullable(Type.String())),
   professions: Type.Array(
     Type.Object({
       professionId: Type.String(),
