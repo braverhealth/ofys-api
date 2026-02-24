@@ -36,6 +36,12 @@ L'API Backend utilise deux schémas d'authentification JWT:
    - Utilisé pour tous les autres endpoints
    - Identifie la clinique/client qui effectue la requête
    - Claims: iss, aud, tid (identifiant clinique), iat, exp
+   
+3. **tokenId** (Token Utilisateur pour l'ajout/mise à jour d'un utilisateur):
+
+   - Utilisé pour prouver l'identité d'un utilisateur lors de sa création ou de sa mise à jour
+   - Uniquement transmis dans le body de la requête
+   - Claims: iss, aud, user_ofys_id, verified_emails, iat, exp
 
 Chaque requête doit inclure un JWT valide dans l'en-tête:
 \`\`\`
@@ -223,7 +229,7 @@ car le client n'existe pas encore au moment de sa création.`,
         },
       },
     },
-    '/lieux/{id}': {
+    '/lieux/{ofysId}': {
       put: {
         tags: ['Lieux de Pratique'],
         summary: 'Modifier un lieu de pratique',
@@ -475,7 +481,7 @@ car le client n'existe pas encore au moment de sa création.`,
         },
       },
     },
-    '/patients/{id}': {
+    '/patients/{ofysId}': {
       put: {
         tags: ['Patients'],
         summary: 'Mettre à jour un patient',
@@ -554,7 +560,7 @@ car le client n'existe pas encore au moment de sa création.`,
         bearerFormat: 'JWT',
         description: `Jeton identifiant le fournisseur Ofys (pour créer des clients).
 Utilisé UNIQUEMENT pour POST /clients.
-Claims suggérés:
+Claims obligatoires:
 - iss: émetteur Ofys
 - aud: "<installation URL à préciser>"
 - sub: identifiant du fournisseur Ofys
@@ -565,7 +571,7 @@ Claims suggérés:
         scheme: 'bearer',
         bearerFormat: 'JWT',
         description: `Jeton backend identifiant la clinique (client).
-Claims suggérés:
+Claims obligatoires:
 - iss: émetteur Ofys
 - aud: "<installation URL à préciser>"
 - tid: identifiant clinique/client

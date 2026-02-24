@@ -24,6 +24,13 @@ info:
        - Utilisé pour tous les autres endpoints
        - Identifie la clinique/client qui effectue la requête
        - Claims: iss, aud, tid (identifiant clinique), iat, exp
+       
+    3. **tokenId** (Token Utilisateur pour l'ajout/mise à jour d'un
+    utilisateur):
+
+       - Utilisé pour prouver l'identité d'un utilisateur lors de sa création ou de sa mise à jour
+       - Uniquement transmis dans le body de la requête
+       - Claims: iss, aud, user_ofys_id, verified_emails, iat, exp
 
     Chaque requête doit inclure un JWT valide dans l'en-tête:
 
@@ -216,7 +223,7 @@ paths:
                     practiceLocationId: lieu-123
                   timestamp: '2025-11-18T14:32:00Z'
                   traceId: abc-123-def
-  /lieux/{id}:
+  /lieux/{ofysId}:
     put:
       tags:
         - Lieux de Pratique
@@ -441,7 +448,7 @@ paths:
                     nam: nam-123
                   timestamp: '2025-11-18T14:32:00Z'
                   traceId: abc-123-def
-  /patients/{id}:
+  /patients/{ofysId}:
     put:
       tags:
         - Patients
@@ -509,7 +516,7 @@ components:
       description: |-
         Jeton identifiant le fournisseur Ofys (pour créer des clients).
         Utilisé UNIQUEMENT pour POST /clients.
-        Claims suggérés:
+        Claims obligatoires:
         - iss: émetteur Ofys
         - aud: "<installation URL à préciser>"
         - sub: identifiant du fournisseur Ofys
@@ -520,7 +527,7 @@ components:
       bearerFormat: JWT
       description: |-
         Jeton backend identifiant la clinique (client).
-        Claims suggérés:
+        Claims obligatoires:
         - iss: émetteur Ofys
         - aud: "<installation URL à préciser>"
         - tid: identifiant clinique/client
@@ -546,13 +553,17 @@ components:
       type: object
       required:
         - tokenId
+        - ofysId
         - prenom
         - nom
         - professions
-        - lieuxPratiqueIds
+        - lieuxPratiqueOfysIds
       properties:
         tokenId:
           description: Token utilisateur signé
+          type: string
+        ofysId:
+          description: Identifiant Ofys. Doit correspondre au claim user_ofys_id du token
           type: string
         prenom:
           type: string
@@ -571,23 +582,26 @@ components:
                 - const: NA
                   type: string
             - type: 'null'
-        courriel:
+        courrielPrincipal:
           anyOf:
-            - type: string
+            - description: >-
+                Courriel principal. Doit être dans le claim verified_emails du
+                token
+              type: string
             - type: 'null'
         professions:
           type: array
           items:
             type: object
             required:
-              - professionId
+              - professionBraverId
               - numeroPratique
             properties:
-              professionId:
+              professionBraverId:
                 type: string
               numeroPratique:
                 type: string
-        lieuxPratiqueIds:
+        lieuxPratiqueOfysIds:
           description: Liste des IDs Ofys des lieux de pratique associés à cet utilisateur
           type: array
           items:
@@ -599,7 +613,7 @@ components:
         - prenom
         - nom
         - professions
-        - lieuxPratiqueIds
+        - lieuxPratiqueOfysIds
       properties:
         tokenId:
           description: >-
@@ -614,7 +628,7 @@ components:
           anyOf:
             - *ref_0
             - type: 'null'
-        courriel:
+        courrielPrincipal:
           anyOf:
             - type: string
             - type: 'null'
@@ -624,14 +638,14 @@ components:
           items:
             type: object
             required:
-              - professionId
+              - professionBraverId
               - numeroPratique
             properties:
-              professionId:
+              professionBraverId:
                 type: string
               numeroPratique:
                 type: string
-        lieuxPratiqueIds:
+        lieuxPratiqueOfysIds:
           description: Permet d'ajouter des lieux de pratique
           type: array
           items:
@@ -640,13 +654,13 @@ components:
     PatientCreate:
       type: object
       required:
-        - id
+        - ofysId
         - prenom
         - nom
         - dateNaissance
         - nam
       properties:
-        id:
+        ofysId:
           description: Identifiant Ofys
           type: string
         prenom:
@@ -699,10 +713,10 @@ components:
     ClientCreate:
       type: object
       required:
-        - id
+        - ofysId
         - nom
       properties:
-        id:
+        ofysId:
           description: Identifiant unique du client côté Ofys
           type: string
         nom:
@@ -717,7 +731,7 @@ components:
                 required:
                   - ofysId
                   - nom
-                  - typeLieu
+                  - typeLieuBraverId
                 properties:
                   ofysId:
                     description: Identifiant Ofys
@@ -725,7 +739,7 @@ components:
                   nom:
                     description: Nom du lieu de pratique
                     type: string
-                  typeLieu:
+                  typeLieuBraverId:
                     description: >-
                       UUID du type de lieu (voir GET /typesLieux dans l'API
                       frontend)
@@ -763,10 +777,18 @@ components:
       type: object
       required:
         - braverOrganizationId
+        - braverWorkplaceIds
       properties:
         braverOrganizationId:
           description: Identifiant unique du client côté Braver
           type: string
+        braverWorkplaceIds:
+          description: >-
+            Identifiants uniques des lieux côté Braver, dans le même ordre que
+            lors de la création
+          type: array
+          items:
+            type: string
     PracticeLocationCreate: *ref_2
     PracticeLocationUpdate:
       type: object
@@ -776,7 +798,7 @@ components:
             - description: Nom du lieu de pratique
               type: string
             - type: 'null'
-        typeLieu:
+        typeLieuBraverId:
           anyOf:
             - description: UUID du type de lieu (voir GET /typesLieux dans l'API frontend)
               type: string
