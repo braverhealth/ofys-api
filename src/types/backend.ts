@@ -62,7 +62,11 @@ export const UserUpdate = Type.Object({
 });
 export type UserUpdate = Static<typeof UserUpdate>;
 
-export const User = UserCreate;
+export const User = Type.Object({
+  braverUserId: Type.String({
+    description: "Identifiant unique de l'utilisateur côté Braver",
+  }),
+});
 export type User = Static<typeof User>;
 
 // ============================================================================
