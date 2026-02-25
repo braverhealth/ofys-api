@@ -549,7 +549,7 @@ components:
         format: uuid
       description: UUID v4 pour garantir l'idempotence (optionnel, durée 1h)
   schemas:
-    UserCreate: &ref_1
+    UserCreate:
       type: object
       required:
         - tokenId
@@ -650,7 +650,14 @@ components:
           type: array
           items:
             type: string
-    User: *ref_1
+    User:
+      type: object
+      required:
+        - braverUserId
+      properties:
+        braverUserId:
+          description: Identifiant unique de l'utilisateur côté Braver
+          type: string
     PatientCreate:
       type: object
       required:
@@ -724,7 +731,7 @@ components:
           type: string
         lieux:
           type: array
-          items: &ref_2
+          items: &ref_1
             type: object
             allOf:
               - type: object
@@ -744,7 +751,7 @@ components:
                       UUID du type de lieu (voir GET /typesLieux dans l'API
                       frontend)
                     type: string
-              - &ref_3
+              - &ref_2
                 type: object
                 required:
                   - rue
@@ -789,7 +796,7 @@ components:
           type: array
           items:
             type: string
-    PracticeLocationCreate: *ref_2
+    PracticeLocationCreate: *ref_1
     PracticeLocationUpdate:
       type: object
       properties:
@@ -805,7 +812,7 @@ components:
             - type: 'null'
         adresse:
           anyOf:
-            - *ref_3
+            - *ref_2
             - type: 'null'
     PracticeLocation:
       type: object
