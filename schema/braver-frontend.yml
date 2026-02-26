@@ -1563,7 +1563,7 @@ components:
           anyOf:
             - const: clinique_sans_licence
               type: string
-            - const: clinique_licencie
+            - const: clinique_licence
               type: string
             - const: non_clinique
               type: string

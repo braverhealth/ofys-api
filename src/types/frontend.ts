@@ -383,7 +383,7 @@ export type ClinicSearchResponse = Static<typeof ClinicSearchResponse>;
 
 export const ProfessionType = Type.Union([
   Type.Literal('clinique_sans_licence'),
-  Type.Literal('clinique_licencie'),
+  Type.Literal('clinique_licence'),
   Type.Literal('non_clinique'),
 ]);
 export type ProfessionType = Static<typeof ProfessionType>;
