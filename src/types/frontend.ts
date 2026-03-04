@@ -30,9 +30,9 @@ export const PracticeLocation = Type.Object({
   id: Type.String(),
   nom: Type.String(),
   typeLieu: Type.String(),
-  adresse: Type.String(),
-  longitude: Type.Number(),
-  latitude: Type.Number(),
+  adresse: Type.Optional(Type.String()),
+  longitude: Type.Optional(Type.Number()),
+  latitude: Type.Optional(Type.Number()),
 });
 export type PracticeLocation = Static<typeof PracticeLocation>;
 
@@ -343,7 +343,7 @@ export type ThreadCreate = Static<typeof ThreadCreate>;
 
 export const ProfessionalProfileProfession = Type.Object({
   id: Type.String(),
-  numeroPratique: Type.String(),
+  numeroPratique: Type.Optional(Type.String()),
 });
 export type ProfessionalProfileProfession = Static<
   typeof ProfessionalProfileProfession

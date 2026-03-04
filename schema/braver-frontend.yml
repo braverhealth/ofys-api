@@ -1107,9 +1107,6 @@ components:
                         - id
                         - nom
                         - typeLieu
-                        - adresse
-                        - longitude
-                        - latitude
                       properties: &ref_1
                         id:
                           type: string
@@ -1504,7 +1501,6 @@ components:
             type: object
             required:
               - id
-              - numeroPratique
             properties:
               id:
                 type: string
