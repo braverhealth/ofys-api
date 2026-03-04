@@ -341,12 +341,19 @@ export type ThreadCreate = Static<typeof ThreadCreate>;
 // Profile Types
 // ============================================================================
 
+export const ProfessionalProfileProfession = Type.Object({
+  id: Type.String(),
+  numeroPratique: Type.String(),
+});
+export type ProfessionalProfileProfession = Static<
+  typeof ProfessionalProfileProfession
+>;
+
 export const ProfessionalProfile = Type.Object({
   id: Type.String(),
   nom: Type.String(),
   prenom: Type.String(),
-  profession: Type.String(),
-  numeroPratique: Type.String(),
+  professions: Type.Array(ProfessionalProfileProfession),
   lieux: Type.Array(PracticeLocation),
 });
 export type ProfessionalProfile = Static<typeof ProfessionalProfile>;
