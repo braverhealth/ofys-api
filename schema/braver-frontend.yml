@@ -1489,8 +1489,7 @@ components:
         - id
         - nom
         - prenom
-        - profession
-        - numeroPratique
+        - professions
         - lieux
       properties:
         id:
@@ -1499,10 +1498,18 @@ components:
           type: string
         prenom:
           type: string
-        profession:
-          type: string
-        numeroPratique:
-          type: string
+        professions:
+          type: array
+          items:
+            type: object
+            required:
+              - id
+              - numeroPratique
+            properties:
+              id:
+                type: string
+              numeroPratique:
+                type: string
         lieux:
           type: array
           items: *ref_4
