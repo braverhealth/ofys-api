@@ -740,12 +740,10 @@ paths:
             default: 20
           description: Nombre max de résultats (max 100, défaut 20)
         - in: query
-          name: offset
+          name: pageToken
           schema:
-            type: integer
-            minimum: 0
-            default: 0
-          description: Offset pour la pagination
+            type: string
+          description: Token de la derniere page (rien pour la première page)
       responses:
         '200':
           description: Résultats
@@ -1529,14 +1527,14 @@ components:
       type: object
       required:
         - results
-        - total
+        - pageToken
       properties:
         results:
           type: array
           items: *ref_19
-        total:
-          description: Nombre total de résultats disponibles
-          type: integer
+        pageToken:
+          description: PageToken pour la prochaine requête
+          type: string
     ClinicSearchResponse:
       type: object
       required:

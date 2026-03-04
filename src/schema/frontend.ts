@@ -700,9 +700,10 @@ Ces IDs sont utilisés dans la recherche de cliniques et l'identification des li
           },
           {
             in: 'query',
-            name: 'offset',
-            schema: { type: 'integer', minimum: 0, default: 0 },
-            description: 'Offset pour la pagination',
+            name: 'pageToken',
+            schema: { type: 'string' },
+            description:
+              'Token de la derniere page (rien pour la première page)',
           },
         ],
         responses: {
