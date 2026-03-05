@@ -402,10 +402,34 @@ export type ProfessionalSearchResponse = Static<
   typeof ProfessionalSearchResponse
 >;
 
+export const WorkplaceSearchRequest = Type.Object({
+  termes: Type.String({ description: 'Termes séparés par virgules' }),
+  typeLieu: Type.Optional(
+    Type.String({ description: 'UUID de profession (voir GET /professions)' }),
+  ),
+  longitude: Type.Optional(Type.Number()),
+  latitude: Type.Optional(Type.Number()),
+  limit: Type.Optional(
+    Type.Integer({
+      minimum: 1,
+      maximum: 100,
+      default: 20,
+      description: 'Nombre max de résultats (max 100, défaut 20)',
+    }),
+  ),
+  pageToken: Type.Optional(
+    Type.String({
+      description:
+        'PageToken de la dernière requête (vide pour la première page)',
+    }),
+  ),
+});
+export type WorkplaceSearchRequest = Static<typeof ProfessionalSearchRequest>;
+
 export const ClinicSearchResponse = Type.Object({
   results: Type.Array(ClinicProfile),
-  total: Type.Integer({
-    description: 'Nombre total de résultats disponibles',
+  pageToken: Type.String({
+    description: 'PageToken pour la prochaine requête',
   }),
 });
 export type ClinicSearchResponse = Static<typeof ClinicSearchResponse>;
