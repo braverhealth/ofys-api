@@ -751,11 +751,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProfessionalSearchResponse'
-  /rechercheDeCliniques:
+  /rechercheDeLieux:
     get:
       tags:
         - Recherche
-      summary: Rechercher des cliniques
+      summary: Rechercher des lieux de pratique
       description: '**Sécurité**: Authentification requise (braverJwt)'
       operationId: searchClinics
       parameters:
@@ -780,26 +780,13 @@ paths:
           schema:
             type: number
             format: double
-        - in: query
-          name: limit
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-            default: 20
-          description: Nombre max de résultats (max 100, défaut 20)
-        - in: query
-          name: pageToken
-          schema:
-            type: string
-          description: Token de la derniere page (rien pour la première page)
       responses:
         '200':
           description: Résultats
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ClinicSearchResponse'
+                $ref: '#/components/schemas/WorkplaceSearchResponse'
   /fils:
     post:
       tags:
@@ -1104,12 +1091,22 @@ components:
                       required: &ref_0
                         - id
                         - nom
+                        - noms
                         - typeLieu
                       properties: &ref_1
                         id:
                           type: string
                         nom:
+                          description: >-
+                            Nom du lieu en français si disponible, sinon la
+                            première traduction disponible
                           type: string
+                        noms:
+                          description: Noms localisés du lieu.
+                          type: object
+                          patternProperties:
+                            ^(.*)$:
+                              type: string
                         typeLieu:
                           type: string
                         adresse:
@@ -1181,7 +1178,7 @@ components:
           description: ID du dernier fil pour la prochaine requête (null si hasMore=false)
           type: string
     ThreadSummary: *ref_2
-    Thread: &ref_23
+    Thread: &ref_22
       type: object
       required:
         - id
@@ -1507,23 +1504,6 @@ components:
         lieux:
           type: array
           items: *ref_4
-    ClinicProfile: &ref_20
-      type: object
-      required:
-        - id
-        - nom
-        - typeLieu
-        - lieux
-      properties:
-        id:
-          type: string
-        nom:
-          type: string
-        typeLieu:
-          type: string
-        lieux:
-          type: array
-          items: *ref_4
     ProfessionalSearchResponse:
       type: object
       required:
@@ -1536,19 +1516,15 @@ components:
         pageToken:
           description: PageToken pour la prochaine requête
           type: string
-    ClinicSearchResponse:
+    WorkplaceSearchResponse:
       type: object
       required:
         - results
-        - pageToken
       properties:
         results:
           type: array
-          items: *ref_20
-        pageToken:
-          description: PageToken pour la prochaine requête
-          type: string
-    Profession: &ref_21
+          items: *ref_4
+    Profession: &ref_20
       type: object
       required:
         - id
@@ -1582,7 +1558,7 @@ components:
             en_O:
               type: string
           description: Libellés localisés et genrés de la profession
-    LocationType: &ref_22
+    LocationType: &ref_21
       type: object
       required:
         - id
@@ -1606,7 +1582,7 @@ components:
       properties:
         professions:
           type: array
-          items: *ref_21
+          items: *ref_20
     LocationTypeListResponse:
       type: object
       required:
@@ -1614,13 +1590,13 @@ components:
       properties:
         typesLieux:
           type: array
-          items: *ref_22
+          items: *ref_21
     WebSocketMessage:
       type: discriminator
       discriminator: type
       description: Message retourné par le WebSocket /fils/activites
       anyOf:
-        - &ref_24
+        - &ref_23
           type: object
           required:
             - type
@@ -1630,11 +1606,11 @@ components:
             type:
               const: newThread
               type: string
-            thread: *ref_23
+            thread: *ref_22
             timestamp:
               format: date-time
               type: string
-        - &ref_25
+        - &ref_24
           type: object
           required:
             - type
@@ -1651,7 +1627,7 @@ components:
             timestamp:
               format: date-time
               type: string
-        - &ref_26
+        - &ref_25
           type: object
           required:
             - type
@@ -1669,7 +1645,7 @@ components:
             timestamp:
               format: date-time
               type: string
-        - &ref_27
+        - &ref_26
           type: object
           required:
             - type
@@ -1685,10 +1661,10 @@ components:
             timestamp:
               format: date-time
               type: string
-    WebSocketMessageNewThread: *ref_24
-    WebSocketMessageNewMessage: *ref_25
-    WebSocketMessageThreadUpdated: *ref_26
-    WebSocketMessageThreadClosed: *ref_27
+    WebSocketMessageNewThread: *ref_23
+    WebSocketMessageNewMessage: *ref_24
+    WebSocketMessageThreadUpdated: *ref_25
+    WebSocketMessageThreadClosed: *ref_26
     ApiError:
       type: object
       required:
