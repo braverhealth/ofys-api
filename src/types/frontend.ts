@@ -28,7 +28,13 @@ export type BraverToken = Static<typeof BraverToken>;
 
 export const PracticeLocation = Type.Object({
   id: Type.String(),
-  nom: Type.String(),
+  nom: Type.String({
+    description:
+      'Nom du lieu en français si disponible, sinon la première traduction disponible',
+  }),
+  noms: Type.Record(Type.String(), Type.String(), {
+    description: 'Noms localisés du lieu.',
+  }),
   typeLieu: Type.String(),
   adresse: Type.Optional(Type.String()),
   longitude: Type.Optional(Type.Number()),
@@ -358,14 +364,6 @@ export const ProfessionalProfile = Type.Object({
 });
 export type ProfessionalProfile = Static<typeof ProfessionalProfile>;
 
-export const ClinicProfile = Type.Object({
-  id: Type.String(),
-  nom: Type.String(),
-  typeLieu: Type.String(),
-  lieux: Type.Array(PracticeLocation),
-});
-export type ClinicProfile = Static<typeof ClinicProfile>;
-
 export const ProfessionalSearchRequest = Type.Object({
   termes: Type.String({ description: 'Termes séparés par virgules' }),
   profession: Type.Optional(
@@ -409,30 +407,13 @@ export const WorkplaceSearchRequest = Type.Object({
   ),
   longitude: Type.Optional(Type.Number()),
   latitude: Type.Optional(Type.Number()),
-  limit: Type.Optional(
-    Type.Integer({
-      minimum: 1,
-      maximum: 100,
-      default: 20,
-      description: 'Nombre max de résultats (max 100, défaut 20)',
-    }),
-  ),
-  pageToken: Type.Optional(
-    Type.String({
-      description:
-        'PageToken de la dernière requête (vide pour la première page)',
-    }),
-  ),
 });
-export type WorkplaceSearchRequest = Static<typeof ProfessionalSearchRequest>;
+export type WorkplaceSearchRequest = Static<typeof WorkplaceSearchRequest>;
 
-export const ClinicSearchResponse = Type.Object({
-  results: Type.Array(ClinicProfile),
-  pageToken: Type.String({
-    description: 'PageToken pour la prochaine requête',
-  }),
+export const WorkplaceSearchResponse = Type.Object({
+  results: Type.Array(PracticeLocation),
 });
-export type ClinicSearchResponse = Static<typeof ClinicSearchResponse>;
+export type WorkplaceSearchResponse = Static<typeof WorkplaceSearchResponse>;
 
 // ============================================================================
 // Reference Data Types

@@ -21,9 +21,7 @@ import {
   Attachment,
   AttachmentCreate,
   ProfessionalProfile,
-  ClinicProfile,
   ProfessionalSearchResponse,
-  ClinicSearchResponse,
   Profession,
   LocationType,
   ProfessionListResponse,
@@ -33,6 +31,7 @@ import {
   WebSocketMessageNewMessage,
   WebSocketMessageThreadUpdated,
   WebSocketMessageThreadClosed,
+  WorkplaceSearchResponse,
 } from '../types/frontend.js';
 import { ApiError } from '../types/common.js';
 
@@ -720,10 +719,10 @@ Ces IDs sont utilisés dans la recherche de cliniques et l'identification des li
         },
       },
     },
-    '/rechercheDeCliniques': {
+    '/rechercheDeLieux': {
       get: {
         tags: ['Recherche'],
-        summary: 'Rechercher des cliniques',
+        summary: 'Rechercher des lieux de pratique',
         description: '**Sécurité**: Authentification requise (braverJwt)',
         operationId: 'searchClinics',
         parameters: [
@@ -752,26 +751,15 @@ Ces IDs sont utilisés dans la recherche de cliniques et l'identification des li
             name: 'latitude',
             schema: { type: 'number', format: 'double' },
           },
-          {
-            in: 'query',
-            name: 'limit',
-            schema: { type: 'integer', minimum: 1, maximum: 100, default: 20 },
-            description: 'Nombre max de résultats (max 100, défaut 20)',
-          },
-          {
-            in: 'query',
-            name: 'pageToken',
-            schema: { type: 'string' },
-            description:
-              'Token de la derniere page (rien pour la première page)',
-          },
         ],
         responses: {
           '200': {
             description: 'Résultats',
             content: {
               'application/json': {
-                schema: { $ref: '#/components/schemas/ClinicSearchResponse' },
+                schema: {
+                  $ref: '#/components/schemas/WorkplaceSearchResponse',
+                },
               },
             },
           },
@@ -974,9 +962,8 @@ Le token peut aussi être utilisé comme sso_token pour https://app.braver.net/?
       Attachment,
       AttachmentCreate,
       ProfessionalProfile,
-      ClinicProfile,
       ProfessionalSearchResponse,
-      ClinicSearchResponse,
+      WorkplaceSearchResponse,
       Profession,
       LocationType,
       ProfessionListResponse,
