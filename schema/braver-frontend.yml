@@ -321,6 +321,12 @@ paths:
       operationId: exchangeOfysJwtForBraverJwt
       security:
         - ofysJwt: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBraverToken'
       responses:
         '200':
           description: Jeton Braver émis
@@ -1178,10 +1184,10 @@ components:
           description: ID du dernier fil pour la prochaine requête (null si hasMore=false)
           type: string
     ThreadSummary: *ref_2
-    Thread: &ref_22
+    Thread: &ref_23
       type: object
       required:
-        - id
+        - braverDiscussionId
         - titre
         - participants
         - lieux
@@ -1190,7 +1196,7 @@ components:
         - nbMessagesNonLus
         - estFerme
       properties:
-        id:
+        braverDiscussionId:
           type: string
         titre:
           type: string
@@ -1206,12 +1212,12 @@ components:
           properties: *ref_6
         messages:
           type: array
-          items: &ref_14
+          items: &ref_15
             description: >-
               Message retourné par GET /fil/{id}. Contient soit du contenu
               texte, soit une pièce jointe, mais pas les deux.
             anyOf:
-              - &ref_15
+              - &ref_16
                 type: object
                 required:
                   - id
@@ -1231,7 +1237,7 @@ components:
                   type:
                     const: contenu
                     type: string
-                  contenu: &ref_17
+                  contenu: &ref_18
                     type: object
                     required: &ref_7
                       - texte
@@ -1249,7 +1255,7 @@ components:
                     type: string
                   nonLu:
                     type: boolean
-              - &ref_16
+              - &ref_17
                 type: object
                 required:
                   - id
@@ -1334,24 +1340,27 @@ components:
           items: &ref_13
             type: object
             properties:
-              professionnelId:
+              professionnelOfysId:
                 type: string
-              cliniqueId:
+              locationOfysId:
                 type: string
         contenuInitial:
           type: object
           required: *ref_7
           properties: *ref_8
         patient:
+          description: >-
+            Créer un patient Braver en même temps que la création du fil.
+            Mutuellement exclusif avec ofysPatientId
           type: object
           required: &ref_11
-            - id
+            - ofysPatientId
             - prenom
             - nom
             - dateNaissance
             - nam
           properties: &ref_12
-            id:
+            ofysPatientId:
               description: Identifiant Ofys du patient
               type: string
             prenom:
@@ -1366,36 +1375,76 @@ components:
             nam:
               description: Numéro d'assurance maladie
               type: string
-        braverPatientId:
+        ofysPatientId:
+          description: >-
+            Associer un patient existant au fil. Mutuellement exclusif avec
+            patient
           type: string
         piecesJointes:
           type: array
           items: *ref_10
     ThreadUpdate:
-      type: object
-      properties:
-        marquerLuJusquaSequenceId:
-          minimum: 0
-          description: Marque tous les messages jusqu’à ce sequenceId comme lus
-          type: integer
-        marquerNonLu:
-          description: Marque le fil globalement comme non lu
-          type: boolean
-        mettreEnSourdinePourSecondes:
-          minimum: 0
-          description: Mettre en sourdine pour N secondes (0 pour retirer la sourdine)
-          type: integer
-        associerPatient:
+      anyOf:
+        - title: Marquer comme lu jusqu’à ce sequenceId
           type: object
-          required: *ref_11
-          properties: *ref_12
-        fermer:
-          description: Fermer le fil
-          type: boolean
-        quitterSansFermer:
-          description: Quitter le fil sans le fermer
-          type: boolean
-      description: Seulement un seul champ doit être fourni
+          required:
+            - marquerLuJusquaSequenceId
+          properties:
+            marquerLuJusquaSequenceId:
+              minimum: 0
+              description: Marque tous les messages jusqu’à ce sequenceId comme lus
+              type: integer
+        - title: Marquer comme non lu
+          type: object
+          required:
+            - marquerNonLu
+          properties:
+            marquerNonLu:
+              description: Marque le fil globalement comme non lu
+              type: boolean
+        - title: Mettre en sourdine pour N secondes
+          type: object
+          required:
+            - mettreEnSourdinePourSecondes
+          properties:
+            mettreEnSourdinePourSecondes:
+              minimum: 0
+              description: Mettre en sourdine pour N secondes (0 pour retirer la sourdine)
+              type: integer
+        - title: Associer un patient
+          type: object
+          required:
+            - associerPatient
+          properties:
+            associerPatient:
+              description: >-
+                Associer un patient existant au fil. Soit son ID Ofys, ou les
+                détails pour un nouveau patient
+              anyOf:
+                - &ref_14
+                  description: >-
+                    Créer un patient Braver en même temps que la création du
+                    fil. Mutuellement exclusif avec ofysPatientId
+                  type: object
+                  required: *ref_11
+                  properties: *ref_12
+                - type: string
+        - title: Fermer le fil
+          type: object
+          required:
+            - fermer
+          properties:
+            fermer:
+              description: Fermer le fil
+              type: boolean
+        - title: Quitter le fil sans le fermer
+          type: object
+          required:
+            - quitterSansFermer
+          properties:
+            quitterSansFermer:
+              description: Quitter le fil sans le fermer
+              type: boolean
     ThreadParticipantRef: *ref_13
     Participant: *ref_3
     PracticeLocation: *ref_4
@@ -1403,36 +1452,11 @@ components:
       type: object
       required: *ref_5
       properties: *ref_6
-    PatientDetails:
-      type: object
-      required:
-        - id
-        - prenom
-        - nom
-      properties:
-        id:
-          description: Identifiant Ofys du patient
-          type: string
-        prenom:
-          type: string
-        nom:
-          type: string
-        sexeNaissance:
-          anyOf: *ref_9
-        dateNaissance:
-          format: date
-          type: string
-        nam:
-          description: Numéro d'assurance maladie
-          type: string
-    PatientCreateForThread:
-      type: object
-      required: *ref_11
-      properties: *ref_12
-    Message: *ref_14
-    MessageWithContent: *ref_15
-    MessageWithAttachment: *ref_16
-    MessageContent: *ref_17
+    PatientCreateForThread: *ref_14
+    Message: *ref_15
+    MessageWithContent: *ref_16
+    MessageWithAttachment: *ref_17
+    MessageContent: *ref_18
     MessageCreate:
       type: object
       properties:
@@ -1442,7 +1466,7 @@ components:
           properties: *ref_8
         piecesJointes:
           type: array
-          items: &ref_18
+          items: &ref_19
             type: object
             required:
               - nomFichier
@@ -1474,8 +1498,8 @@ components:
                   contenuBase64)
                 type: string
     Attachment: *ref_10
-    AttachmentCreate: *ref_18
-    ProfessionalProfile: &ref_19
+    AttachmentCreate: *ref_19
+    ProfessionalProfile: &ref_20
       type: object
       required:
         - id
@@ -1512,7 +1536,7 @@ components:
       properties:
         results:
           type: array
-          items: *ref_19
+          items: *ref_20
         pageToken:
           description: PageToken pour la prochaine requête
           type: string
@@ -1524,7 +1548,7 @@ components:
         results:
           type: array
           items: *ref_4
-    Profession: &ref_20
+    Profession: &ref_21
       type: object
       required:
         - id
@@ -1558,7 +1582,7 @@ components:
             en_O:
               type: string
           description: Libellés localisés et genrés de la profession
-    LocationType: &ref_21
+    LocationType: &ref_22
       type: object
       required:
         - id
@@ -1582,7 +1606,7 @@ components:
       properties:
         professions:
           type: array
-          items: *ref_20
+          items: *ref_21
     LocationTypeListResponse:
       type: object
       required:
@@ -1590,13 +1614,13 @@ components:
       properties:
         typesLieux:
           type: array
-          items: *ref_21
+          items: *ref_22
     WebSocketMessage:
       type: discriminator
       discriminator: type
       description: Message retourné par le WebSocket /fils/activites
       anyOf:
-        - &ref_23
+        - &ref_24
           type: object
           required:
             - type
@@ -1606,11 +1630,11 @@ components:
             type:
               const: newThread
               type: string
-            thread: *ref_22
+            thread: *ref_23
             timestamp:
               format: date-time
               type: string
-        - &ref_24
+        - &ref_25
           type: object
           required:
             - type
@@ -1623,11 +1647,11 @@ components:
               type: string
             threadId:
               type: string
-            message: *ref_14
+            message: *ref_15
             timestamp:
               format: date-time
               type: string
-        - &ref_25
+        - &ref_26
           type: object
           required:
             - type
@@ -1645,7 +1669,7 @@ components:
             timestamp:
               format: date-time
               type: string
-        - &ref_26
+        - &ref_27
           type: object
           required:
             - type
@@ -1661,10 +1685,10 @@ components:
             timestamp:
               format: date-time
               type: string
-    WebSocketMessageNewThread: *ref_23
-    WebSocketMessageNewMessage: *ref_24
-    WebSocketMessageThreadUpdated: *ref_25
-    WebSocketMessageThreadClosed: *ref_26
+    WebSocketMessageNewThread: *ref_24
+    WebSocketMessageNewMessage: *ref_25
+    WebSocketMessageThreadUpdated: *ref_26
+    WebSocketMessageThreadClosed: *ref_27
     ApiError:
       type: object
       required:

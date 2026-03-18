@@ -11,7 +11,6 @@ import {
   Participant,
   PracticeLocation,
   PatientMini,
-  PatientDetails,
   PatientCreateForThread,
   Message,
   MessageWithContent,
@@ -243,6 +242,14 @@ L'API valide ce jeton et retourne un JWT émis par Braver qui pourra être utili
 **Sécurité**: Authentification requise (ofysJwt)`,
         operationId: 'exchangeOfysJwtForBraverJwt',
         security: [{ ofysJwt: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/CreateBraverToken' },
+            },
+          },
+        },
         responses: {
           '200': {
             description: 'Jeton Braver émis',
@@ -952,7 +959,6 @@ Le token peut aussi être utilisé comme sso_token pour https://app.braver.net/?
       Participant,
       PracticeLocation,
       PatientMini,
-      PatientDetails,
       PatientCreateForThread,
       Message,
       MessageWithContent,
