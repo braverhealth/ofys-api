@@ -11,6 +11,15 @@ import { ParticipantStatus, ParticipantPermission, Gender } from './common.js';
 // Authentication Types
 // ============================================================================
 
+export const CreateBraverToken = Type.Object({
+  ofysClientId: Type.Optional(
+    Type.String({
+      description:
+        "Si l'utilisateur est dans plusieurs cliniques, il faut préciser la clinique dans laquelle il est connecté",
+    }),
+  ),
+});
+
 export const BraverToken = Type.Object({
   access_token: Type.String({
     description: 'JWT émis par Braver à utiliser pour les appels suivants',
@@ -232,7 +241,7 @@ export const ThreadListResponse = Type.Object({
 export type ThreadListResponse = Static<typeof ThreadListResponse>;
 
 export const Thread = Type.Object({
-  id: Type.String(),
+  braverDiscussionId: Type.String(),
   titre: Type.String(),
   participants: Type.Array(Participant),
   lieux: Type.Array(PracticeLocation),
@@ -277,58 +286,82 @@ export const Thread = Type.Object({
 });
 export type Thread = Static<typeof Thread>;
 
-export const PatientDetails = Type.Object({
-  id: Type.String({ description: 'Identifiant Ofys du patient' }),
-  prenom: Type.String(),
-  nom: Type.String(),
-  sexeNaissance: Type.Optional(Gender),
-  dateNaissance: Type.Optional(Type.String({ format: 'date' })),
-  nam: Type.Optional(
-    Type.String({ description: "Numéro d'assurance maladie" }),
-  ),
-});
-export type PatientDetails = Static<typeof PatientDetails>;
-
-export const PatientCreateForThread = Type.Object({
-  id: Type.String({ description: 'Identifiant Ofys du patient' }),
-  prenom: Type.String(),
-  nom: Type.String(),
-  sexeNaissance: Type.Optional(Gender),
-  dateNaissance: Type.String({ format: 'date' }),
-  nam: Type.String({ description: "Numéro d'assurance maladie" }),
-});
+export const PatientCreateForThread = Type.Object(
+  {
+    ofysPatientId: Type.String({ description: 'Identifiant Ofys du patient' }),
+    prenom: Type.String(),
+    nom: Type.String(),
+    sexeNaissance: Type.Optional(Gender),
+    dateNaissance: Type.String({ format: 'date' }),
+    nam: Type.String({ description: "Numéro d'assurance maladie" }),
+  },
+  {
+    description:
+      'Créer un patient Braver en même temps que la création du fil. Mutuellement exclusif avec ofysPatientId',
+  },
+);
 export type PatientCreateForThread = Static<typeof PatientCreateForThread>;
 
-export const ThreadUpdate = Type.Partial(
-  Type.Object({
-    marquerLuJusquaSequenceId: Type.Integer({
-      minimum: 0,
-      description: 'Marque tous les messages jusqu’à ce sequenceId comme lus',
-    }),
-    marquerNonLu: Type.Boolean({
-      description: 'Marque le fil globalement comme non lu',
-    }),
-    mettreEnSourdinePourSecondes: Type.Integer({
-      minimum: 0,
-      description:
-        'Mettre en sourdine pour N secondes (0 pour retirer la sourdine)',
-    }),
-    associerPatient: PatientCreateForThread,
-    fermer: Type.Boolean({
-      description: 'Fermer le fil',
-    }),
-    quitterSansFermer: Type.Boolean({
-      description: 'Quitter le fil sans le fermer',
-    }),
-  }),
-  { description: 'Seulement un seul champ doit être fourni' },
-);
+export const ThreadUpdate = Type.Union([
+  Type.Object(
+    {
+      marquerLuJusquaSequenceId: Type.Integer({
+        minimum: 0,
+        description: 'Marque tous les messages jusqu’à ce sequenceId comme lus',
+      }),
+    },
+    { title: 'Marquer comme lu jusqu’à ce sequenceId' },
+  ),
+  Type.Object(
+    {
+      marquerNonLu: Type.Boolean({
+        description: 'Marque le fil globalement comme non lu',
+      }),
+    },
+    { title: 'Marquer comme non lu' },
+  ),
+  Type.Object(
+    {
+      mettreEnSourdinePourSecondes: Type.Integer({
+        minimum: 0,
+        description:
+          'Mettre en sourdine pour N secondes (0 pour retirer la sourdine)',
+      }),
+    },
+    { title: 'Mettre en sourdine pour N secondes' },
+  ),
+  Type.Object(
+    {
+      associerPatient: Type.Union([PatientCreateForThread, Type.String()], {
+        description:
+          'Associer un patient existant au fil. Soit son ID Ofys, ou les détails pour un nouveau patient',
+      }),
+    },
+    { title: 'Associer un patient' },
+  ),
+  Type.Object(
+    {
+      fermer: Type.Boolean({
+        description: 'Fermer le fil',
+      }),
+    },
+    { title: 'Fermer le fil' },
+  ),
+  Type.Object(
+    {
+      quitterSansFermer: Type.Boolean({
+        description: 'Quitter le fil sans le fermer',
+      }),
+    },
+    { title: 'Quitter le fil sans le fermer' },
+  ),
+]);
 export type ThreadUpdate = Static<typeof ThreadUpdate>;
 
 export const ThreadParticipantRef = Type.Partial(
   Type.Object({
-    professionnelId: Type.String(),
-    cliniqueId: Type.String(),
+    professionnelOfysId: Type.String(),
+    locationOfysId: Type.String(),
   }),
 );
 export type ThreadParticipantRef = Static<typeof ThreadParticipantRef>;
@@ -338,7 +371,12 @@ export const ThreadCreate = Type.Object({
   participants: Type.Array(ThreadParticipantRef),
   contenuInitial: Type.Optional(MessageContent),
   patient: Type.Optional(PatientCreateForThread),
-  braverPatientId: Type.Optional(Type.String()),
+  ofysPatientId: Type.Optional(
+    Type.String({
+      description:
+        'Associer un patient existant au fil. Mutuellement exclusif avec patient',
+    }),
+  ),
   piecesJointes: Type.Optional(Type.Array(Attachment)),
 });
 export type ThreadCreate = Static<typeof ThreadCreate>;
