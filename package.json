@@ -61,7 +61,7 @@
     "eslint-plugin-prettier": "^5.5",
     "js-yaml": "^4.1",
     "prettier": "^3.6",
-    "serve": "^14.2.5",
+    "serve": "^14.2.6",
     "tsx": "^4.21.0",
     "typescript": "^5.9"
   }
