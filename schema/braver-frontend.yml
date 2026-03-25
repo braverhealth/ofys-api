@@ -1616,9 +1616,6 @@ components:
           type: array
           items: *ref_22
     WebSocketMessage:
-      type: discriminator
-      discriminator: type
-      description: Message retourné par le WebSocket /fils/activites
       anyOf:
         - &ref_24
           type: object
