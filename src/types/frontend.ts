@@ -549,12 +549,10 @@ export type WebSocketMessageThreadClosed = Static<
   typeof WebSocketMessageThreadClosed
 >;
 
-export const WebSocketMessage = Type.Union(
-  [
-    WebSocketMessageNewThread,
-    WebSocketMessageNewMessage,
-    WebSocketMessageThreadUpdated,
-    WebSocketMessageThreadClosed,
-  ]
-);
+export const WebSocketMessage = Type.Union([
+  WebSocketMessageNewThread,
+  WebSocketMessageNewMessage,
+  WebSocketMessageThreadUpdated,
+  WebSocketMessageThreadClosed,
+]);
 export type WebSocketMessage = Static<typeof WebSocketMessage>;
