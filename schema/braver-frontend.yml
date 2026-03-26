@@ -1054,11 +1054,11 @@ components:
                 items: &ref_3
                   type: object
                   required:
-                    - ofysId
+                    - id
                     - type
                     - nomAffiche
                   properties:
-                    ofysId:
+                    id:
                       type: string
                     type:
                       anyOf:

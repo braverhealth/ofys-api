@@ -59,7 +59,7 @@ export const ParticipantType = Type.Union([
 export type ParticipantType = Static<typeof ParticipantType>;
 
 export const Participant = Type.Object({
-  ofysId: Type.String(),
+  id: Type.String(),
   type: ParticipantType,
   status: Type.Optional(ParticipantStatus),
   nomAffiche: Type.String(),
