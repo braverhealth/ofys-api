@@ -62,7 +62,7 @@ info:
     - **Limite par défaut**: 50 messages
 
     - **Pagination**: Basée sur `sequenceId` avec `offset` et `limit` (voir GET
-    /fil/{id})
+    /fils/{ofysOrBraverId})
 
     - **Ordre**: Du plus récent au moins récent
 
@@ -165,8 +165,8 @@ info:
 
     - Évite les doublons en cas de retry réseau ou de clics multiples
 
-    - Applicable à: POST /fils, POST /fil/{id}/messages, POST /utilisateurs,
-    POST /patients, etc.
+    - Applicable à: POST /fils, POST /fils/{ofysOrBraverId}/messages, POST
+    /utilisateurs, POST /patients, etc.
 
 
     ## Statuts et Permissions des Participants
@@ -264,7 +264,7 @@ info:
 
     ```json
 
-    POST /fil/{id}/messages
+    POST /fils/{ofysOrBraverId}/messages
 
     {
       "contenu": "Voici le document",
@@ -403,7 +403,7 @@ paths:
         Retourne les fils actifs (non fermés) avec métadonnées résumées,
         participants, lieux et infos patient minimales.
 
-        Le contenu détaillé (messages) se trouve via GET /fil/{id}.
+        Le contenu détaillé (messages) se trouve via GET /fils/{ofysOrBraverId}.
 
 
         **Pagination**: Basée sur le curseur (ID du dernier fil connu)
@@ -443,7 +443,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ThreadListResponse'
-  /fil/{id}:
+  /fils/{ofysOrBraverId}:
     get:
       tags:
         - Fils
@@ -571,7 +571,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiError'
-  /fil/{id}/messages:
+  /fils/{ofysOrBraverId}/messages:
     post:
       tags:
         - Fils
@@ -1054,11 +1054,11 @@ components:
                 items: &ref_3
                   type: object
                   required:
-                    - id
+                    - ofysId
                     - type
                     - nomAffiche
                   properties:
-                    id:
+                    ofysId:
                       type: string
                     type:
                       anyOf:
@@ -1330,9 +1330,13 @@ components:
     ThreadCreate:
       type: object
       required:
+        - ofysId
         - titre
         - participants
       properties:
+        ofysId:
+          description: Identifiant Ofys du fil
+          type: string
         titre:
           type: string
         participants:
@@ -1435,7 +1439,9 @@ components:
             - fermer
           properties:
             fermer:
-              description: Fermer le fil
+              description: >-
+                Fermer le fil. Doit être "true", un fil ne peut pas être
+                ré-ouvert
               type: boolean
         - title: Quitter le fil sans le fermer
           type: object
@@ -1443,7 +1449,7 @@ components:
             - quitterSansFermer
           properties:
             quitterSansFermer:
-              description: Quitter le fil sans le fermer
+              description: Quitter le fil sans le fermer. Doit être "true"
               type: boolean
     ThreadParticipantRef: *ref_13
     Participant: *ref_3

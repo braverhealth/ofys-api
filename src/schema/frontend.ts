@@ -75,7 +75,7 @@ Voir chaque endpoint pour son modèle de sécurité spécifique.
 
 - **Limite max par requête**: 100 messages
 - **Limite par défaut**: 50 messages
-- **Pagination**: Basée sur \`sequenceId\` avec \`offset\` et \`limit\` (voir GET /fil/{id})
+- **Pagination**: Basée sur \`sequenceId\` avec \`offset\` et \`limit\` (voir GET /fils/{ofysOrBraverId})
 - **Ordre**: Du plus récent au moins récent
 
 ### Pièces Jointes
@@ -134,7 +134,7 @@ Idempotency-Key: 550e8400-e29b-41d4-a716-446655440000
 
 - Si la même requête est envoyée avec la même \`Idempotency-Key\` dans l'heure, la réponse en cache est retournée
 - Évite les doublons en cas de retry réseau ou de clics multiples
-- Applicable à: POST /fils, POST /fil/{id}/messages, POST /utilisateurs, POST /patients, etc.
+- Applicable à: POST /fils, POST /fils/{ofysOrBraverId}/messages, POST /utilisateurs, POST /patients, etc.
 
 ## Statuts et Permissions des Participants
 
@@ -189,7 +189,7 @@ Les pièces jointes peuvent être transmises de deux façons:
 ### Exemple de Requête
 
 \`\`\`json
-POST /fil/{id}/messages
+POST /fils/{ofysOrBraverId}/messages
 {
   "contenu": "Voici le document",
   "format": "texte",
@@ -340,7 +340,7 @@ Inclut le nombre de fils actifs (ouverts) et le nombre total de messages non lus
         tags: ['Fils'],
         summary: 'Lister les fils actifs',
         description: `Retourne les fils actifs (non fermés) avec métadonnées résumées, participants, lieux et infos patient minimales.
-Le contenu détaillé (messages) se trouve via GET /fil/{id}.
+Le contenu détaillé (messages) se trouve via GET /fils/{ofysOrBraverId}.
 
 **Pagination**: Basée sur le curseur (ID du dernier fil connu)
 - Première requête: Pas de paramètre \`afterThreadId\` → retourne les N fils les plus récents
@@ -376,7 +376,7 @@ Le contenu détaillé (messages) se trouve via GET /fil/{id}.
         },
       },
     },
-    '/fil/{id}': {
+    '/fils/{ofysOrBraverId}': {
       get: {
         tags: ['Fils'],
         summary: "Détails complets d'un fil (messages et métadonnées)",
@@ -513,7 +513,7 @@ C'est souvent à ce moment que Braver prend connaissance du patient pour la prem
         },
       },
     },
-    '/fil/{id}/messages': {
+    '/fils/{ofysOrBraverId}/messages': {
       post: {
         tags: ['Fils'],
         summary: 'Poster un message dans un fil',
