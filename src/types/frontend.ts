@@ -59,7 +59,7 @@ export const ParticipantType = Type.Union([
 export type ParticipantType = Static<typeof ParticipantType>;
 
 export const Participant = Type.Object({
-  id: Type.String(),
+  ofysId: Type.String(),
   type: ParticipantType,
   status: Type.Optional(ParticipantStatus),
   nomAffiche: Type.String(),
@@ -342,7 +342,8 @@ export const ThreadUpdate = Type.Union([
   Type.Object(
     {
       fermer: Type.Boolean({
-        description: 'Fermer le fil',
+        description:
+          'Fermer le fil. Doit être "true", un fil ne peut pas être ré-ouvert',
       }),
     },
     { title: 'Fermer le fil' },
@@ -350,7 +351,7 @@ export const ThreadUpdate = Type.Union([
   Type.Object(
     {
       quitterSansFermer: Type.Boolean({
-        description: 'Quitter le fil sans le fermer',
+        description: 'Quitter le fil sans le fermer. Doit être "true"',
       }),
     },
     { title: 'Quitter le fil sans le fermer' },
@@ -367,6 +368,9 @@ export const ThreadParticipantRef = Type.Partial(
 export type ThreadParticipantRef = Static<typeof ThreadParticipantRef>;
 
 export const ThreadCreate = Type.Object({
+  ofysId: Type.String({
+    description: 'Identifiant Ofys du fil',
+  }),
   titre: Type.String(),
   participants: Type.Array(ThreadParticipantRef),
   contenuInitial: Type.Optional(MessageContent),
