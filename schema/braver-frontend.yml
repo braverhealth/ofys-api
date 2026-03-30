@@ -373,7 +373,7 @@ paths:
                         userId: user-123
                       timestamp: '2025-11-18T14:32:00Z'
                       traceId: abc-123-def
-  /fils/actifs/stats:
+  /fils-actifs/stats:
     get:
       tags:
         - Fils
@@ -394,7 +394,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ActiveThreadStats'
-  /fils/actifs:
+  /fils-actifs:
     get:
       tags:
         - Fils
