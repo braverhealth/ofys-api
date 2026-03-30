@@ -314,7 +314,7 @@ L'API valide ce jeton et retourne un JWT émis par Braver qui pourra être utili
         },
       },
     },
-    '/fils/actifs/stats': {
+    '/fils-actifs/stats': {
       get: {
         tags: ['Fils'],
         summary: 'Statistiques des fils actifs',
@@ -335,7 +335,7 @@ Inclut le nombre de fils actifs (ouverts) et le nombre total de messages non lus
         },
       },
     },
-    '/fils/actifs': {
+    '/fils-actifs': {
       get: {
         tags: ['Fils'],
         summary: 'Lister les fils actifs',
