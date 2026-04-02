@@ -12,6 +12,19 @@ info:
     ainsi qu'un canal WebSocket pour les activités en temps réel liées aux fils.
 
 
+    ## État d'avancement
+
+
+    - /fils/{id}: Tous les messages sont affichés, les paramètres pour limiter
+    les messages ne sont pas fonctionnels
+
+    - /fils/activites: Le websocket n'est pas fonctionnel
+
+    - Les clés d'idempotence ne sont pas fonctionnels
+
+    - Le modèle JSON pour les erreurs n'est pas complété
+
+
     ## Modèle de Sécurité
 
 
@@ -1014,17 +1027,25 @@ components:
         expires_in:
           description: Durée de validité du token en secondes
           type: integer
+    CreateBraverToken:
+      type: object
+      properties:
+        ofysClientId:
+          description: >-
+            Si l'utilisateur est dans plusieurs cliniques, il faut préciser la
+            clinique dans laquelle il est connecté
+          type: string
     ActiveThreadStats:
       type: object
       required:
         - nbFilsActifs
-        - nbMessagesNonLus
+        - nbFilsNonLus
       properties:
         nbFilsActifs:
           description: Nombre de fils non fermés
           type: integer
-        nbMessagesNonLus:
-          description: Total des messages non lus dans tous les fils actifs
+        nbFilsNonLus:
+          description: Nombre de fils avec un ou plusieurs messages non lus
           type: integer
     ThreadListResponse:
       type: object

@@ -21,6 +21,11 @@ export const schema: OpenAPIV3_1.Document = {
     version: '0.2.2',
     description: `API consommée par le backend d'Ofys pour provisionner les professionnels et synchroniser des patients.
 
+## État d'avancement
+
+- Les clés d'idempotence ne sont pas fonctionnels
+- Le modèle JSON pour les erreurs n'est pas complété
+
 ## Modèle de Sécurité
 
 L'API Backend utilise deux schémas d'authentification JWT:

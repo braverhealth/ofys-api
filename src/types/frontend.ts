@@ -19,6 +19,7 @@ export const CreateBraverToken = Type.Object({
     }),
   ),
 });
+export type CreateBraverToken = Static<typeof CreateBraverToken>;
 
 export const BraverToken = Type.Object({
   access_token: Type.String({
@@ -181,8 +182,8 @@ export type MessageCreate = Static<typeof MessageCreate>;
 
 export const ActiveThreadStats = Type.Object({
   nbFilsActifs: Type.Integer({ description: 'Nombre de fils non fermés' }),
-  nbMessagesNonLus: Type.Integer({
-    description: 'Total des messages non lus dans tous les fils actifs',
+  nbFilsNonLus: Type.Integer({
+    description: 'Nombre de fils avec un ou plusieurs messages non lus',
   }),
 });
 export type ActiveThreadStats = Static<typeof ActiveThreadStats>;
