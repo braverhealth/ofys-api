@@ -1,6 +1,7 @@
 import type { OpenAPIV3_1 } from 'openapi-types';
 import {
   BraverToken,
+  CreateBraverToken,
   ActiveThreadStats,
   ThreadListResponse,
   ThreadSummary,
@@ -37,6 +38,13 @@ import { ApiError } from '../types/common.js';
 const INFO_DESCRIPTION = `API exposée par Braver et consommée par Ofys pour la consultation, la création et la gestion des fils de discussion,
 la consultation des statistiques sur les fils actifs, la recherche de professionnels et de cliniques,
 ainsi qu'un canal WebSocket pour les activités en temps réel liées aux fils.
+
+## État d'avancement
+
+- /fils/{id}: Tous les messages sont affichés, les paramètres pour limiter les messages ne sont pas fonctionnels
+- /fils/activites: Le websocket n'est pas fonctionnel
+- Les clés d'idempotence ne sont pas fonctionnels
+- Le modèle JSON pour les erreurs n'est pas complété
 
 ## Modèle de Sécurité
 
@@ -949,6 +957,7 @@ Le token peut aussi être utilisé comme sso_token pour https://app.braver.net/?
     },
     schemas: {
       BraverToken,
+      CreateBraverToken,
       ActiveThreadStats,
       ThreadListResponse,
       ThreadSummary,

@@ -7,6 +7,14 @@ info:
     synchroniser des patients.
 
 
+    ## État d'avancement
+
+
+    - Les clés d'idempotence ne sont pas fonctionnels
+
+    - Le modèle JSON pour les erreurs n'est pas complété
+
+
     ## Modèle de Sécurité
 
 
