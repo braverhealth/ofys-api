@@ -41,7 +41,6 @@ ainsi qu'un canal WebSocket pour les activités en temps réel liées aux fils.
 
 ## État d'avancement
 
-- /fils/{id}: Tous les messages sont affichés, les paramètres pour limiter les messages ne sont pas fonctionnels
 - /fils/activites: Le websocket n'est pas fonctionnel
 - Les clés d'idempotence ne sont pas fonctionnels
 - Le modèle JSON pour les erreurs n'est pas complété
@@ -394,13 +393,6 @@ Le contenu détaillé (messages) se trouve via GET /fils/{ofysOrBraverId}.
           { $ref: '#/components/parameters/PathId' },
           {
             in: 'query',
-            name: 'offset',
-            schema: { type: 'integer', minimum: 0, default: 0 },
-            description:
-              'Offset pour la pagination (nombre de messages à sauter)',
-          },
-          {
-            in: 'query',
             name: 'limit',
             schema: { type: 'integer', minimum: 1, maximum: 100, default: 50 },
             description:
@@ -410,6 +402,7 @@ Le contenu détaillé (messages) se trouve via GET /fils/{ofysOrBraverId}.
             in: 'query',
             name: 'sinceSequenceId',
             schema: { type: 'integer', minimum: 0 },
+            required: false,
             description:
               'Optionnel—récupérer les messages depuis un sequenceId (du plus récent au moins récent)',
           },
