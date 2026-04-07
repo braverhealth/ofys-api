@@ -15,9 +15,6 @@ info:
     ## État d'avancement
 
 
-    - /fils/{id}: Tous les messages sont affichés, les paramètres pour limiter
-    les messages ne sont pas fonctionnels
-
     - /fils/activites: Le websocket n'est pas fonctionnel
 
     - Les clés d'idempotence ne sont pas fonctionnels
@@ -466,13 +463,6 @@ paths:
       parameters:
         - $ref: '#/components/parameters/PathId'
         - in: query
-          name: offset
-          schema:
-            type: integer
-            minimum: 0
-            default: 0
-          description: Offset pour la pagination (nombre de messages à sauter)
-        - in: query
           name: limit
           schema:
             type: integer
@@ -485,6 +475,7 @@ paths:
           schema:
             type: integer
             minimum: 0
+          required: false
           description: >-
             Optionnel—récupérer les messages depuis un sequenceId (du plus
             récent au moins récent)
@@ -1059,14 +1050,14 @@ components:
           items: &ref_2
             type: object
             required:
-              - id
+              - braverDiscussionId
               - titre
               - participants
               - lieux
               - estFerme
               - nbMessagesNonLus
             properties:
-              id:
+              braverDiscussionId:
                 type: string
               titre:
                 type: string

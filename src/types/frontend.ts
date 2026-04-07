@@ -189,7 +189,7 @@ export const ActiveThreadStats = Type.Object({
 export type ActiveThreadStats = Static<typeof ActiveThreadStats>;
 
 export const ThreadSummary = Type.Object({
-  id: Type.String(),
+  braverDiscussionId: Type.String(),
   titre: Type.String(),
   participants: Type.Array(Participant),
   lieux: Type.Array(PracticeLocation),
