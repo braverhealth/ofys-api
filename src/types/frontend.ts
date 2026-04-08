@@ -141,6 +141,11 @@ export const Message = Type.Union([MessageWithContent, MessageWithAttachment], {
 });
 export type Message = Static<typeof Message>;
 
+export const MessageList = Type.Object({
+  messages: Type.Array(Message),
+});
+export type MessageList = Static<typeof MessageList>;
+
 export const AttachmentCreate = Type.Object({
   nomFichier: Type.String({ description: 'Nom du fichier' }),
   typeMime: Type.String({
