@@ -543,7 +543,7 @@ et zéro ou plusieurs pièces jointes (fichiers en base64 ou URLs).
             },
             content: {
               'application/json': {
-                schema: { $ref: '#/components/schemas/Message' },
+                schema: { $ref: '#/components/schemas/MessageList' },
               },
             },
           },
