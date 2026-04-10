@@ -543,7 +543,7 @@ export type WebSocketMessageNewMessage = Static<
 
 export const WebSocketMessageThreadUpdated = Type.Object({
   type: Type.Literal('threadUpdated'),
-  threadId: Type.String({ format: 'uuid' }),
+  threadId: Type.String(),
   thread: ThreadSummary,
   timestamp: Type.String({ format: 'date-time' }),
 });
@@ -553,7 +553,7 @@ export type WebSocketMessageThreadUpdated = Static<
 
 export const WebSocketMessageThreadClosed = Type.Object({
   type: Type.Literal('threadClosed'),
-  threadId: Type.String({ format: 'uuid' }),
+  threadId: Type.String(),
   timestamp: Type.String({ format: 'date-time' }),
 });
 export type WebSocketMessageThreadClosed = Static<

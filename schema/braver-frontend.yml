@@ -1679,7 +1679,6 @@ components:
               const: threadUpdated
               type: string
             threadId:
-              format: uuid
               type: string
             thread: *ref_2
             timestamp:
@@ -1696,7 +1695,6 @@ components:
               const: threadClosed
               type: string
             threadId:
-              format: uuid
               type: string
             timestamp:
               format: date-time
