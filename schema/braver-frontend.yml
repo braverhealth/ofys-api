@@ -1302,7 +1302,10 @@ components:
                       typeMime:
                         type: string
                       tailleOctets:
-                        type: integer
+                        description: >-
+                          Taille en octets du fichier. Représenté en String pour
+                          éviter les overflow
+                        type: string
                       urlTelechargement:
                         format: uri
                         type: string
