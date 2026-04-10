@@ -1224,12 +1224,12 @@ components:
           properties: *ref_6
         messages:
           type: array
-          items: &ref_15
+          items: &ref_14
             description: >-
               Message retourné par GET /fil/{id}. Contient soit du contenu
               texte, soit une pièce jointe, mais pas les deux.
             anyOf:
-              - &ref_16
+              - &ref_15
                 type: object
                 required:
                   - id
@@ -1249,7 +1249,7 @@ components:
                   type:
                     const: contenu
                     type: string
-                  contenu: &ref_18
+                  contenu: &ref_17
                     type: object
                     required: &ref_7
                       - texte
@@ -1267,7 +1267,7 @@ components:
                     type: string
                   nonLu:
                     type: boolean
-              - &ref_17
+              - &ref_16
                 type: object
                 required:
                   - id
@@ -1287,7 +1287,7 @@ components:
                   type:
                     const: pieceJointe
                     type: string
-                  pieceJointe: &ref_10
+                  pieceJointe: &ref_19
                     type: object
                     required:
                       - id
@@ -1354,7 +1354,7 @@ components:
           type: string
         participants:
           type: array
-          items: &ref_13
+          items: &ref_12
             type: object
             properties:
               professionnelOfysId:
@@ -1370,13 +1370,13 @@ components:
             Créer un patient Braver en même temps que la création du fil.
             Mutuellement exclusif avec ofysPatientId
           type: object
-          required: &ref_11
+          required: &ref_10
             - ofysPatientId
             - prenom
             - nom
             - dateNaissance
             - nam
-          properties: &ref_12
+          properties: &ref_11
             ofysPatientId:
               description: Identifiant Ofys du patient
               type: string
@@ -1399,7 +1399,37 @@ components:
           type: string
         piecesJointes:
           type: array
-          items: *ref_10
+          items: &ref_18
+            type: object
+            required:
+              - nomFichier
+              - typeMime
+              - description
+            properties:
+              nomFichier:
+                description: Nom du fichier
+                type: string
+              typeMime:
+                description: Type MIME du fichier (ex. application/pdf, image/png)
+                type: string
+              description:
+                description: Description ou légende du fichier
+                type: string
+              contenuBase64:
+                format: byte
+                maxLength: 52428800
+                description: >-
+                  Contenu du fichier encodé en base64 (mutuellement exclusif
+                  avec urlTelechargement)
+                          Limite: max 50 MB par fichier en base64 (≈ 37.5 MB de données réelles)
+                          Limites globales: max 2 GB total par message, max 10 fichiers par message
+                type: string
+              urlTelechargement:
+                format: uri
+                description: >-
+                  URL pour télécharger le fichier (mutuellement exclusif avec
+                  contenuBase64)
+                type: string
     ThreadUpdate:
       anyOf:
         - title: Marquer comme lu jusqu’à ce sequenceId
@@ -1438,13 +1468,13 @@ components:
                 Associer un patient existant au fil. Soit son ID Ofys, ou les
                 détails pour un nouveau patient
               anyOf:
-                - &ref_14
+                - &ref_13
                   description: >-
                     Créer un patient Braver en même temps que la création du
                     fil. Mutuellement exclusif avec ofysPatientId
                   type: object
-                  required: *ref_11
-                  properties: *ref_12
+                  required: *ref_10
+                  properties: *ref_11
                 - type: string
         - title: Fermer le fil
           type: object
@@ -1464,18 +1494,18 @@ components:
             quitterSansFermer:
               description: Quitter le fil sans le fermer. Doit être "true"
               type: boolean
-    ThreadParticipantRef: *ref_13
+    ThreadParticipantRef: *ref_12
     Participant: *ref_3
     PracticeLocation: *ref_4
     PatientMini:
       type: object
       required: *ref_5
       properties: *ref_6
-    PatientCreateForThread: *ref_14
-    Message: *ref_15
-    MessageWithContent: *ref_16
-    MessageWithAttachment: *ref_17
-    MessageContent: *ref_18
+    PatientCreateForThread: *ref_13
+    Message: *ref_14
+    MessageWithContent: *ref_15
+    MessageWithAttachment: *ref_16
+    MessageContent: *ref_17
     MessageCreate:
       type: object
       properties:
@@ -1485,39 +1515,9 @@ components:
           properties: *ref_8
         piecesJointes:
           type: array
-          items: &ref_19
-            type: object
-            required:
-              - nomFichier
-              - typeMime
-              - description
-            properties:
-              nomFichier:
-                description: Nom du fichier
-                type: string
-              typeMime:
-                description: Type MIME du fichier (ex. application/pdf, image/png)
-                type: string
-              description:
-                description: Description ou légende du fichier
-                type: string
-              contenuBase64:
-                format: byte
-                maxLength: 52428800
-                description: >-
-                  Contenu du fichier encodé en base64 (mutuellement exclusif
-                  avec urlTelechargement)
-                          Limite: max 50 MB par fichier en base64 (≈ 37.5 MB de données réelles)
-                          Limites globales: max 2 GB total par message, max 10 fichiers par message
-                type: string
-              urlTelechargement:
-                format: uri
-                description: >-
-                  URL pour télécharger le fichier (mutuellement exclusif avec
-                  contenuBase64)
-                type: string
-    Attachment: *ref_10
-    AttachmentCreate: *ref_19
+          items: *ref_18
+    Attachment: *ref_19
+    AttachmentCreate: *ref_18
     ProfessionalProfile: &ref_20
       type: object
       required:
@@ -1663,7 +1663,7 @@ components:
               type: string
             threadId:
               type: string
-            message: *ref_15
+            message: *ref_14
             timestamp:
               format: date-time
               type: string

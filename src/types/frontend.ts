@@ -388,7 +388,7 @@ export const ThreadCreate = Type.Object({
         'Associer un patient existant au fil. Mutuellement exclusif avec patient',
     }),
   ),
-  piecesJointes: Type.Optional(Type.Array(Attachment)),
+  piecesJointes: Type.Optional(Type.Array(AttachmentCreate)),
 });
 export type ThreadCreate = Static<typeof ThreadCreate>;
 
