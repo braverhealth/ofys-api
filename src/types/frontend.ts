@@ -92,7 +92,12 @@ export const Attachment = Type.Object({
   id: Type.String(),
   nomFichier: Type.String(),
   typeMime: Type.String(),
-  tailleOctets: Type.Optional(Type.Integer()),
+  tailleOctets: Type.Optional(
+    Type.String({
+      description:
+        'Taille en octets du fichier. Représenté en String pour éviter les overflow',
+    }),
+  ),
   urlTelechargement: Type.Optional(Type.String({ format: 'uri' })),
   fichierPret: Type.Boolean(),
 });
