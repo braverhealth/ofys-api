@@ -92,8 +92,9 @@ export const Attachment = Type.Object({
   id: Type.String(),
   nomFichier: Type.String(),
   typeMime: Type.String(),
-  tailleOctets: Type.Integer(),
-  urlTelechargement: Type.String({ format: 'uri' }),
+  tailleOctets: Type.Optional(Type.Integer()),
+  urlTelechargement: Type.Optional(Type.String({ format: 'uri' })),
+  fichierPret: Type.Boolean(),
 });
 export type Attachment = Static<typeof Attachment>;
 
