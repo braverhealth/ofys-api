@@ -20,11 +20,22 @@ L'API Frontend utilise une authentification JWT en deux étapes:
 
 ## Schémas d'Authentification
 
+Tous les tokens doivent utiliser l'algorithme de signature **RS512**.
+
 ### 1. ofysJwt (Authentification Ofys)
 - **Type**: HTTP Bearer JWT
 - **Émetteur**: Ofys
 - **Utilisation**: UNIQUEMENT pour `POST /auth/token`
 - **Flux**: Ofys envoie son JWT → Braver valide et retourne un braverJwt
+
+**Format attendu**
+
+- `user_ofys_id`: Identifiant utilisateur Ofys
+- `verified_emails`: Liste des courriels vérifiés de l'utilisateur. Peut être une string (un seul courriel, ou séparés par des virgules) OU un array.
+- `exp`: Timestamp d'expiration
+- `iat`: Timestamp d'émission
+- `iss`: URL identifiant Ofys
+- `aud`: URL d'installation Braver
 
 ### 2. braverJwt (Authentification Braver)
 - **Type**: HTTP Bearer JWT
@@ -32,6 +43,10 @@ L'API Frontend utilise une authentification JWT en deux étapes:
 - **Utilisation**: Tous les endpoints protégés (sauf /professions et /typesLieux)
 - **Obtention**: Via `POST /auth/token` en présentant un ofysJwt
 - **Durée de vie**: À définir
+
+**Format attendu**
+
+Généré par Braver, pas de format requis.
 
 ## Endpoints et Sécurité
 
@@ -112,24 +127,28 @@ Aucun endpoint public. Tous les endpoints nécessitent une authentification.
 - **Utilisation**: UNIQUEMENT pour POST /clients
 - **Identifie**: Le fournisseur Ofys (pas une clinique spécifique)
 - **Raison**: Le client n'existe pas encore au moment de sa création
-- **Claims suggérés**:
-  - `iss`: Émetteur (Ofys)
-  - `aud`: URL d'installation Braver
-  - `sub`: Identifiant du fournisseur Ofys
-  - `iat`: Timestamp d'émission
-  - `exp`: Timestamp d'expiration
+
+**Format attendu**
+
+- `iss`: Émetteur (Ofys)
+- `aud`: URL d'installation Braver
+- `sub`: Identifiant du fournisseur Ofys
+- `iat`: Timestamp d'émission
+- `exp`: Timestamp d'expiration
 
 ### clinicJwt (Authentification Clinique)
 - **Type**: HTTP Bearer JWT
 - **Émetteur**: Ofys (backend)
 - **Utilisation**: Tous les autres endpoints (sauf POST /clients)
 - **Identifie**: La clinique/client qui effectue la requête
-- **Claims suggérés**:
-  - `iss`: Émetteur (Ofys)
-  - `aud`: URL d'installation Braver
-  - `tid`: Identifiant clinique/client (tenant ID)
-  - `iat`: Timestamp d'émission
-  - `exp`: Timestamp d'expiration
+
+**Format attendu**
+
+- `iss`: Émetteur (Ofys)
+- `aud`: URL d'installation Braver
+- `tid`: Identifiant clinique/client (tenant ID - identifiant Ofys de la clinique)
+- `iat`: Timestamp d'émission
+- `exp`: Timestamp d'expiration
 
 ## Endpoints et Sécurité
 

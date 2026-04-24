@@ -12,12 +12,10 @@ import { ParticipantStatus, ParticipantPermission, Gender } from './common.js';
 // ============================================================================
 
 export const CreateBraverToken = Type.Object({
-  ofysClientId: Type.Optional(
-    Type.String({
-      description:
-        "Si l'utilisateur est dans plusieurs cliniques, il faut préciser la clinique dans laquelle il est connecté",
-    }),
-  ),
+  ofysClientId: Type.String({
+    description:
+      "L'identifiant Ofys de la clinique dans laquelle l'utilisateur veut se connecter",
+  }),
 });
 export type CreateBraverToken = Static<typeof CreateBraverToken>;
 
