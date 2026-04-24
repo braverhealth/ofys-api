@@ -23,6 +23,7 @@ export const schema: OpenAPIV3_1.Document = {
 
 ## État d'avancement
 
+- Les appels pour créer un utilisateur ne sont pas idempotent
 - Le modèle JSON pour les erreurs n'est pas complété (pas uniformisé)
 
 ## Modèle de Sécurité
