@@ -984,7 +984,7 @@ components:
         https://app.braver.net/?sso_token=...
   parameters:
     PathId:
-      name: id
+      name: ofysOrBraverId
       in: path
       required: true
       schema:
