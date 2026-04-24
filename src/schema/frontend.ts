@@ -41,9 +41,7 @@ ainsi qu'un canal WebSocket pour les activités en temps réel liées aux fils.
 
 ## État d'avancement
 
-- /fils/activites: Le websocket n'est pas fonctionnel
-- Les clés d'idempotence ne sont pas fonctionnels
-- Le modèle JSON pour les erreurs n'est pas complété
+- Le modèle JSON pour les erreurs n'est pas complété (pas uniformisé)
 
 ## Modèle de Sécurité
 
@@ -128,7 +126,7 @@ Tous les endpoints POST et PUT supportent le header standard \`Idempotency-Key\`
 
 **Format**: UUID v4 (ex: \`550e8400-e29b-41d4-a716-446655440000\`)
 
-**Durée de garantie**: 1 heure
+**Durée de garantie**: 10 minutes
 
 **Utilisation**: Inclure le header \`Idempotency-Key\` dans la requête:
 
@@ -139,7 +137,7 @@ Idempotency-Key: 550e8400-e29b-41d4-a716-446655440000
 
 **Comportement**:
 
-- Si la même requête est envoyée avec la même \`Idempotency-Key\` dans l'heure, la réponse en cache est retournée
+- Si la même requête est envoyée avec la même \`Idempotency-Key\` dans le délai, la réponse en cache est retournée
 - Évite les doublons en cas de retry réseau ou de clics multiples
 - Applicable à: POST /fils, POST /fils/{ofysOrBraverId}/messages, POST /utilisateurs, POST /patients, etc.
 
@@ -225,7 +223,10 @@ export const schema: OpenAPIV3_1.Document = {
   },
   servers: [
     { url: '<À préciser prochainement>', description: 'Production' },
-    { url: '<À préciser prochainement>', description: 'Sandbox' },
+    {
+      url: 'https://webhook.stage.braver.dev/webhook/3a0fc9f4-4dcd-42da-a951-7f3da4af0b19/',
+      description: 'Sandbox',
+    },
   ],
   tags: [
     { name: 'Authentification' },
