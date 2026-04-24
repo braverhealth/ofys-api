@@ -934,7 +934,7 @@ Le token peut aussi être utilisé comme sso_token pour https://app.braver.net/?
     },
     parameters: {
       PathId: {
-        name: 'id',
+        name: 'ofysOrBraverId',
         in: 'path',
         required: true,
         schema: { type: 'string' },
