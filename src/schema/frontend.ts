@@ -108,7 +108,7 @@ Voir chaque endpoint pour son modèle de sécurité spécifique.
 
 ### Durée d'Expiration
 
-- **Token Braver (braverJwt)**: 24 heures (86400 secondes)
+- **Token Braver (braverJwt)**: 1 heure (3600 secondes)
 - **Refresh**: Un nouveau token peut être obtenu en utilisant le token Ofys que contrôle Ofys
 - **Méthode**: Appeler à nouveau POST /auth/token avec un nouveau ofysJwt
 
@@ -243,7 +243,7 @@ export const schema: OpenAPIV3_1.Document = {
         description: `Ofys appelle cet endpoint en présentant un JWT signé dans Authorization: Bearer <token>.
 L'API valide ce jeton et retourne un JWT émis par Braver qui pourra être utilisé pour tous les autres appels de cette API.
 
-**Durée d'expiration**: 24 heures (86400 secondes)
+**Durée d'expiration**: 1 heure (3600 secondes)
 
 **Refresh**: Pour obtenir un nouveau token après expiration, appeler à nouveau cet endpoint avec un nouveau ofysJwt.
 
@@ -672,7 +672,8 @@ Ces IDs sont utilisés dans la recherche de cliniques et l'identification des li
       get: {
         tags: ['Recherche'],
         summary: 'Rechercher des professionnels',
-        description: '**Sécurité**: Authentification requise (braverJwt)',
+        description:
+          'Seul un utilisateur avec une profession peut rechercher des professionnels. **Sécurité**: Authentification requise (braverJwt)',
         operationId: 'searchProfessionals',
         parameters: [
           {
@@ -722,6 +723,15 @@ Ces IDs sont utilisés dans la recherche de cliniques et l'identification des li
                 schema: {
                   $ref: '#/components/schemas/ProfessionalSearchResponse',
                 },
+              },
+            },
+          },
+          '401': {
+            description:
+              "Non autorisé, l'utilisateur n'est possiblement pas un professionnel",
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/ApiError' },
               },
             },
           },

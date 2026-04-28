@@ -50,20 +50,20 @@ Généré par Braver, pas de format requis.
 
 ## Endpoints et Sécurité
 
-| Endpoint | Méthode | Authentification | Description |
-|----------|---------|------------------|-------------|
-| `/auth/token` | POST | ofysJwt | Échange JWT Ofys → JWT Braver |
-| `/professions` | GET | ❌ Publique | Liste des professions (données de référence) |
-| `/typesLieux` | GET | ❌ Publique | Liste des types de lieux (données de référence) |
-| `/rechercheDeProfessionnels` | GET | braverJwt | Recherche de professionnels |
-| `/rechercheDeCliniques` | GET | braverJwt | Recherche de cliniques |
-| `/fils/actifs/stats` | GET | braverJwt | Statistiques des fils actifs |
-| `/fils/actifs` | GET | braverJwt | Liste des fils actifs (paginée) |
-| `/fil/{id}` | GET | braverJwt | Détails complets d'un fil |
-| `/fil/{id}` | PUT | braverJwt | Mettre à jour l'état du fil |
-| `/fil/{id}/messages` | POST | braverJwt | Poster un message |
-| `/fils` | POST | braverJwt | Créer un nouveau fil |
-| `/fils/activites` | GET (WebSocket) | braverJwt | Connexion WebSocket temps réel |
+| Endpoint                     | Méthode         | Authentification | Description                                     |
+|------------------------------|-----------------|------------------|-------------------------------------------------|
+| `/auth/token`                | POST            | ofysJwt          | Échange JWT Ofys → JWT Braver                   |
+| `/professions`               | GET             | ❌ Publique       | Liste des professions (données de référence)    |
+| `/typesLieux`                | GET             | ❌ Publique       | Liste des types de lieux (données de référence) |
+| `/rechercheDeProfessionnels` | GET             | braverJwt        | Recherche de professionnels                     |
+| `/rechercheDeCliniques`      | GET             | braverJwt        | Recherche de cliniques                          |
+| `/fils-actifs/stats`         | GET             | braverJwt        | Statistiques des fils actifs                    |
+| `/fils-actifs`               | GET             | braverJwt        | Liste des fils actifs (paginée)                 |
+| `/fils/{id}`                 | GET             | braverJwt        | Détails complets d'un fil                       |
+| `/fils/{id}`                 | PUT             | braverJwt        | Mettre à jour l'état du fil                     |
+| `/fils/{id}/messages`        | POST            | braverJwt        | Poster un message                               |
+| `/fils`                      | POST            | braverJwt        | Créer un nouveau fil                            |
+| `/fils/activites`            | GET (WebSocket) | braverJwt        | Connexion WebSocket temps réel                  |
 
 ## Endpoints Publics
 
@@ -152,15 +152,15 @@ Aucun endpoint public. Tous les endpoints nécessitent une authentification.
 
 ## Endpoints et Sécurité
 
-| Endpoint | Méthode | Authentification | Description |
-|----------|---------|------------------|-------------|
-| `/clients` | POST | **providerJwt** | Créer un nouveau client (identifie le fournisseur) |
-| `/utilisateurs` | POST | clinicJwt | Créer un professionnel |
-| `/utilisateur/{id}` | PUT | clinicJwt | Mettre à jour un professionnel |
-| `/utilisateur/{id}` | DELETE | clinicJwt | Désactiver un professionnel |
-| `/patients` | POST | clinicJwt | Créer un patient |
-| `/patient/{id}` | PUT | clinicJwt | Mettre à jour un patient |
-| `/patient/{id}` | DELETE | clinicJwt | Archiver un patient |
+| Endpoint             | Méthode | Authentification | Description                                        |
+|----------------------|---------|------------------|----------------------------------------------------|
+| `/clients`           | POST    | **providerJwt**  | Créer un nouveau client (identifie le fournisseur) |
+| `/utilisateurs`      | POST    | clinicJwt        | Créer un professionnel                             |
+| `/utilisateurs/{id}` | PUT     | clinicJwt        | Mettre à jour un professionnel                     |
+| `/utilisateurs/{id}` | DELETE  | clinicJwt        | Désactiver un professionnel                        |
+| `/patients`          | POST    | clinicJwt        | Créer un patient                                   |
+| `/patients/{id}`     | PUT     | clinicJwt        | Mettre à jour un patient                           |
+| `/patients/{id}`     | DELETE  | clinicJwt        | Archiver un patient                                |
 
 ## Endpoints Protégés
 
