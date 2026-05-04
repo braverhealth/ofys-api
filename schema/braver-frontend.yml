@@ -1368,8 +1368,18 @@ components:
             type: object
             properties:
               professionnelOfysId:
+                description: '[Ne plus utiliser] Identifiant Ofys du professionnel'
+                deprecated: true
+                type: string
+              professionnelId:
+                description: Identifiant Braver of Ofys du professionnel
                 type: string
               locationOfysId:
+                description: '[Ne plus utiliser] Identifiant Ofys du lieu'
+                deprecated: true
+                type: string
+              locationId:
+                description: Identifiant Braver of Ofys du lieu
                 type: string
         contenuInitial:
           type: object
@@ -1504,6 +1514,14 @@ components:
             quitterSansFermer:
               description: Quitter le fil sans le fermer. Doit être "true"
               type: boolean
+        - title: Ajouter un ou des participants au fil
+          type: object
+          required:
+            - ajouterParticipants
+          properties:
+            ajouterParticipants:
+              type: array
+              items: *ref_12
     ThreadParticipantRef: *ref_12
     Participant: *ref_3
     PracticeLocation: *ref_4
