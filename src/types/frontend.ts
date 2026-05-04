@@ -312,6 +312,48 @@ export const PatientCreateForThread = Type.Object(
 );
 export type PatientCreateForThread = Static<typeof PatientCreateForThread>;
 
+export const ThreadParticipantRef = Type.Partial(
+  Type.Object({
+    professionnelOfysId: Type.Optional(
+      Type.String({
+        description: '[Ne plus utiliser] Identifiant Ofys du professionnel',
+        deprecated: true,
+      }),
+    ),
+    professionnelId: Type.String({
+      description: 'Identifiant Braver of Ofys du professionnel',
+    }),
+    locationOfysId: Type.Optional(
+      Type.String({
+        description: '[Ne plus utiliser] Identifiant Ofys du lieu',
+        deprecated: true,
+      }),
+    ),
+    locationId: Type.String({
+      description: 'Identifiant Braver of Ofys du lieu',
+    }),
+  }),
+);
+export type ThreadParticipantRef = Static<typeof ThreadParticipantRef>;
+
+export const ThreadCreate = Type.Object({
+  ofysId: Type.String({
+    description: 'Identifiant Ofys du fil',
+  }),
+  titre: Type.String(),
+  participants: Type.Array(ThreadParticipantRef),
+  contenuInitial: Type.Optional(MessageContent),
+  patient: Type.Optional(PatientCreateForThread),
+  ofysPatientId: Type.Optional(
+    Type.String({
+      description:
+        'Associer un patient existant au fil. Mutuellement exclusif avec patient',
+    }),
+  ),
+  piecesJointes: Type.Optional(Type.Array(AttachmentCreate)),
+});
+export type ThreadCreate = Static<typeof ThreadCreate>;
+
 export const ThreadUpdate = Type.Union([
   Type.Object(
     {
@@ -366,34 +408,14 @@ export const ThreadUpdate = Type.Union([
     },
     { title: 'Quitter le fil sans le fermer' },
   ),
+  Type.Object(
+    {
+      ajouterParticipants: Type.Array(ThreadParticipantRef),
+    },
+    { title: 'Ajouter un ou des participants au fil' },
+  ),
 ]);
 export type ThreadUpdate = Static<typeof ThreadUpdate>;
-
-export const ThreadParticipantRef = Type.Partial(
-  Type.Object({
-    professionnelOfysId: Type.String(),
-    locationOfysId: Type.String(),
-  }),
-);
-export type ThreadParticipantRef = Static<typeof ThreadParticipantRef>;
-
-export const ThreadCreate = Type.Object({
-  ofysId: Type.String({
-    description: 'Identifiant Ofys du fil',
-  }),
-  titre: Type.String(),
-  participants: Type.Array(ThreadParticipantRef),
-  contenuInitial: Type.Optional(MessageContent),
-  patient: Type.Optional(PatientCreateForThread),
-  ofysPatientId: Type.Optional(
-    Type.String({
-      description:
-        'Associer un patient existant au fil. Mutuellement exclusif avec patient',
-    }),
-  ),
-  piecesJointes: Type.Optional(Type.Array(AttachmentCreate)),
-});
-export type ThreadCreate = Static<typeof ThreadCreate>;
 
 // ============================================================================
 // Profile Types
