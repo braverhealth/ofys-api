@@ -98,6 +98,7 @@ export const Attachment = Type.Object({
   ),
   urlTelechargement: Type.Optional(Type.String({ format: 'uri' })),
   fichierPret: Type.Boolean(),
+  description: Type.String(),
 });
 export type Attachment = Static<typeof Attachment>;
 

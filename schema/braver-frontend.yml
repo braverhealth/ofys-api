@@ -1301,6 +1301,7 @@ components:
                       - nomFichier
                       - typeMime
                       - fichierPret
+                      - description
                     properties:
                       id:
                         type: string
@@ -1318,6 +1319,8 @@ components:
                         type: string
                       fichierPret:
                         type: boolean
+                      description:
+                        type: string
                   creeAt:
                     format: date-time
                     type: string
