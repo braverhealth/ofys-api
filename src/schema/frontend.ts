@@ -388,7 +388,14 @@ Le contenu détaillé (messages) se trouve via GET /fils/{ofysOrBraverId}.
       get: {
         tags: ['Fils'],
         summary: "Détails complets d'un fil (messages et métadonnées)",
-        description: '**Sécurité**: Authentification requise (braverJwt)',
+        description: `
+**Association d'un patient Ofys**:
+
+Le patient associé pourrait ne pas avoir d'ofysPatientId s'il n'est pas associé à un patient connu
+de l'utilisateur qui fait cette requête. Voir la note sur l'association des patients dans l'API de création
+de fils (POST /fils).
+
+**Sécurité**: Authentification requise (braverJwt)`,
         operationId: 'getThread',
         parameters: [
           { $ref: '#/components/parameters/PathId' },
@@ -448,12 +455,13 @@ Le contenu détaillé (messages) se trouve via GET /fils/{ofysOrBraverId}.
         tags: ['Fils'],
         summary: "Mettre à jour l'état du fil",
         description: `Permet de marquer comme lu jusqu'à un sequenceId, marquer globalement comme non lu,
-mettre en sourdine pour une durée, associer un patient Ofys, fermer ou quitter le fil.
+mettre en sourdine pour une durée, associer un patient Ofys, ajouter un participant, fermer ou quitter le fil.
 
 **Association d'un patient Ofys**:
-Lorsque \`associerPatient\` est fourni, la requête doit inclure les détails complets du patient
-(id, prenom, nom, sexeNaissance, dateNaissance, nam) comme lors d'une création de patient backend.
-C'est souvent à ce moment que Braver prend connaissance du patient pour la première fois.
+
+Le patient associé pourrait ne pas avoir d'ofysPatientId s'il n'est pas associé à un patient connu
+de l'utilisateur qui fait cette requête. Voir la note sur l'association des patients dans l'API de création
+de fils (POST /fils).
 
 **Sécurité**: Authentification requise (braverJwt)`,
         operationId: 'updateThread',
@@ -673,7 +681,7 @@ Ces IDs sont utilisés dans la recherche de cliniques et l'identification des li
         tags: ['Recherche'],
         summary: 'Rechercher des professionnels',
         description:
-          'Seul un utilisateur avec une profession peut rechercher des professionnels. **Sécurité**: Authentification requise (braverJwt)',
+          'Seul un utilisateur avec une profession de type "clinique_licence" ou "clinique_sans_licence" peut rechercher des professionnels. **Sécurité**: Authentification requise (braverJwt)',
         operationId: 'searchProfessionals',
         parameters: [
           {
@@ -796,6 +804,27 @@ Lorsque \`patient\` est fourni, la requête doit inclure les détails complets d
 (id, prenom, nom, sexeNaissance, dateNaissance, nam) comme lors d'une création de patient backend.
 C'est souvent à ce moment que Braver prend connaissance du patient pour la première fois.
 
+Le patient associé à la discussion n'est pas forcément un patient auquel l'utilisateur a accès (peut être un id patient braver d'une autre clinique)
+
+Par exemple : 
+Clinique A, avec un lieu A et un patient A
+Clinique B, avec un lieu B et un patient B
+
+Clinique A fait une discussion avec Clinique B (via des users, évidement). Si le user dans B va chercher la discussion, 
+il va voir les info du patient A SAUF son ofysPatientId. Si un user dans A va chercher la même discussion, il va voir 
+aussi les infos du patient ET son ofysPatientId.
+
+L'utilisateur de B peut par la suite associer le patient à la discussion de son côté s'il le souhaite (avec un 
+ofysId différent), à l'air du PUT /discussion/{id}. Après cela, il verrait son ID à lui à la place.
+
+> discussion
+  --> sharedPatientData, populé à la création ou mise à jour (juste les infos comme le nom)
+  --> Une liste de workplaces participants
+  ----> Chaque workplace a ses info patient à lui (nullable)
+
+Donc l'info patient affiché est celle de la workplace (lieux) en premier si disponible, sinon l'info 
+partagé. L'ID ofys est seulement sauvegardé dans les info patient du lieu, pas dans le sharedPatientData.
+
 **Sécurité**: Authentification requise (braverJwt)`,
         operationId: 'createThread',
         parameters: [{ $ref: '#/components/parameters/IdempotencyKey' }],
@@ -883,6 +912,10 @@ Exemple: \`wss://api.braver.net/fils/activites?token=<braverJwt>\`
 
 **Expiration du Token**: Le token n'expire PAS tant que la connexion WebSocket reste ouverte.
 Si la connexion est fermée, un nouveau token doit être obtenu pour se reconnecter.
+
+**Expiration du socket**: Le socket sera fermé automatiquement après 1 minute d'inactivité. Le client doit envoyer la
+chaîne de caractères "ping" pour maintenir la connexion ouverte (un textframe avec seulement le contenu "ping"). Il est
+possible d'envoyer des pings plus fréquemment pour éviter un problème de timing.
 
 **Protocole**: WebSocket standard (wss://)
 

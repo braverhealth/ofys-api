@@ -35,7 +35,7 @@ export const UserCreate = Type.Object({
   ),
   lieuxPratiqueOfysIds: Type.Array(Type.String(), {
     description:
-      'Liste des IDs Ofys des lieux de pratique associés à cet utilisateur',
+      'Liste des IDs Ofys des lieux de pratique associés à cet utilisateur. Tous les lieux doivent appartenir à la clinique (identifié par le champ `tid` du JWT) qui crée cet utilisateur. Un lieu ne peut être que dans 1 seule clinique.',
   }),
 });
 export type UserCreate = Static<typeof UserCreate>;

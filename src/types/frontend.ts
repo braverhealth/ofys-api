@@ -74,6 +74,12 @@ export type Participant = Static<typeof Participant>;
 
 export const PatientMini = Type.Object({
   ofysPatientId: Type.Optional(Type.String()),
+  braverPatientId: Type.Optional(
+    Type.String({
+      description:
+        'Identifiant Braver du patient (si le patient a été créé côté Braver)',
+    }),
+  ),
   prenom: Type.String(),
   nom: Type.String(),
   sexeNaissance: Type.Optional(Gender),
@@ -86,20 +92,26 @@ export type PatientMini = Static<typeof PatientMini>;
 // Message Types
 // ============================================================================
 
-export const Attachment = Type.Object({
-  id: Type.String(),
-  nomFichier: Type.String(),
-  typeMime: Type.String(),
-  tailleOctets: Type.Optional(
-    Type.String({
-      description:
-        'Taille en octets du fichier. Représenté en String pour éviter les overflow',
-    }),
-  ),
-  urlTelechargement: Type.Optional(Type.String({ format: 'uri' })),
-  fichierPret: Type.Boolean(),
-  description: Type.String(),
-});
+export const Attachment = Type.Object(
+  {
+    id: Type.String(),
+    nomFichier: Type.String(),
+    typeMime: Type.String(),
+    tailleOctets: Type.Optional(
+      Type.String({
+        description:
+          'Taille en octets du fichier. Représenté en String pour éviter les overflow',
+      }),
+    ),
+    urlTelechargement: Type.Optional(Type.String({ format: 'uri' })),
+    fichierPret: Type.Boolean(),
+    description: Type.String(),
+  },
+  {
+    description:
+      "Certaines informations, incluant l'URL de téléchargement, ne seront disponibles que lorsque le fichier sera prêt.",
+  },
+);
 export type Attachment = Static<typeof Attachment>;
 
 export const MessageFormat = Type.Union([
@@ -270,17 +282,6 @@ export const Thread = Type.Object({
       format: 'date-time',
       description:
         'Indique jusqu’à quand le fil est en sourdine (null si pas en sourdine)',
-    }),
-  ),
-  ofysPatientId: Type.Optional(
-    Type.String({
-      description: 'Identifiant Ofys associé si établi',
-    }),
-  ),
-  braverPatientId: Type.Optional(
-    Type.String({
-      description:
-        'Identifiant Braver du patient (si le patient a été créé côté Braver)',
     }),
   ),
   resumeDepuisDebut: Type.Optional(
