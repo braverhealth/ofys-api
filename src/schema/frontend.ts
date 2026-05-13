@@ -224,7 +224,7 @@ export const schema: OpenAPIV3_1.Document = {
   servers: [
     { url: '<À préciser prochainement>', description: 'Production' },
     {
-      url: 'https://webhook.stage.braver.dev/webhook/3a0fc9f4-4dcd-42da-a951-7f3da4af0b19/',
+      url: 'https://webhook.stage.braver.dev/webhook/cf0ea066-1baa-47eb-9033-bedefe5b58e6/',
       description: 'Sandbox',
     },
   ],
