@@ -92,6 +92,17 @@ export type PatientMini = Static<typeof PatientMini>;
 // Message Types
 // ============================================================================
 
+export const TypeReaction = Type.Enum({
+  OK: 'ok',
+  AIME: 'aime',
+  SURPRISE: 'surprise',
+  TRISTE: 'triste',
+  EXITE: 'exite',
+  MERCI: 'merci',
+  AIME_PAS: 'aime_pas',
+});
+export type ReactionType = Static<typeof TypeReaction>;
+
 export const Attachment = Type.Object(
   {
     id: Type.String(),
@@ -152,10 +163,26 @@ export const MessageWithAttachment = Type.Object({
 });
 export type MessageWithAttachment = Static<typeof MessageWithAttachment>;
 
-export const Message = Type.Union([MessageWithContent, MessageWithAttachment], {
-  description:
-    'Message retourné par GET /fil/{id}. Contient soit du contenu texte, soit une pièce jointe, mais pas les deux.',
+export const MessageReaction = Type.Object({
+  id: Type.String(),
+  sequenceId: Type.Integer({
+    description: 'Ordre strict des messages dans le fil',
+  }),
+  reactionAuSequenceId: Type.Integer(),
+  typeReaction: TypeReaction,
+  auteur: Participant,
+  creeAt: Type.String({ format: 'date-time' }),
+  nonLu: Type.Boolean(),
 });
+export type MessageReaction = Static<typeof MessageReaction>;
+
+export const Message = Type.Union(
+  [MessageWithContent, MessageWithAttachment, MessageReaction],
+  {
+    description:
+      'Message retourné par GET /fil/{id}. Contient soit du contenu texte, soit une pièce jointe, mais pas les deux.',
+  },
+);
 export type Message = Static<typeof Message>;
 
 export const MessageList = Type.Object({
@@ -197,6 +224,11 @@ export const MessageCreate = Type.Object({
   piecesJointes: Type.Optional(Type.Array(AttachmentCreate)),
 });
 export type MessageCreate = Static<typeof MessageCreate>;
+
+export const AjouterReaction = Type.Object({
+  reactionType: TypeReaction,
+});
+export type AddReaction = Static<typeof AjouterReaction>;
 
 // ============================================================================
 // Thread Types
