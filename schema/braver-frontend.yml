@@ -672,6 +672,58 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiError'
+  /fils/{ofysOrBraverId}/messages/{sequenceId}/reactions:
+    post:
+      tags:
+        - Fils
+        - Réactions
+      summary: Réagit à un message
+      description: >-
+        Réagit à un message avec un emoji. Le sequenceId du message auquel on
+        réagit doit être fourni dans l'URL.
+
+
+        **Sécurité**: Authentification requise (braverJwt)
+      operationId: addReaction
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+        - $ref: '#/components/parameters/SequenceId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AjouterReaction'
+      responses:
+        '201':
+          description: Reaction ajoutée
+          headers:
+            Location:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageList'
+        '400':
+          description: Requête invalide
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '401':
+          description: Non autorisé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Fil non trouvé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
   /professions:
     get:
       tags:
@@ -1063,6 +1115,14 @@ components:
       schema:
         type: string
       description: Identifiant côté Ofys ou Braver selon le contexte
+    SequenceId:
+      name: sequenceId
+      in: path
+      required: true
+      schema:
+        type: integer
+        minimum: 0
+      description: ID de séquence du message
     IdempotencyKey:
       name: Idempotency-Key
       in: header
@@ -1394,6 +1454,46 @@ components:
                         type: boolean
                       description:
                         type: string
+                  creeAt:
+                    format: date-time
+                    type: string
+                  nonLu:
+                    type: boolean
+              - &ref_29
+                type: object
+                required:
+                  - id
+                  - sequenceId
+                  - reactionAuSequenceId
+                  - typeReaction
+                  - auteur
+                  - creeAt
+                  - nonLu
+                properties:
+                  id:
+                    type: string
+                  sequenceId:
+                    description: Ordre strict des messages dans le fil
+                    type: integer
+                  reactionAuSequenceId:
+                    type: integer
+                  typeReaction: &ref_28
+                    anyOf:
+                      - const: ok
+                        type: string
+                      - const: aime
+                        type: string
+                      - const: surprise
+                        type: string
+                      - const: triste
+                        type: string
+                      - const: exite
+                        type: string
+                      - const: merci
+                        type: string
+                      - const: aime_pas
+                        type: string
+                  auteur: *ref_3
                   creeAt:
                     format: date-time
                     type: string
@@ -1833,3 +1933,11 @@ components:
             traceId:
               description: Identifiant unique pour tracer l'erreur en production
               type: string
+    TypeReaction: *ref_28
+    AjouterReaction:
+      type: object
+      required:
+        - reactionType
+      properties:
+        reactionType: *ref_28
+    MessageReaction: *ref_29

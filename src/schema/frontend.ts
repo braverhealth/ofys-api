@@ -9,6 +9,9 @@ import {
   ThreadCreate,
   ThreadUpdate,
   ThreadParticipantRef,
+  TypeReaction,
+  AjouterReaction,
+  MessageReaction,
   Participant,
   PracticeLocation,
   PatientMini,
@@ -628,6 +631,66 @@ et zéro ou plusieurs pièces jointes (fichiers en base64 ou URLs).
         },
       },
     },
+    '/fils/{ofysOrBraverId}/messages/{sequenceId}/reactions': {
+      post: {
+        tags: ['Fils', 'Réactions'],
+        summary: 'Réagit à un message',
+        description: `Réagit à un message avec un emoji. Le sequenceId du message auquel on réagit doit être fourni dans l'URL.
+
+**Sécurité**: Authentification requise (braverJwt)`,
+        operationId: 'addReaction',
+        parameters: [
+          { $ref: '#/components/parameters/PathId' },
+          { $ref: '#/components/parameters/SequenceId' },
+          { $ref: '#/components/parameters/IdempotencyKey' },
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/AjouterReaction' },
+            },
+          },
+        },
+        responses: {
+          '201': {
+            description: 'Reaction ajoutée',
+            headers: {
+              Location: { schema: { type: 'string' } },
+            },
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/MessageList' },
+              },
+            },
+          },
+          '400': {
+            description: 'Requête invalide',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/ApiError' },
+              },
+            },
+          },
+          '401': {
+            description: 'Non autorisé',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/ApiError' },
+              },
+            },
+          },
+          '404': {
+            description: 'Fil non trouvé',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/ApiError' },
+              },
+            },
+          },
+        },
+      },
+    },
     '/professions': {
       get: {
         tags: ['Recherche'],
@@ -983,6 +1046,13 @@ Le token peut aussi être utilisé comme sso_token pour https://app.braver.net/?
         schema: { type: 'string' },
         description: 'Identifiant côté Ofys ou Braver selon le contexte',
       },
+      SequenceId: {
+        name: 'sequenceId',
+        in: 'path',
+        required: true,
+        schema: { type: 'integer', minimum: 0 },
+        description: 'ID de séquence du message',
+      },
       IdempotencyKey: {
         name: 'Idempotency-Key',
         in: 'header',
@@ -1026,6 +1096,9 @@ Le token peut aussi être utilisé comme sso_token pour https://app.braver.net/?
       WebSocketMessageThreadUpdated,
       WebSocketMessageThreadClosed,
       ApiError,
+      TypeReaction,
+      AjouterReaction,
+      MessageReaction,
     },
   },
 };
