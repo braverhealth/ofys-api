@@ -137,52 +137,50 @@ export const MessageContent = Type.Object({
 });
 export type MessageContent = Static<typeof MessageContent>;
 
-export const MessageWithContent = Type.Object({
+export const MessageBase = Type.Object({
   id: Type.String(),
   sequenceId: Type.Integer({
     description: 'Ordre strict des messages dans le fil',
   }),
   auteur: Participant,
-  type: Type.Literal('contenu'),
-  contenu: MessageContent,
   creeAt: Type.String({ format: 'date-time' }),
   nonLu: Type.Boolean(),
+  estSupprime: Type.Boolean(),
 });
-export type MessageWithContent = Static<typeof MessageWithContent>;
+export type MessageBase = Static<typeof MessageBase>;
 
-export const MessageWithAttachment = Type.Object({
-  id: Type.String(),
-  sequenceId: Type.Integer({
-    description: 'Ordre strict des messages dans le fil',
+export const MessageReaction = Type.Composite([
+  MessageBase,
+  Type.Object({
+    typeReaction: TypeReaction,
   }),
-  auteur: Participant,
-  type: Type.Literal('pieceJointe'),
-  pieceJointe: Attachment,
-  creeAt: Type.String({ format: 'date-time' }),
-  nonLu: Type.Boolean(),
-});
-export type MessageWithAttachment = Static<typeof MessageWithAttachment>;
-
-export const MessageReaction = Type.Object({
-  id: Type.String(),
-  sequenceId: Type.Integer({
-    description: 'Ordre strict des messages dans le fil',
-  }),
-  reactionAuSequenceId: Type.Integer(),
-  typeReaction: TypeReaction,
-  auteur: Participant,
-  creeAt: Type.String({ format: 'date-time' }),
-  nonLu: Type.Boolean(),
-});
+]);
 export type MessageReaction = Static<typeof MessageReaction>;
 
-export const Message = Type.Union(
-  [MessageWithContent, MessageWithAttachment, MessageReaction],
-  {
-    description:
-      'Message retourné par GET /fil/{id}. Contient soit du contenu texte, soit une pièce jointe, mais pas les deux.',
-  },
-);
+export const MessageWithContent = Type.Composite([
+  MessageBase,
+  Type.Object({
+    type: Type.Literal('contenu'),
+    contenu: MessageContent,
+    reactions: Type.Array(MessageReaction),
+  }),
+]);
+export type MessageWithContent = Static<typeof MessageWithContent>;
+
+export const MessageWithAttachment = Type.Composite([
+  MessageBase,
+  Type.Object({
+    type: Type.Literal('pieceJointe'),
+    pieceJointe: Attachment,
+    reactions: Type.Array(MessageReaction),
+  }),
+]);
+export type MessageWithAttachment = Static<typeof MessageWithAttachment>;
+
+export const Message = Type.Union([MessageWithContent, MessageWithAttachment], {
+  description:
+    'Message retourné par GET /fil/{id}. Contient soit du contenu texte, soit une pièce jointe, mais pas les deux.',
+});
 export type Message = Static<typeof Message>;
 
 export const MessageList = Type.Object({

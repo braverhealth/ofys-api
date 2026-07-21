@@ -691,6 +691,54 @@ et zéro ou plusieurs pièces jointes (fichiers en base64 ou URLs).
         },
       },
     },
+    '/fils/{ofysOrBraverId}/messages/{sequenceId}': {
+      delete: {
+        tags: ['Fils', 'Réactions'],
+        summary: 'Permet de retirer un message, incluant les réactions',
+        description: `Enlève un message. Permet également de fournir le sequenceId d'une réaction pour retirer celle-ci.
+        
+        Les messages sont seulement supprimé avec un "soft-delete". Ceux-ci continueront d'être retournés par l'API, mais avec un flag estSupprime: true.
+        
+        On doit être l'auteur du message pour pouvoir le supprimer. 
+
+**Sécurité**: Authentification requise (braverJwt)`,
+        operationId: 'addReaction',
+        parameters: [
+          { $ref: '#/components/parameters/PathId' },
+          { $ref: '#/components/parameters/SequenceId' },
+          { $ref: '#/components/parameters/IdempotencyKey' },
+        ],
+        responses: {
+          '200': {
+            description: 'Success',
+          },
+          '400': {
+            description: 'Requête invalide',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/ApiError' },
+              },
+            },
+          },
+          '401': {
+            description: 'Non autorisé',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/ApiError' },
+              },
+            },
+          },
+          '404': {
+            description: 'Fil non trouvé',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/ApiError' },
+              },
+            },
+          },
+        },
+      },
+    },
     '/professions': {
       get: {
         tags: ['Recherche'],
