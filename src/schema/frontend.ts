@@ -660,7 +660,7 @@ et zéro ou plusieurs pièces jointes (fichiers en base64 ou URLs).
             },
             content: {
               'application/json': {
-                schema: { $ref: '#/components/schemas/MessageList' },
+                schema: { $ref: '#/components/schemas/MessageReaction' },
               },
             },
           },
