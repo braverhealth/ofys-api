@@ -157,12 +157,21 @@ export const MessageReaction = Type.Composite([
 ]);
 export type MessageReaction = Static<typeof MessageReaction>;
 
+export const MessageEdition = Type.Composite([
+  MessageBase,
+  Type.Object({
+    nouveauContenu: MessageContent,
+  }),
+]);
+export type MessageEdition = Static<typeof MessageEdition>;
+
 export const MessageWithContent = Type.Composite([
   MessageBase,
   Type.Object({
     type: Type.Literal('contenu'),
     contenu: MessageContent,
     reactions: Type.Array(MessageReaction),
+    editions: Type.Array(MessageEdition),
   }),
 ]);
 export type MessageWithContent = Static<typeof MessageWithContent>;
@@ -173,6 +182,7 @@ export const MessageWithAttachment = Type.Composite([
     type: Type.Literal('pieceJointe'),
     pieceJointe: Attachment,
     reactions: Type.Array(MessageReaction),
+    editions: Type.Array(MessageEdition),
   }),
 ]);
 export type MessageWithAttachment = Static<typeof MessageWithAttachment>;
@@ -226,7 +236,7 @@ export type MessageCreate = Static<typeof MessageCreate>;
 export const AjouterReaction = Type.Object({
   reactionType: TypeReaction,
 });
-export type AddReaction = Static<typeof AjouterReaction>;
+export type AjouterReaction = Static<typeof AjouterReaction>;
 
 // ============================================================================
 // Thread Types
@@ -598,6 +608,32 @@ export type WebSocketMessageNewMessage = Static<
   typeof WebSocketMessageNewMessage
 >;
 
+export const WebSocketMessageNewReaction = Type.Object({
+  type: Type.Literal('newReaction'),
+  threadId: Type.String(),
+  message: Message,
+  timestamp: Type.String({ format: 'date-time' }),
+});
+export type WebSocketMessageNewReaction = Static<
+  typeof WebSocketMessageNewReaction
+>;
+
+export const WebSocketMessageRemoved = Type.Object({
+  type: Type.Literal('messageRemoved'),
+  threadId: Type.String(),
+  message: Message,
+  timestamp: Type.String({ format: 'date-time' }),
+});
+export type WebSocketMessageRemoved = Static<typeof WebSocketMessageRemoved>;
+
+export const WebSocketMessageEdited = Type.Object({
+  type: Type.Literal('messageEdited'),
+  threadId: Type.String(),
+  message: Message,
+  timestamp: Type.String({ format: 'date-time' }),
+});
+export type WebSocketMessageEdited = Static<typeof WebSocketMessageEdited>;
+
 export const WebSocketMessageThreadUpdated = Type.Object({
   type: Type.Literal('threadUpdated'),
   threadId: Type.String(),
@@ -622,5 +658,7 @@ export const WebSocketMessage = Type.Union([
   WebSocketMessageNewMessage,
   WebSocketMessageThreadUpdated,
   WebSocketMessageThreadClosed,
+  WebSocketMessageNewReaction,
+  WebSocketMessageRemoved,
 ]);
 export type WebSocketMessage = Static<typeof WebSocketMessage>;
