@@ -35,6 +35,10 @@ import {
   WebSocketMessageThreadUpdated,
   WebSocketMessageThreadClosed,
   WorkplaceSearchResponse,
+  WebSocketMessageEdited,
+  MessageEdition,
+  WebSocketMessageNewReaction,
+  WebSocketMessageRemoved,
 } from '../types/frontend.js';
 import { ApiError } from '../types/common.js';
 
@@ -1143,10 +1147,14 @@ Le token peut aussi être utilisé comme sso_token pour https://app.braver.net/?
       WebSocketMessageNewMessage,
       WebSocketMessageThreadUpdated,
       WebSocketMessageThreadClosed,
+      WebSocketMessageEdited,
+      WebSocketMessageNewReaction,
+      WebSocketMessageRemoved,
       ApiError,
       TypeReaction,
       AjouterReaction,
       MessageReaction,
+      MessageEdition,
     },
   },
 };

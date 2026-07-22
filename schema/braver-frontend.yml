@@ -1330,7 +1330,7 @@ components:
                   nom:
                     type: string
                   sexeNaissance:
-                    anyOf: &ref_12
+                    anyOf: &ref_13
                       - const: M
                         type: string
                       - const: F
@@ -1374,7 +1374,7 @@ components:
           description: ID du dernier fil pour la prochaine requête (null si hasMore=false)
           type: string
     ThreadSummary: *ref_2
-    Thread: &ref_26
+    Thread: &ref_27
       type: object
       required:
         - braverDiscussionId
@@ -1402,12 +1402,12 @@ components:
           properties: *ref_6
         messages:
           type: array
-          items: &ref_17
+          items: &ref_18
             description: >-
               Message retourné par GET /fil/{id}. Contient soit du contenu
               texte, soit une pièce jointe, mais pas les deux.
             anyOf:
-              - &ref_18
+              - &ref_19
                 type: object
                 required:
                   - id
@@ -1419,6 +1419,7 @@ components:
                   - type
                   - contenu
                   - reactions
+                  - editions
                 properties:
                   id:
                     type: string
@@ -1441,9 +1442,9 @@ components:
                     type: string
                   contenu:
                     type: object
-                    required: &ref_10
+                    required: &ref_9
                       - texte
-                    properties: &ref_11
+                    properties: &ref_10
                       texte:
                         type: string
                       format:
@@ -1454,7 +1455,7 @@ components:
                             type: string
                   reactions:
                     type: array
-                    items: &ref_9
+                    items: &ref_11
                       type: object
                       required:
                         - id
@@ -1482,7 +1483,7 @@ components:
                         estSupprime:
                           type: boolean
                         typeReaction:
-                          anyOf: &ref_31
+                          anyOf: &ref_34
                             - const: ok
                               type: string
                             - const: aime
@@ -1497,7 +1498,40 @@ components:
                               type: string
                             - const: aime_pas
                               type: string
-              - &ref_19
+                  editions:
+                    type: array
+                    items: &ref_12
+                      type: object
+                      required:
+                        - id
+                        - sequenceId
+                        - auteur
+                        - creeAt
+                        - nonLu
+                        - estSupprime
+                        - nouveauContenu
+                      properties:
+                        id:
+                          type: string
+                        sequenceId:
+                          description: Ordre strict des messages dans le fil
+                          type: integer
+                        auteur:
+                          type: object
+                          required: *ref_7
+                          properties: *ref_8
+                        creeAt:
+                          format: date-time
+                          type: string
+                        nonLu:
+                          type: boolean
+                        estSupprime:
+                          type: boolean
+                        nouveauContenu:
+                          type: object
+                          required: *ref_9
+                          properties: *ref_10
+              - &ref_20
                 type: object
                 required:
                   - id
@@ -1509,6 +1543,7 @@ components:
                   - type
                   - pieceJointe
                   - reactions
+                  - editions
                 properties:
                   id:
                     type: string
@@ -1534,13 +1569,13 @@ components:
                       Certaines informations, incluant l'URL de téléchargement,
                       ne seront disponibles que lorsque le fichier sera prêt.
                     type: object
-                    required: &ref_21
+                    required: &ref_22
                       - id
                       - nomFichier
                       - typeMime
                       - fichierPret
                       - description
-                    properties: &ref_22
+                    properties: &ref_23
                       id:
                         type: string
                       nomFichier:
@@ -1561,7 +1596,10 @@ components:
                         type: string
                   reactions:
                     type: array
-                    items: *ref_9
+                    items: *ref_11
+                  editions:
+                    type: array
+                    items: *ref_12
         nbMessages:
           description: Nombre total de messages dans ce fil
           type: integer
@@ -1597,7 +1635,7 @@ components:
           type: string
         participants:
           type: array
-          items: &ref_15
+          items: &ref_16
             type: object
             properties:
               professionnelOfysId:
@@ -1616,20 +1654,20 @@ components:
                 type: string
         contenuInitial:
           type: object
-          required: *ref_10
-          properties: *ref_11
+          required: *ref_9
+          properties: *ref_10
         patient:
           description: >-
             Créer un patient Braver en même temps que la création du fil.
             Mutuellement exclusif avec ofysPatientId
           type: object
-          required: &ref_13
+          required: &ref_14
             - ofysPatientId
             - prenom
             - nom
             - dateNaissance
             - nam
-          properties: &ref_14
+          properties: &ref_15
             ofysPatientId:
               description: Identifiant Ofys du patient
               type: string
@@ -1638,7 +1676,7 @@ components:
             nom:
               type: string
             sexeNaissance:
-              anyOf: *ref_12
+              anyOf: *ref_13
             dateNaissance:
               format: date
               type: string
@@ -1652,7 +1690,7 @@ components:
           type: string
         piecesJointes:
           type: array
-          items: &ref_20
+          items: &ref_21
             type: object
             required:
               - nomFichier
@@ -1721,13 +1759,13 @@ components:
                 Associer un patient existant au fil. Soit son ID Ofys, ou les
                 détails pour un nouveau patient
               anyOf:
-                - &ref_16
+                - &ref_17
                   description: >-
                     Créer un patient Braver en même temps que la création du
                     fil. Mutuellement exclusif avec ofysPatientId
                   type: object
-                  required: *ref_13
-                  properties: *ref_14
+                  required: *ref_14
+                  properties: *ref_15
                 - type: string
         - title: Fermer le fil
           type: object
@@ -1754,41 +1792,41 @@ components:
           properties:
             ajouterParticipants:
               type: array
-              items: *ref_15
-    ThreadParticipantRef: *ref_15
+              items: *ref_16
+    ThreadParticipantRef: *ref_16
     Participant: *ref_3
     PracticeLocation: *ref_4
     PatientMini:
       type: object
       required: *ref_5
       properties: *ref_6
-    PatientCreateForThread: *ref_16
-    Message: *ref_17
-    MessageWithContent: *ref_18
-    MessageWithAttachment: *ref_19
+    PatientCreateForThread: *ref_17
+    Message: *ref_18
+    MessageWithContent: *ref_19
+    MessageWithAttachment: *ref_20
     MessageContent:
       type: object
-      required: *ref_10
-      properties: *ref_11
+      required: *ref_9
+      properties: *ref_10
     MessageCreate:
       type: object
       properties:
         contenu:
           type: object
-          required: *ref_10
-          properties: *ref_11
+          required: *ref_9
+          properties: *ref_10
         piecesJointes:
           type: array
-          items: *ref_20
+          items: *ref_21
     Attachment:
       description: >-
         Certaines informations, incluant l'URL de téléchargement, ne seront
         disponibles que lorsque le fichier sera prêt.
       type: object
-      required: *ref_21
-      properties: *ref_22
-    AttachmentCreate: *ref_20
-    ProfessionalProfile: &ref_23
+      required: *ref_22
+      properties: *ref_23
+    AttachmentCreate: *ref_21
+    ProfessionalProfile: &ref_24
       type: object
       required:
         - id
@@ -1825,7 +1863,7 @@ components:
       properties:
         results:
           type: array
-          items: *ref_23
+          items: *ref_24
         pageToken:
           description: PageToken pour la prochaine requête
           type: string
@@ -1837,7 +1875,7 @@ components:
         results:
           type: array
           items: *ref_4
-    Profession: &ref_24
+    Profession: &ref_25
       type: object
       required:
         - id
@@ -1871,7 +1909,7 @@ components:
             en_O:
               type: string
           description: Libellés localisés et genrés de la profession
-    LocationType: &ref_25
+    LocationType: &ref_26
       type: object
       required:
         - id
@@ -1895,7 +1933,7 @@ components:
       properties:
         professions:
           type: array
-          items: *ref_24
+          items: *ref_25
     LocationTypeListResponse:
       type: object
       required:
@@ -1903,10 +1941,10 @@ components:
       properties:
         typesLieux:
           type: array
-          items: *ref_25
+          items: *ref_26
     WebSocketMessage:
       anyOf:
-        - &ref_27
+        - &ref_28
           type: object
           required:
             - type
@@ -1916,11 +1954,11 @@ components:
             type:
               const: newThread
               type: string
-            thread: *ref_26
+            thread: *ref_27
             timestamp:
               format: date-time
               type: string
-        - &ref_28
+        - &ref_29
           type: object
           required:
             - type
@@ -1933,11 +1971,11 @@ components:
               type: string
             threadId:
               type: string
-            message: *ref_17
+            message: *ref_18
             timestamp:
               format: date-time
               type: string
-        - &ref_29
+        - &ref_30
           type: object
           required:
             - type
@@ -1954,7 +1992,7 @@ components:
             timestamp:
               format: date-time
               type: string
-        - &ref_30
+        - &ref_31
           type: object
           required:
             - type
@@ -1969,10 +2007,63 @@ components:
             timestamp:
               format: date-time
               type: string
-    WebSocketMessageNewThread: *ref_27
-    WebSocketMessageNewMessage: *ref_28
-    WebSocketMessageThreadUpdated: *ref_29
-    WebSocketMessageThreadClosed: *ref_30
+        - &ref_32
+          type: object
+          required:
+            - type
+            - threadId
+            - message
+            - timestamp
+          properties:
+            type:
+              const: newReaction
+              type: string
+            threadId:
+              type: string
+            message: *ref_18
+            timestamp:
+              format: date-time
+              type: string
+        - &ref_33
+          type: object
+          required:
+            - type
+            - threadId
+            - message
+            - timestamp
+          properties:
+            type:
+              const: messageRemoved
+              type: string
+            threadId:
+              type: string
+            message: *ref_18
+            timestamp:
+              format: date-time
+              type: string
+    WebSocketMessageNewThread: *ref_28
+    WebSocketMessageNewMessage: *ref_29
+    WebSocketMessageThreadUpdated: *ref_30
+    WebSocketMessageThreadClosed: *ref_31
+    WebSocketMessageEdited:
+      type: object
+      required:
+        - type
+        - threadId
+        - message
+        - timestamp
+      properties:
+        type:
+          const: messageEdited
+          type: string
+        threadId:
+          type: string
+        message: *ref_18
+        timestamp:
+          format: date-time
+          type: string
+    WebSocketMessageNewReaction: *ref_32
+    WebSocketMessageRemoved: *ref_33
     ApiError:
       type: object
       required:
@@ -2005,12 +2096,13 @@ components:
             traceId:
               description: Identifiant unique pour tracer l'erreur en production
               type: string
-    TypeReaction: &ref_32
-      anyOf: *ref_31
+    TypeReaction: &ref_35
+      anyOf: *ref_34
     AjouterReaction:
       type: object
       required:
         - reactionType
       properties:
-        reactionType: *ref_32
-    MessageReaction: *ref_9
+        reactionType: *ref_35
+    MessageReaction: *ref_11
+    MessageEdition: *ref_12
