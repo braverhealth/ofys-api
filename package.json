@@ -47,7 +47,7 @@
   "dependencies": {
     "@sinclair/typebox": "^0.34",
     "openapi-types": "^12.1",
-    "uuid": "^11.0"
+    "uuid": "^14.0"
   },
   "devDependencies": {
     "@sinclair/typebox-codegen": "^0.11",
